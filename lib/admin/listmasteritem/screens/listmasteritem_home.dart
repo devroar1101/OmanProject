@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
+import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_form.dart';
 
 class ListMasterItemHome extends StatefulWidget {
   const ListMasterItemHome({super.key});
@@ -71,14 +72,34 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
             final details = ListMasterItem.listToMap(items);
 
             // Pass the converted list to DisplayDetails
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DisplayDetails(
-                headers: headers,
-                data: dataKeys,
-                details: details,
-                expandable: true,
-              ),
+            return Column(
+              children: [
+                ListMasterItemSearchForm(),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DisplayDetails(
+                            headers: headers,
+                            data: dataKeys,
+                            details: details, // Pass the list of maps
+                            expandable: true, // Set false to expand by default
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: FloatingActionButton(
+                            onPressed: () {},
+                            child: const Icon(Icons.add),
+                          ))
+                    ],
+                  ),
+                ),
+              ],
             );
           }
         },
