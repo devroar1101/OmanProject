@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
 
@@ -16,89 +17,46 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ListMaster Items'),
+        title: const Text('ListMaster Items'),
       ),
       body: FutureBuilder<List<ListMasterItem>>(
         future: _repository.fetchListMasterItems(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No items found'));
+            return const Center(child: Text('No items found'));
           } else {
             final items = snapshot.data!;
-            return Column(
-              children: [
-                // Static header row
-                Container(
-                  color: Colors.blue.shade200,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Text('S.No',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        Expanded(
-                            child: Text('Name Arabic',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        Expanded(
-                            child: Text('Name English',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        Expanded(
-                            child: Text('System Field',
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                      ],
-                    ),
-                  ),
-                ),
 
-                // Scrollable content with data rows
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: MediaQuery.of(context).size.width,
-                        ),
-                        child: DataTable(
-                          dataRowColor: WidgetStateProperty.resolveWith(
-                              (states) => Colors.grey.shade100),
-                          columns: [
-                            DataColumn(
-                                label: SizedBox
-                                    .shrink()), // Empty column for alignment with header
-                            DataColumn(
-                                label: SizedBox
-                                    .shrink()), // Empty column for alignment with header
-                            DataColumn(
-                                label: SizedBox
-                                    .shrink()), // Empty column for alignment with header
-                            DataColumn(
-                                label: SizedBox
-                                    .shrink()), // Empty column for alignment with header
-                          ],
-                          rows: List<DataRow>.generate(
-                            items.length,
-                            (index) => DataRow(
-                              cells: [
-                                DataCell(Text('${index + 1}')),
-                                DataCell(Text(items[index].nameArabic)),
-                                DataCell(Text(items[index].nameEnglish)),
-                                DataCell(Text(items[index].systemField)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            // Define headers and data keys
+            final headers = [
+              'code',
+              'Name Arabic',
+              'Name English',
+              'System Field',
+            ];
+            final dataKeys = [
+              'systemField',
+              'nameArabic',
+              'nameEnglish',
+              'systemField',
+            ];
+
+            // Convert ListMasterItem list to map list with sno
+            final details = ListMasterItem.listToMap(items);
+
+            // Pass the converted list to DisplayDetails
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DisplayDetails(
+                headers: headers,
+                data: dataKeys,
+                details: details, // Pass the list of maps
+                expandable: true, // Set false to expand by default
+              ),
             );
           }
         },

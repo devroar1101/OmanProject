@@ -30,4 +30,13 @@ class ListMasterItem {
       'systemField': systemField,
     };
   }
+
+  // Convert list of ListMasterItems to a list of maps, adding 'sno'
+  static List<Map<String, dynamic>> listToMap(List<ListMasterItem> items) {
+    return List<Map<String, dynamic>>.generate(items.length, (index) {
+      Map<String, dynamic> itemMap = items[index].toMap();
+      itemMap['sno'] = (index + 1).toString(); // Add sno field
+      return itemMap;
+    });
+  }
 }
