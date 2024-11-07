@@ -7,12 +7,12 @@ class DisplayDetails extends StatefulWidget {
   final bool expandable;
 
   const DisplayDetails({
-    Key? key,
+    super.key,
     required this.headers,
     required this.data,
     required this.details,
     this.expandable = false, // Default is false to expand by default
-  }) : super(key: key);
+  });
 
   @override
   _DisplayDetailsState createState() => _DisplayDetailsState();
@@ -39,7 +39,7 @@ class _DisplayDetailsState extends State<DisplayDetails> {
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   header,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             );
