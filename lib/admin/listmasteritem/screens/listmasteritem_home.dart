@@ -33,16 +33,38 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
 
             // Define headers and data keys
             final headers = [
-              'code',
+              'Sno',
               'Name Arabic',
               'Name English',
-              'System Field',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
             ];
             final dataKeys = [
-              'systemField',
+              'sno',
               'nameArabic',
               'nameEnglish',
-              'systemField',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
             ];
 
             // Convert ListMasterItem list to map list with sno
@@ -54,8 +76,8 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
               child: DisplayDetails(
                 headers: headers,
                 data: dataKeys,
-                details: details, // Pass the list of maps
-                expandable: true, // Set false to expand by default
+                details: details,
+                expandable: true,
               ),
             );
           }

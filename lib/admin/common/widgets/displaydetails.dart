@@ -7,19 +7,29 @@ class DisplayDetails extends StatefulWidget {
   final bool expandable;
 
   const DisplayDetails({
-    Key? key,
+    super.key,
     required this.headers,
     required this.data,
     required this.details,
-    this.expandable = false, // Default is false to expand by default
-  }) : super(key: key);
+    this.expandable = false,
+  });
 
   @override
   _DisplayDetailsState createState() => _DisplayDetailsState();
 }
 
 class _DisplayDetailsState extends State<DisplayDetails> {
-  bool isExpanded = false;
+  Set<int> expandedRows = {}; // Track which rows are expanded
+
+  @override
+  void initState() {
+    super.initState();
+    // Expand all rows if expandable is false
+    if (!widget.expandable) {
+      expandedRows =
+          Set<int>.from(List.generate(widget.details.length, (index) => index));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,83 +41,109 @@ class _DisplayDetailsState extends State<DisplayDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Static Header Row (only first 8 columns)
-        Row(
-          children: widget.headers.take(headerColumns).map((header) {
-            return Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(8),
+        // Header Row with colorful background
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.blueAccent,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: widget.headers.take(headerColumns).map((header) {
+              return Expanded(
                 child: Text(
                   header,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
+        const SizedBox(height: 10),
 
-        const Divider(),
-
-        // Data Rows with Scroll
+        // Data Rows
         Expanded(
           child: ListView.builder(
             itemCount: widget.details.length,
             itemBuilder: (context, rowIndex) {
               final row = widget.details[rowIndex];
-
-              // Check if there are more than 8 columns of data
               bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
 
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Display first 8 columns (visible columns)
-                  Row(
-                    children: widget.data.take(headerColumns).map((key) {
-                      return Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(row[key]?.toString() ?? ''),
-                        ),
-                      );
-                    }).toList(),
+                  // Main row with full background
+                  Container(
+                    color: Colors.grey[100], // Full background color
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: widget.data.take(headerColumns).map((key) {
+                        return Expanded(
+                          child: Text(
+                            row[key]?.toString() ?? '',
+                            style: const TextStyle(fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
 
-                  // Display arrow icon after the last visible column (8th column)
-                  if (hasMoreThanMaxColumns)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child:
-                                Container(), // Empty container to push icon to the end
+                  // Divider and Expand/Collapse Icon
+                  if (hasMoreThanMaxColumns && widget.expandable)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 1.5,
+                            color: Colors.grey[300],
                           ),
-                          IconButton(
-                            icon: Icon(
-                              isExpanded
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isExpanded = !isExpanded;
-                              });
-                            },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            expandedRows.contains(rowIndex)
+                                ? Icons.arrow_drop_up
+                                : Icons.arrow_drop_down,
+                            color: Colors.blueAccent,
                           ),
-                        ],
-                      ),
+                          onPressed: () {
+                            setState(() {
+                              if (expandedRows.contains(rowIndex)) {
+                                expandedRows.remove(rowIndex);
+                              } else {
+                                expandedRows.add(rowIndex);
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
 
-                  // Divider will appear after expansion
-                  if (isExpanded) const Divider(),
-
-                  // Display extra columns (columns 9 and beyond)
-                  if (isExpanded)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
+                  // Expanded Section with gradient background
+                  if (expandedRows.contains(rowIndex))
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blue[50]!, Colors.blue[100]!],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Column(
                         children: _buildExpandedRows(row, headerColumns),
                       ),
+                    ),
+                  if (expandedRows.contains(rowIndex))
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Divider(),
                     ),
                 ],
               );
@@ -118,24 +154,42 @@ class _DisplayDetailsState extends State<DisplayDetails> {
     );
   }
 
-  // Method to build rows for expanded columns (columns 9 and beyond)
+  // Build rows for expanded columns with unified gradient background
   List<Widget> _buildExpandedRows(Map<String, dynamic> row, int headerColumns) {
-    int maxItemsPerRow = 8; // You want 8 per row
+    int maxItemsPerRow = 4;
     List<Widget> expandedRows = [];
-    List<String> extraData = widget.data.skip(headerColumns).toList();
+    List<String> extraDataKeys = widget.data.skip(headerColumns).toList();
 
-    // Calculate how many rows are needed to fit the extra columns
-    for (int i = 0; i < extraData.length; i += maxItemsPerRow) {
-      int end = (i + maxItemsPerRow) < extraData.length
+    for (int i = 0; i < extraDataKeys.length; i += maxItemsPerRow) {
+      int end = (i + maxItemsPerRow) < extraDataKeys.length
           ? (i + maxItemsPerRow)
-          : extraData.length;
+          : extraDataKeys.length;
+
       expandedRows.add(
         Row(
-          children: extraData.sublist(i, end).map((key) {
+          children: extraDataKeys.sublist(i, end).map((key) {
+            int headerIndex = widget.data.indexOf(key);
+            String header = widget.headers[headerIndex];
+
             return Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                child: Text(row[key]?.toString() ?? ''),
+              child: Column(
+                children: [
+                  Text(
+                    header,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    row[key]?.toString() ?? '',
+                    style: const TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
           }).toList(),
