@@ -8,7 +8,6 @@ class DisplayDetails extends StatefulWidget {
 
   const DisplayDetails({
     super.key,
-    super.key,
     required this.headers,
     required this.data,
     required this.details,

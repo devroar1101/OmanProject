@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
 import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_form.dart';
