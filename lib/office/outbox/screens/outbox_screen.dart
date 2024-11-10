@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
+import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/office/outbox/model/outbox.dart';
+import 'package:tenderboard/office/outbox/model/outbox_repo.dart';
+import 'package:tenderboard/office/outbox/screens/outbox_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class OutboxScreen extends StatefulWidget {
+  const OutboxScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _OutboxScreenState createState() => _OutboxScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _OutboxScreenState extends State<OutboxScreen> {
+  final OutboxRepository _repository = OutboxRepository();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ListMaster'),
+        title: const Text('Outbox'),
       ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<Outbox>>(
+        future: _repository.fetchOutboxItem(
+          fromUserObjectId: 'C792ED5F-8763-46E9-BF31-7ED8201EEB96',
+          screenName: 'Outbox',
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -35,25 +37,25 @@ class _ListMasterHomeState extends State<ListMasterHome> {
 
             // Define headers and data keys
             final headers = [
-              'code',
-              'Name Arabic',
-              'Name English',
-              'System Field',
+              'Subject',
+              'Location',
+              'Reference #',
+              'Date & Time',
             ];
             final dataKeys = [
-              'systemField',
-              'nameArabic',
-              'nameEnglish',
-              'systemField',
+              'subject',
+              'location',
+              'jobReferenceNumber',
+              'actionDate',
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = Outbox.listToMap(items); 
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                ListMasterSearchForm(),
+                OutboxSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -71,9 +73,9 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(
+                          child: FloatingActionButton(  
                             onPressed: () {},
-                            child: const Icon(Icons.add),
+                            child:const Icon(Icons.add),
                           ))
                     ],
                   ),

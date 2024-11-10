@@ -48,9 +48,9 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
                 ),
               ),
             ),
-            
+
             SizedBox(width: 8.0), // Spacing between fields
-            
+
             // Name Arabic Text Field
             Expanded(
               child: TextField(
@@ -64,9 +64,9 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
                 ),
               ),
             ),
-            
+
             SizedBox(width: 8.0), // Spacing between fields and icons
-            
+
             // Search Icon Button
             Card(
               color: const Color.fromARGB(255, 238, 240, 241),
@@ -77,7 +77,7 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
                 tooltip: 'Search',
               ),
             ),
-            
+
             // Reset Icon Button
             Card(
               color: const Color.fromARGB(255, 240, 234, 235),
