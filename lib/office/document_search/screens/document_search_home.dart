@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/office/document_search/model/document_search.dart';
 import 'package:tenderboard/office/document_search/model/document_search_repo.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_form.dart';

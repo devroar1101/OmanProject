@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/office/inbox/model/inbox.dart';
 import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
@@ -17,9 +17,6 @@ class _InboxHomeState extends State<InboxHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inbox'),
-      ),
       body: FutureBuilder<List<ListInbox>>(
         future: _repository.fetchListInboxItems(
           toUserObjectId: 'C792ED5F-8763-46E9-BF31-7ED8201EEB96',
@@ -52,7 +49,7 @@ class _InboxHomeState extends State<InboxHome> {
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListInbox.listToMap(items); 
+            final details = ListInbox.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
@@ -75,9 +72,9 @@ class _InboxHomeState extends State<InboxHome> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(  
+                          child: FloatingActionButton(
                             onPressed: () {},
-                            child:const Icon(Icons.add),
+                            child: const Icon(Icons.add),
                           ))
                     ],
                   ),

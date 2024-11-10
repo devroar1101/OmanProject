@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
+import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget)
       onNavigate; // Callback function to navigate to new widget
 
-  CustomSidebar({required this.onNavigate});
+  const CustomSidebar({super.key, required this.onNavigate});
 
   @override
   _CustomSidebarState createState() => _CustomSidebarState();
@@ -19,7 +20,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': Dashboard()},
+      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxHome()},
       {'title': 'Outbox', 'icon': Icons.outbox, 'navigate': Dashboard()},
       {'title': 'CC', 'icon': Icons.mail, 'navigate': Dashboard()},
       {'title': 'eJob', 'icon': Icons.business, 'navigate': Dashboard()},
@@ -66,16 +67,22 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine if the layout direction is RTL
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       width: _isMinimized ? 60 : 250, // Width changes based on minimized state
       color: Colors.blueGrey[50],
       child: Column(
         children: [
-          // Minimize Button at top-right corner of sidebar
+          // Minimize Button at top-left or top-right corner of sidebar based on RTL
           Align(
-            alignment: Alignment.topRight,
+            alignment: isRtl ? Alignment.topLeft : Alignment.topRight,
             child: IconButton(
-              icon: Icon(_isMinimized ? Icons.arrow_forward : Icons.arrow_back),
+              icon: Icon(
+                _isMinimized
+                    ? (isRtl ? Icons.arrow_back : Icons.arrow_forward)
+                    : (isRtl ? Icons.arrow_forward : Icons.arrow_back),
+              ),
               onPressed: _toggleMinimize,
             ),
           ),
@@ -90,7 +97,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   final toggleCategory =
                       _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
-                    leading: Icon(Icons.folder),
+                    leading: const Icon(Icons.folder),
                     title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
                       _changeCategory(toggleCategory);

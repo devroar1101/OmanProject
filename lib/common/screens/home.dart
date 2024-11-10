@@ -3,6 +3,8 @@ import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/screens/widgets/sidebar.dart';
 
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -34,25 +36,27 @@ class _HomeState extends State<Home> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.dashboard,
+            icon: const Icon(Icons.dashboard,
                 color: Colors.lightGreenAccent, size: 28.0),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.inbox, color: Colors.teal, size: 28.0),
+            icon: const Icon(Icons.inbox, color: Colors.teal, size: 28.0),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.outbox, color: Colors.lightBlueAccent, size: 28.0),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.pinkAccent, size: 28.0),
+            icon: const Icon(Icons.outbox,
+                color: Colors.lightBlueAccent, size: 28.0),
             onPressed: () {},
           ),
           IconButton(
             icon:
-                Icon(Icons.person, color: Colors.deepPurpleAccent, size: 28.0),
+                const Icon(Icons.search, color: Colors.pinkAccent, size: 28.0),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.person,
+                color: Colors.deepPurpleAccent, size: 28.0),
             onPressed: () {},
           ),
         ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatelessWidget {
+  const Dashboard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -8,8 +10,8 @@ class Dashboard extends StatelessWidget {
         Align(
           alignment: Alignment.topCenter, // Position cards to top-center
           child: Container(
-            margin:
-                EdgeInsets.all(16.0), // Margin to give space around the cards
+            margin: const EdgeInsets.all(
+                16.0), // Margin to give space around the cards
             child: Wrap(
               spacing: 10, // Horizontal space between cards
               runSpacing: 10, // Vertical space between cards
@@ -34,7 +36,8 @@ class Dashboard extends StatelessWidget {
         width: 150, // Smaller width for compact cards
         height: 150, // Smaller height
         decoration: BoxDecoration(
-          color: Color(0xFFE8F5E9), // Pastel green background for all cards
+          color:
+              const Color(0xFFE8F5E9), // Pastel green background for all cards
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Center(
@@ -43,16 +46,16 @@ class Dashboard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black87, // Dark text for contrast
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Text(
                 value,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.blueAccent, // Pastel blue for the value
                   fontSize: 24, // Increased number font size
                   fontWeight: FontWeight.bold,

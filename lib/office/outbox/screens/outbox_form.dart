@@ -6,7 +6,7 @@ class OutboxSearchForm extends StatefulWidget {
   // Optional: Callback to pass search results to parent
   //final Function(List<ListMasterItem>)? onSearch;
 
-  OutboxSearchForm({super.key});
+  const OutboxSearchForm({super.key});
 
   @override
   _OutboxSearchFormState createState() => _OutboxSearchFormState();
@@ -69,9 +69,9 @@ class _OutboxSearchFormState extends State<OutboxSearchForm> {
                 ),
               ),
             ),
-            
-            SizedBox(width: 8.0), // Spacing between fields
-            
+
+            const SizedBox(width: 8.0), // Spacing between fields
+
             // SearchFor Text Field
             Expanded(
               child: TextField(
@@ -84,9 +84,9 @@ class _OutboxSearchFormState extends State<OutboxSearchForm> {
                 ),
               ),
             ),
-            
+
             // SizedBox(width: 8.0), // Spacing between fields
-            
+
             // // status (Status) Text Field
             // Expanded(
             //   child: TextField(
@@ -99,20 +99,20 @@ class _OutboxSearchFormState extends State<OutboxSearchForm> {
             //     ),
             //   ),
             // ),
-            
-            SizedBox(width: 8.0), // Spacing between fields and icons
-            
+
+            const SizedBox(width: 8.0), // Spacing between fields and icons
+
             // Search Icon Button
             Card(
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
                 icon: const Icon(Icons.search),
-                onPressed: (){},
+                onPressed: () {},
                 tooltip: 'Search',
               ),
             ),
-            
+
             // Reset Icon Button
             Card(
               color: const Color.fromARGB(255, 240, 234, 235),
