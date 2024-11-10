@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/screens/widgets/sidebar.dart';
 
-class HomePage extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomeState createState() => _HomeState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeState extends State<Home> {
   Widget _currentWidget = Dashboard(); // Default widget to show
 
   // Callback function to update the current widget based on the sidebar item clicked
@@ -26,7 +26,11 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         title: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset('assets/gstb_logo.png', height: 40),
+          child: Image.asset(
+            'assets/gstb_logo.png',
+            height: 40,
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           IconButton(

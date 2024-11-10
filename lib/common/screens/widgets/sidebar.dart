@@ -47,11 +47,10 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': Dashboard()
       },
       {'title': 'User', 'icon': Icons.person, 'navigate': Dashboard()},
-      {'title': 'Office', 'icon': Icons.home, 'navigate': Dashboard()},
     ]
   };
 
-  // Function to handle when a category is clicked
+  // Function to handle category switching
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
@@ -59,7 +58,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   }
 
   // Function to minimize/expand the sidebar
-  void _minimizeSidebar() {
+  void _toggleMinimize() {
     setState(() {
       _isMinimized = !_isMinimized;
     });
@@ -72,46 +71,38 @@ class _CustomSidebarState extends State<CustomSidebar> {
       color: Colors.blueGrey[50],
       child: Column(
         children: [
-          // Minimize/Maximize Button in the top-right corner
+          // Minimize Button at top-right corner of sidebar
           Align(
             alignment: Alignment.topRight,
             child: IconButton(
               icon: Icon(_isMinimized ? Icons.arrow_forward : Icons.arrow_back),
-              onPressed: _minimizeSidebar,
+              onPressed: _toggleMinimize,
             ),
           ),
           // Display menu items for the selected category
           Expanded(
             child: ListView.builder(
-              itemCount: (_menuItems[_currentCategory]?.length ?? 0) +
+              itemCount: _menuItems[_currentCategory]!.length +
                   1, // Add 1 for the "Admin/Office" button at the end
               itemBuilder: (context, index) {
-                // If the last item, display the opposite category (Admin or Office)
-                if (index == (_menuItems[_currentCategory]?.length ?? 0)) {
+                // If this is the last item, show the toggle to switch between categories
+                if (index == _menuItems[_currentCategory]!.length) {
+                  final toggleCategory =
+                      _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
-                    leading: _isMinimized
-                        ? Icon(Icons.folder)
-                        : Icon(Icons.folder, size: 24),
-                    title: _isMinimized
-                        ? null
-                        : Text(
-                            _currentCategory == 'Office' ? 'Admin' : 'Office'),
+                    leading: Icon(Icons.folder),
+                    title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
-                      // Switch between categories
-                      _changeCategory(
-                          _currentCategory == 'Office' ? 'Admin' : 'Office');
+                      _changeCategory(toggleCategory);
                     },
                   );
                 }
+                // Render menu items normally
                 final item = _menuItems[_currentCategory]![index];
                 return ListTile(
-                  leading: _isMinimized
-                      ? Icon(item['icon']) // Show only icon for minimized mode
-                      : Icon(item['icon'],
-                          size: 24), // Use full icon in expanded mode
-                  title: _isMinimized ? null : Text(item['title']!),
+                  leading: Icon(item['icon']),
+                  title: _isMinimized ? null : Text(item['title']),
                   onTap: () {
-                    // Navigate to the selected widget when clicked
                     widget.onNavigate(item['navigate']);
                   },
                 );
