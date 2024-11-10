@@ -3,8 +3,7 @@ import 'package:tenderboard/admin/listmaster/model/listmaster.dart'; // Assuming
 
 class ListMasterRepository {
   final Dio _dio = Dio();
-  final String _baseUrl =
-      'http://eofficetbdevdal.cloutics.net/api/ListMaster';
+  final String _baseUrl = 'http://eofficetbdevdal.cloutics.net/api/ListMaster';
 
   Future<List<ListMaster>> fetchListMasters() async {
     try {
@@ -21,5 +20,21 @@ class ListMasterRepository {
       // Handle any errors during the request
       throw Exception('Error occurred while fetching ListMasters: $e');
     }
+  }
+
+  // Search and filter method that accepts nameArabic and nameEnglish as optional filters
+  Future<List<ListMaster>> searchAndFilter(List<ListMaster> listMasters,
+      {String? nameArabic, String? nameEnglish}) async {
+    // Filter the list based on the provided nameArabic and nameEnglish filters
+    var filteredList = await listMasters.where((listMaster) {
+      bool matchesArabic =
+          nameArabic == null || listMaster.nameArabic.contains(nameArabic);
+      bool matchesEnglish =
+          nameEnglish == null || listMaster.nameEnglish.contains(nameEnglish);
+
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    return filteredList;
   }
 }

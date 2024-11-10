@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
-
-
 
 class ListMasterHome extends StatefulWidget {
   const ListMasterHome({super.key});
@@ -15,6 +13,7 @@ class ListMasterHome extends StatefulWidget {
 
 class _ListMasterHomeState extends State<ListMasterHome> {
   final ListMasterRepository _repository = ListMasterRepository();
+  final List<ListMaster> items = [];
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +71,9 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(  
+                          child: FloatingActionButton(
                             onPressed: () {},
-                            child:const Icon(Icons.add),
+                            child: const Icon(Icons.add),
                           ))
                     ],
                   ),

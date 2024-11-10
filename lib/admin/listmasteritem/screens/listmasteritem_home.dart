@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
 import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_form.dart';
@@ -34,16 +34,38 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
 
             // Define headers and data keys
             final headers = [
-              'code',
+              'Sno',
               'Name Arabic',
               'Name English',
-              'System Field',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
+              'Sno',
+              'Name Arabic',
+              'Name English',
             ];
             final dataKeys = [
-              'systemField',
+              'sno',
               'nameArabic',
               'nameEnglish',
-              'systemField',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
+              'sno',
+              'nameArabic',
+              'nameEnglish',
             ];
 
             // Convert ListMasterItem list to map list with sno
@@ -70,9 +92,9 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(  
+                          child: FloatingActionButton(
                             onPressed: () {},
-                            child:const Icon(Icons.add),
+                            child: const Icon(Icons.add),
                           ))
                     ],
                   ),
