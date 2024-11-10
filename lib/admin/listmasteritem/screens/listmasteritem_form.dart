@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
+import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 
 class ListMasterItemSearchForm extends StatefulWidget {
-  //final Function(String nameEnglish, String nameArabic) onSearch;
+  // Optional: Callback to pass search results to parent
+  final Function(List<ListMasterItem>)? onSearch;
 
-  ListMasterItemSearchForm({super.key});
+  ListMasterItemSearchForm({Key? key, this.onSearch}) : super(key: key);
 
   @override
   _ListMasterItemSearchFormState createState() => _ListMasterItemSearchFormState();
@@ -12,17 +15,34 @@ class ListMasterItemSearchForm extends StatefulWidget {
 class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
+  final ListMasterItemRepository _repository = ListMasterItemRepository();
 
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
   }
 
-  void _handleSearch() {
+  Future<void> _handleSearch() async {
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
 
-    //widget.onSearch(nameEnglish, nameArabic);
+    try {
+      // Fetch filtered list of ListMasterItems
+      List<ListMasterItem> results = await _repository.fetchListMasterItems(
+        nameArabic: nameArabic,
+        nameEnglish: nameEnglish,
+      );
+
+      // Optional: Pass results back to parent widget if a callback is provided
+      if (widget.onSearch != null) {
+        widget.onSearch!(results);
+      }
+    } catch (e) {
+      // Handle errors if any
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error occurred during search: $e')),
+      );
+    }
   }
 
   @override
@@ -41,7 +61,6 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
                 controller: _nameEnglishController,
                 decoration: InputDecoration(
                   labelText: 'Name English',
-                  //prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -57,7 +76,6 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
                 controller: _nameArabicController,
                 decoration: InputDecoration(
                   labelText: 'Name Arabic',
-                  //prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -70,7 +88,7 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
             // Search Icon Button
             Card(
               color: const Color.fromARGB(255, 238, 240, 241),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: IconButton(
                 icon: Icon(Icons.search),
                 onPressed: _handleSearch,
@@ -81,7 +99,7 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
             // Reset Icon Button
             Card(
               color: const Color.fromARGB(255, 240, 234, 235),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: _resetFields,
