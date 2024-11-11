@@ -8,7 +8,7 @@ class CustomSidebar extends StatefulWidget {
   final Function(Widget)
       onNavigate; // Callback function to navigate to new widget
 
-  CustomSidebar({required this.onNavigate});
+  const CustomSidebar({super.key, required this.onNavigate});
 
   @override
   _CustomSidebarState createState() => _CustomSidebarState();
@@ -69,16 +69,22 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine if the layout direction is RTL
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       width: _isMinimized ? 60 : 250, // Width changes based on minimized state
       color: Colors.blueGrey[50],
       child: Column(
         children: [
-          // Minimize Button at top-right corner of sidebar
+          // Minimize Button at top-left or top-right corner of sidebar based on RTL
           Align(
-            alignment: Alignment.topRight,
+            alignment: isRtl ? Alignment.topLeft : Alignment.topRight,
             child: IconButton(
-              icon: Icon(_isMinimized ? Icons.arrow_forward : Icons.arrow_back),
+              icon: Icon(
+                _isMinimized
+                    ? (isRtl ? Icons.arrow_back : Icons.arrow_forward)
+                    : (isRtl ? Icons.arrow_forward : Icons.arrow_back),
+              ),
               onPressed: _toggleMinimize,
             ),
           ),
@@ -93,7 +99,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   final toggleCategory =
                       _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
-                    leading: Icon(Icons.folder),
+                    leading: const Icon(Icons.folder),
                     title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
                       _changeCategory(toggleCategory);

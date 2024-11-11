@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ListMasterSearchForm extends StatefulWidget {
   //final Function(String nameEnglish, String nameArabic) onSearch;
 
-  ListMasterSearchForm({super.key});
+  const ListMasterSearchForm({super.key});
 
   @override
   _ListMasterSearchFormState createState() => _ListMasterSearchFormState();
@@ -49,7 +49,7 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
               ),
             ),
 
-            SizedBox(width: 8.0), // Spacing between fields
+            const SizedBox(width: 8.0), // Spacing between fields
 
             // Name Arabic Text Field
             Expanded(
@@ -65,14 +65,14 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
               ),
             ),
 
-            SizedBox(width: 8.0), // Spacing between fields and icons
+            const SizedBox(width: 8.0), // Spacing between fields and icons
 
             // Search Icon Button
             Card(
               color: const Color.fromARGB(255, 238, 240, 241),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: IconButton(
-                icon: Icon(Icons.search),
+                icon: const Icon(Icons.search),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -81,9 +81,9 @@ class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
             // Reset Icon Button
             Card(
               color: const Color.fromARGB(255, 240, 234, 235),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: IconButton(
-                icon: Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

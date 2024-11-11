@@ -1,55 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/screens/home.dart';
-import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
+import 'package:tenderboard/common/utilities/auth_provider.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  String _selectedLanguage = 'English';
-  TextEditingController _loginIdController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _loginIdController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _selectedLanguage = 'English'; // Initially set to 'English'
 
   @override
   Widget build(BuildContext context) {
+    // Watch the selectedLanguage from authProvider (in case you want to display it elsewhere)
+    final selectedLanguage =
+        ref.watch(authProvider.select((state) => state.selectedLanguage));
+
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
               'assets/tb_login.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          // Overlay to darken background
           Container(color: Colors.black.withOpacity(0.5)),
           Center(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: _buildLoginContainer(context),
+                child: _buildLoginContainer(selectedLanguage),
               ),
             ),
           ),
-          // Language selector positioned at the bottom right
           Positioned(
             bottom: 30,
             right: 30,
-            child: _buildLanguageSelector(),
+            child: _buildLanguageSelector(selectedLanguage),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLoginContainer(BuildContext context) {
+  Widget _buildLoginContainer(String selectedLanguage) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double containerWidth = screenWidth < 500 ? screenWidth * 0.9 : 400;
 
@@ -63,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
             blurRadius: 12,
-            offset: Offset(0, 6),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -73,19 +75,18 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildLogo(),
-            const SizedBox(height: 30), // Spacing between logo and fields
+            const SizedBox(height: 30),
             _buildLoginIdField(),
             const SizedBox(height: 15),
             _buildPasswordField(),
             const SizedBox(height: 30),
-            _buildLoginButton(),
+            _buildLoginButton(selectedLanguage),
           ],
         ),
       ),
     );
   }
 
-  // Logo Widget without Title
   Widget _buildLogo() {
     return Image.asset(
       'assets/gstb_logo.png',
@@ -93,14 +94,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Login ID Field with validation
   Widget _buildLoginIdField() {
     return TextFormField(
       controller: _loginIdController,
-      style: TextStyle(fontSize: 14), // Reduced font size
+      style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         labelText: 'Login ID',
-        labelStyle: TextStyle(fontSize: 14), // Reduced label font size
+        labelStyle: const TextStyle(fontSize: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -114,15 +114,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Password Field with visibility toggle and validation
   Widget _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
       obscureText: !_isPasswordVisible,
-      style: TextStyle(fontSize: 14), // Reduced font size
+      style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         labelText: 'Password',
-        labelStyle: TextStyle(fontSize: 14), // Reduced label font size
+        labelStyle: const TextStyle(fontSize: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -146,23 +145,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Language Selector with global icon and full names
-  Widget _buildLanguageSelector() {
-    // Light color for unselected and white for selected
-    TextStyle unselectedStyle = TextStyle(
-        fontSize: 18, color: Colors.white70); // Light gray for unselected
+  Widget _buildLanguageSelector(String selectedLanguage) {
+    TextStyle unselectedStyle =
+        const TextStyle(fontSize: 18, color: Colors.white70);
     TextStyle selectedStyle = const TextStyle(
-        fontSize: 24,
-        color: Colors.white,
-        fontWeight: FontWeight.bold); // White for selected
+        fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold);
 
     return Row(
       children: [
-        // Global Icon with White Color
-        Icon(Icons.language, size: 30, color: Colors.white),
+        const Icon(Icons.language, size: 30, color: Colors.white),
         const SizedBox(width: 10),
         GestureDetector(
-          onTap: () => setState(() => _selectedLanguage = 'Arabic'),
+          onTap: () {
+            setState(() {
+              _selectedLanguage = 'Arabic';
+            });
+          },
           child: Text(
             'Arabic',
             style:
@@ -171,7 +169,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(width: 30),
         GestureDetector(
-          onTap: () => setState(() => _selectedLanguage = 'English'),
+          onTap: () {
+            setState(() {
+              _selectedLanguage = 'English';
+            });
+          },
           child: Text(
             'English',
             style: _selectedLanguage == 'English'
@@ -183,8 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Centered Login Button at Bottom
-  Widget _buildLoginButton() {
+  Widget _buildLoginButton(String selectedLanguage) {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
@@ -192,16 +193,15 @@ class _LoginScreenState extends State<LoginScreen> {
         child: ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => Home(),
-                ),
-              );
+              final authNotifier = ref.read(authProvider.notifier);
+              authNotifier.login(_loginIdController.text,
+                  _passwordController.text, _selectedLanguage);
+              // Language is updated in SharedPreferences and globally
             }
           },
           child: const Text(
-            'LOGIN',  
+            'LOGIN',
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
       ),

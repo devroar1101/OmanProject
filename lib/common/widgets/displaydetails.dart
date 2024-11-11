@@ -43,7 +43,7 @@ class _DisplayDetailsState extends State<DisplayDetails> {
       children: [
         // Header Row with colorful background
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.blueAccent,
           ),
           padding: const EdgeInsets.symmetric(vertical: 12),

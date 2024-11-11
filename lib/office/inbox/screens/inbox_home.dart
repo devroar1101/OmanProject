@@ -50,7 +50,7 @@ class _InboxHomeState extends State<InboxHome> {
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListInbox.listToMap(items); 
+            final details = ListInbox.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
@@ -84,9 +84,9 @@ class _InboxHomeState extends State<InboxHome> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(  
+                          child: FloatingActionButton(
                             onPressed: () {},
-                            child:const Icon(Icons.add),
+                            child: const Icon(Icons.add),
                           ))
                     ],
                   ),

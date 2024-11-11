@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DocumentSearchForm extends StatefulWidget {
-  DocumentSearchForm({super.key});
+  const DocumentSearchForm({super.key});
 
   @override
   _DocumentSearchFormState createState() => _DocumentSearchFormState();
@@ -53,7 +53,7 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                 _buildTextField('Subject', _subjectController),
               ],
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               children: [
                 _buildTextField('Tender Number', _tenderNumberController),
@@ -61,7 +61,7 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                 _buildDateField('Letter Date From', _letterDateFromController),
               ],
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               children: [
                 _buildDateField('Letter Date To', _letterDateToController),
@@ -69,7 +69,7 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                 _buildTextField('Location', _locationController),
               ],
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               children: [
                 Expanded(
@@ -80,7 +80,7 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                 _buildRadioField('Direction', ['Incoming', 'Outgoing', 'All']),
               ],
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               children: [
                 _buildDateField('Received From', _receivedFromController),
@@ -88,7 +88,7 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                 _buildDateField('Received To', _receivedToController),
               ],
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Row(
               children: [
                 _buildIconButton(Icons.search, 'Search', () {}),

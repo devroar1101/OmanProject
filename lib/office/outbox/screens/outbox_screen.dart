@@ -50,7 +50,7 @@ class _OutboxScreenState extends State<OutboxScreen> {
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = Outbox.listToMap(items); 
+            final details = Outbox.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
@@ -73,9 +73,9 @@ class _OutboxScreenState extends State<OutboxScreen> {
                       Positioned(
                           bottom: 10,
                           right: 10,
-                          child: FloatingActionButton(  
+                          child: FloatingActionButton(
                             onPressed: () {},
-                            child:const Icon(Icons.add),
+                            child: const Icon(Icons.add),
                           ))
                     ],
                   ),

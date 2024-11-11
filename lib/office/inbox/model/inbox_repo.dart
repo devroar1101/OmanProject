@@ -15,18 +15,15 @@ class ListInboxRepository {
     String? screenName,
     int pageSize = 15,
     int pageNumber = 1,
-    
-
-    
   }) async {
-
     Map<String, dynamic> requestBody = {
-    'screenName': screenName,
-    "toUserObjectId": toUserObjectId,
-    'paginationDetail': {
-      'pageSize': pageSize,
-      'pageNumber': pageNumber,
-    }};
+      'screenName': screenName,
+      "toUserObjectId": toUserObjectId,
+      'paginationDetail': {
+        'pageSize': pageSize,
+        'pageNumber': pageNumber,
+      }
+    };
     try {
       final response = await _dio.post(
         '/SearchAndListLatestJobAction',
@@ -37,7 +34,8 @@ class ListInboxRepository {
       // Check if the response is successful
       if (response.statusCode == 200) {
         List data = response.data as List;
-        List<ListInbox> listInboxItems = data.map((item) => ListInbox.fromMap(item)).toList();
+        List<ListInbox> listInboxItems =
+            data.map((item) => ListInbox.fromMap(item)).toList();
 
         return listInboxItems;
       } else {

@@ -6,10 +6,11 @@ class ListMasterItemSearchForm extends StatefulWidget {
   // Optional: Callback to pass search results to parent
   final Function(List<ListMasterItem>)? onSearch;
 
-  ListMasterItemSearchForm({Key? key, this.onSearch}) : super(key: key);
+  const ListMasterItemSearchForm({super.key, this.onSearch});
 
   @override
-  _ListMasterItemSearchFormState createState() => _ListMasterItemSearchFormState();
+  _ListMasterItemSearchFormState createState() =>
+      _ListMasterItemSearchFormState();
 }
 
 class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
@@ -67,9 +68,9 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
                 ),
               ),
             ),
-            
-            SizedBox(width: 8.0), // Spacing between fields
-            
+
+            const SizedBox(width: 8.0), // Spacing between fields
+
             // Name Arabic Text Field
             Expanded(
               child: TextField(
@@ -82,26 +83,26 @@ class _ListMasterItemSearchFormState extends State<ListMasterItemSearchForm> {
                 ),
               ),
             ),
-            
-            SizedBox(width: 8.0), // Spacing between fields and icons
-            
+
+            const SizedBox(width: 8.0), // Spacing between fields and icons
+
             // Search Icon Button
             Card(
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: Icon(Icons.search),
+                icon: const Icon(Icons.search),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
             ),
-            
+
             // Reset Icon Button
             Card(
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

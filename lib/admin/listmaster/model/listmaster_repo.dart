@@ -26,7 +26,7 @@ class ListMasterRepository {
   Future<List<ListMaster>> searchAndFilter(List<ListMaster> listMasters,
       {String? nameArabic, String? nameEnglish}) async {
     // Filter the list based on the provided nameArabic and nameEnglish filters
-    var filteredList = await listMasters.where((listMaster) {
+    var filteredList = listMasters.where((listMaster) {
       bool matchesArabic =
           nameArabic == null || listMaster.nameArabic.contains(nameArabic);
       bool matchesEnglish =
