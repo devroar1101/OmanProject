@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/screens/home.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -127,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            _isPasswordVisible ? Icons.visibility : Icons.visibility_off, 
           ),
           onPressed: () {
             setState(() {
@@ -150,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Light color for unselected and white for selected
     TextStyle unselectedStyle = TextStyle(
         fontSize: 18, color: Colors.white70); // Light gray for unselected
-    TextStyle selectedStyle = TextStyle(
+    TextStyle selectedStyle = const TextStyle(
         fontSize: 24,
         color: Colors.white,
         fontWeight: FontWeight.bold); // White for selected
@@ -189,13 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
       child: SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal[700], // Updated to a teal color
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          ),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               Navigator.push(
@@ -206,11 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             }
           },
-          child: Text(
-            'LOGIN',
-            style: TextStyle(
-                fontSize: 14,
-                color: Colors.white), // Changed text color to white
+          child: const Text(
+            'LOGIN',  
           ),
         ),
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/office/outbox/model/outbox.dart';
 import 'package:tenderboard/office/outbox/model/outbox_repo.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_form.dart';

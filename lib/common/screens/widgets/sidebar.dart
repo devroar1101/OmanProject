@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
+import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
+import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
+import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget)
@@ -19,8 +22,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': Dashboard()},
-      {'title': 'Outbox', 'icon': Icons.outbox, 'navigate': Dashboard()},
+      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxHome()},
+      {'title': 'Outbox', 'icon': Icons.outbox, 'navigate': const OutboxScreen()},
       {'title': 'CC', 'icon': Icons.mail, 'navigate': Dashboard()},
       {'title': 'eJob', 'icon': Icons.business, 'navigate': Dashboard()},
       {
@@ -32,7 +35,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': Dashboard()
+        'navigate': DocumentSearchHome()
       },
     ],
     'Admin': [

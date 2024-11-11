@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
-import 'package:tenderboard/common/screens/home.dart';
 import 'package:tenderboard/common/screens/login.dart';
-//import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_home.dart';
-//import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
-//import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-// Import the ListMasterItemScreen
-
+import 'package:tenderboard/common/themes/app_theme.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -19,9 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ListMaster Item App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppTheme.themeData,
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      // ),
       home: const LoginScreen(),
     );
   }
