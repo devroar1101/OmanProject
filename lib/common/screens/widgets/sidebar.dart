@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
+import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
+import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
+
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget)
@@ -21,19 +26,23 @@ class _CustomSidebarState extends State<CustomSidebar> {
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
       {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxHome()},
-      {'title': 'Outbox', 'icon': Icons.outbox, 'navigate': Dashboard()},
+      {
+        'title': 'Outbox',
+        'icon': Icons.outbox,
+        'navigate': const OutboxScreen()
+      },
       {'title': 'CC', 'icon': Icons.mail, 'navigate': Dashboard()},
       {'title': 'eJob', 'icon': Icons.business, 'navigate': Dashboard()},
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': Dashboard()
+        'navigate': DocumentSearchHome()
       },
-      {'title': 'Circular', 'icon': Icons.circle, 'navigate': Dashboard()},
+      {'title': 'Circular', 'icon': Icons.circle, 'navigate': ScanAndIndexScreen()},
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': Dashboard()
+        'navigate': DocumentSearchHome()
       },
     ],
     'Admin': [
@@ -71,7 +80,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       width: _isMinimized ? 60 : 250, // Width changes based on minimized state
-      color: Colors.blueGrey[50],
+      // color: Colors.blueGrey[50],
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3), // Shadow color
+            offset: Offset(3, 0), // Move shadow to the right
+            blurRadius: 5, // Blur radius
+            spreadRadius: 1, // Spread radius
+          ),
+        ],
+      ),
       child: Column(
         children: [
           // Minimize Button at top-left or top-right corner of sidebar based on RTL
@@ -97,7 +117,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   final toggleCategory =
                       _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
-                    leading: const Icon(Icons.folder),
+                    iconColor: Theme.of(context).iconTheme.color,
+                    leading: Icon(Icons.folder),
                     title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
                       _changeCategory(toggleCategory);
@@ -107,7 +128,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                 // Render menu items normally
                 final item = _menuItems[_currentCategory]![index];
                 return ListTile(
-                  leading: Icon(item['icon']),
+                  leading: Icon(item['icon'],
+                      color: AppTheme.iconColor), // Apply the theme color here
                   title: _isMinimized ? null : Text(item['title']),
                   onTap: () {
                     widget.onNavigate(item['navigate']);

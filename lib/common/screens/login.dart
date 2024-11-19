@@ -127,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            _isPasswordVisible ? Icons.visibility : Icons.visibility_off, 
           ),
           onPressed: () {
             setState(() {
@@ -191,13 +191,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal[700],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          ),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               final authNotifier = ref.read(authProvider.notifier);
@@ -208,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
           child: const Text(
             'LOGIN',
-            style: TextStyle(fontSize: 14, color: Colors.white),
+            // style: TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
       ),
