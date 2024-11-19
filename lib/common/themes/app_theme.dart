@@ -1,102 +1,103 @@
-// lib/app_theme.dart
-
 import 'package:flutter/material.dart';
 
 class AppTheme {
   // Define your color palette
-  static const Color primaryColor = Color.fromARGB(255, 255, 255, 255);
+  static const Color primaryColor = Color(0xFFD4B492);
   static const Color secondaryColor = Color(0xFF03DAC5); // Secondary color
-  static const Color backgroundColor = Color(0x00f8f7f3);  // Light background color
-  static const Color darkBackgroundColor = Color(0xFF303030); // Dark background color
-  static const Color buttonColor = Color(0xd4b492); // Button color
-  static const Color buttonTextColor = Color(0x222f47); // Button text color
-  static const Color textColor = Color(0x000000);
-  static const Color appBarColor = Color.fromARGB(255, 75, 81, 88); // AppBar color
+  static const Color backgroundColor = Color.fromARGB(0, 212, 123, 49); // Light background color
+  static const Color darkBackgroundColor = Color.fromARGB(255, 250, 249, 249); // Dark background color
+  static const Color activeColor = Color.fromARGB(255, 6, 163, 129); // Active color for focus and selection
+  static const Color buttonColor = Color(0xFFD4B492); // Button color
+  static const Color buttonTextColor = Color(0xFF222F47); // Button text color
+  static const Color textColor = Colors.black; // Set to black
+  static const Color appBarColor = Color(0xFFFFFFFF); // AppBar color
   static const Color cardColor = Color.fromARGB(255, 163, 100, 100);
-  static const Color icon = Color(0x131e3d); // Color for cards
+  static const Color iconColor = Color(0xFF0A1E3D); // Overall icon color
+  static const Color borderColor = Color(0xFF95B3A1); // Field border color
+  static const Color displayHeaderColor =
+      Color(0xFF8EAE9B); // Display detail header color
 
- static final elevatedButtonTheme = ElevatedButtonThemeData(
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.teal, // Button color
-    foregroundColor: const Color.fromARGB(255, 10, 10, 10), // Text/icon color
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    padding: const EdgeInsets.symmetric(vertical: 12),
-  ),
-);
-
-static ThemeData get themeData => ThemeData(
-  elevatedButtonTheme: elevatedButtonTheme,  // Ensure this is applied globally
-  primaryColor: Colors.teal,
-  // You can add other theme properties as needed
-);
-
-
-  // Light Theme
-  static final ThemeData lightTheme = ThemeData(
-    primaryColor: const Color.fromARGB(255, 255, 255, 255),
-    scaffoldBackgroundColor: backgroundColor,
-    colorScheme: const ColorScheme.light(
-      primary: Color(0xd0ddd6),  // Primary color
-      secondary: secondaryColor,  // Secondary color
-      background: backgroundColor,
-    ),
-    buttonTheme: const ButtonThemeData(
-      buttonColor: buttonColor, // Default button color
-      textTheme: ButtonTextTheme.primary, // Button text color (white)
-    ),
-    
-    textTheme: _textTheme,
-    appBarTheme: const AppBarTheme(
-      color: appBarColor, // AppBar background color
-      iconTheme: IconThemeData(color: buttonTextColor), // AppBar icon color
-      titleTextStyle: TextStyle(
-        color: buttonTextColor, // AppBar title text color
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
+  // Common elevated button theme
+  static final elevatedButtonTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: buttonColor,
+      foregroundColor: textColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
       ),
+      padding: const EdgeInsets.symmetric(vertical: 12),
     ),
-    cardColor: cardColor, // Color for cards
   );
 
-  // Dark Theme
-  static final ThemeData darkTheme = ThemeData(
-    primaryColor: primaryColor,
-    scaffoldBackgroundColor: const Color.fromARGB(0, 248, 247, 243),
-    colorScheme: const ColorScheme.dark(
-      primary: primaryColor, // Primary color
-      secondary: secondaryColor, // Secondary color
-      background: darkBackgroundColor, // Dark background color
-    ),
-    buttonTheme: const ButtonThemeData(
-      buttonColor: buttonColor, // Default button color for dark theme
-      textTheme: ButtonTextTheme.primary,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: buttonColor, // Elevated button color
-        foregroundColor: const Color.fromARGB(255, 199, 77, 77), // Elevated button text color
-      ),
-    ),
-    textTheme: _textTheme.apply(bodyColor: const Color.fromARGB(255, 0, 0, 0)),
-    appBarTheme: const AppBarTheme(
-      color: appBarColor, // AppBar color for dark theme
-      iconTheme: IconThemeData(color: Color.fromARGB(255, 95, 71, 71)),
-      titleTextStyle: TextStyle(
-        color: Color.fromARGB(255, 48, 45, 45),
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    cardColor: darkBackgroundColor, // Dark background color for cards
-  );
-
-  // Text Styles
+  // Common text theme
   static const TextTheme _textTheme = TextTheme(
-    headlineLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, color: textColor),
+    headlineLarge: TextStyle(
+        fontSize: 32.0, fontWeight: FontWeight.bold, color: textColor),
     bodyLarge: TextStyle(fontSize: 16.0, color: textColor),
-    labelLarge: TextStyle(fontSize: 14.0, color: buttonTextColor, fontWeight: FontWeight.bold),
-    // Define other text styles as needed
+    labelLarge: TextStyle(
+        fontSize: 14.0, color: buttonTextColor, fontWeight: FontWeight.bold),
   );
+
+//static const Color iconColor = Color(0xFF0A1E3D); // Overall icon color
+
+// Global IconTheme Data for the entire project
+  static const iconTheme = IconThemeData(
+    color: iconColor, // Set the global icon color
+  );
+
+  // Method to get theme based on brightness
+  static ThemeData getTheme({required bool isDarkMode}) {
+    return ThemeData(
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor:
+          isDarkMode ? darkBackgroundColor : backgroundColor,
+      colorScheme: ColorScheme(
+        primary: primaryColor,
+        secondary: secondaryColor,
+        surface: isDarkMode ? darkBackgroundColor : backgroundColor,
+        background: isDarkMode ? darkBackgroundColor : backgroundColor,
+        error: Colors.red,
+        onPrimary: textColor,
+        onSecondary: buttonTextColor,
+        onSurface: textColor,
+        onBackground: textColor,
+        onError: const Color.fromARGB(255, 180, 81, 81),
+        brightness: isDarkMode ? Brightness.dark : Brightness.light,
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.all(activeColor), // Set selected color for radio button
+      ),
+      iconTheme: iconTheme, // Set the global icon theme here
+      buttonTheme: const ButtonThemeData(
+        buttonColor: buttonColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      elevatedButtonTheme: elevatedButtonTheme,
+      textTheme: _textTheme,
+      appBarTheme: const AppBarTheme(
+        color: Color.fromARGB(0, 187, 57, 57),
+        iconTheme:
+            IconThemeData(color: iconColor), // Icon color in AppBar
+        titleTextStyle: TextStyle(
+          color: buttonTextColor,
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      cardColor: isDarkMode ? darkBackgroundColor : cardColor,
+      inputDecorationTheme: const InputDecorationTheme(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor),
+        ),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor),
+        ),
+        labelStyle: TextStyle(color: textColor),
+        hintStyle: TextStyle(color: textColor),
+      ),
+    );
+  }
 }

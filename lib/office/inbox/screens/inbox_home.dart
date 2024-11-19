@@ -3,6 +3,7 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/office/inbox/model/inbox.dart';
 import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
+import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
 
 class InboxHome extends StatefulWidget {
   const InboxHome({super.key});
@@ -77,7 +78,12 @@ class _InboxHomeState extends State<InboxHome> {
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
-                            expandable: true, // Set false to expand by default
+                            expandable: true,
+                            onTap: (int Index){
+                              final jobId = items[Index].scanDocumentObjectId;
+    
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ScanDocumentSummaryScreen(jobId)));
+                            }, // Set false to expand by default
                           ),
                         ),
                       ),

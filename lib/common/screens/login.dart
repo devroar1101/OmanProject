@@ -201,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
           child: const Text(
             'LOGIN',
-            style: TextStyle(fontSize: 14, color: Colors.white),
+            // style: TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
       ),

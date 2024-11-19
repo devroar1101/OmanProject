@@ -5,6 +5,8 @@ class ListInbox {
   String location;
   String jobReferenceNumber;
   String fromUserName;
+  String scanDocumentObjectId;
+  String eJobObjectId;
   DateTime actionDate;
 
   ListInbox({
@@ -12,6 +14,8 @@ class ListInbox {
     required this.location,
     required this.jobReferenceNumber,
     required this.fromUserName,
+    required this.scanDocumentObjectId,
+    required this.eJobObjectId,
     required this.actionDate,
   });
 
@@ -21,6 +25,8 @@ class ListInbox {
       subject: map['scanDocumentSubjectName'] ?? '',
       location: map['fromExternalLocationNameEnglish'] ?? '',
       jobReferenceNumber: map['jobReferenceNumber'] ?? '',
+      scanDocumentObjectId: map['scanDocumentObjectId'] ?? '',
+      eJobObjectId: map['eJobObjectId'] ?? '',
       fromUserName: map['fromUserName'] ?? '',
       actionDate: parseDate(map['actionDate']),
     );
