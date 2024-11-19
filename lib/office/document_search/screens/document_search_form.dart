@@ -43,158 +43,89 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
       margin: const EdgeInsets.all(16.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Row(
           children: [
-            Row(
-              children: [
-                _buildDropdownField(
-                    'Scan Type', _scanType, ['Type 1', 'Type 2']),
-                const SizedBox(width: 8.0),
-                _buildTextField('Subject', _subjectController),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                _buildTextField('Tender Number', _tenderNumberController),
-                const SizedBox(width: 8.0),
-                _buildDateField('Letter Date From', _letterDateFromController),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                _buildDateField('Letter Date To', _letterDateToController),
-                const SizedBox(width: 8.0),
-                _buildTextField('Location', _locationController),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1, // Adjust if you want to control the width ratio
-                  child: _buildTextField('Reference#', _referenceController),
+            Expanded(
+              child: TextField(
+                controller: _subjectController,
+                decoration: InputDecoration(
+                  labelText: 'Subject',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
-                const SizedBox(width: 8.0), // Spacing between the fields
-                _buildRadioField('Direction', ['Incoming', 'Outgoing', 'All']),
-              ],
+              ),
             ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                _buildDateField('Received From', _receivedFromController),
-                const SizedBox(width: 8.0),
-                _buildDateField('Received To', _receivedToController),
-              ],
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: TextField(
+                controller: _tenderNumberController,
+                decoration: InputDecoration(
+                  labelText: 'Tender Number',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 16.0),
-            Row(
-              children: [
-                _buildIconButton(Icons.search, 'Search', () {}),
-                _buildIconButton(Icons.refresh, 'Reset', _resetFields),
-              ],
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: TextField(
+                controller: _locationController,
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _scanType,
+                decoration: InputDecoration(
+                  labelText: 'Scan Type',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                items: ['Type 1', 'Type 2'].map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _scanType = newValue!;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Card(
+              color: const Color.fromARGB(255, 238, 240, 241),
+              shape: const CircleBorder(),
+              child: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  // Add search functionality
+                },
+                tooltip: 'Search',
+              ),
+            ),
+            Card(
+              color: const Color.fromARGB(255, 240, 234, 235),
+              shape: const CircleBorder(),
+              child: IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _resetFields,
+                tooltip: 'Reset',
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller) {
-    return Expanded(
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdownField(String label, String value, List<String> options) {
-    return Expanded(
-      child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        items: options.map((String option) {
-          return DropdownMenuItem<String>(
-            value: option,
-            child: Text(option),
-          );
-        }).toList(),
-        onChanged: (newValue) {
-          setState(() {
-            _scanType = newValue!;
-          });
-        },
-      ),
-    );
-  }
-
-  Widget _buildRadioField(String label, List<String> options) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: options.map((String option) {
-          return RadioListTile<String>(
-            title: Text(option),
-            value: option,
-            groupValue: _direction,
-            onChanged: (newValue) {
-              setState(() {
-                _direction = newValue!;
-              });
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildDateField(String label, TextEditingController controller) {
-    return Expanded(
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        onTap: () async {
-          FocusScope.of(context).requestFocus(FocusNode());
-          final date = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2100),
-          );
-          if (date != null) {
-            controller.text = date.toString().substring(0, 10);
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildIconButton(
-      IconData icon, String tooltip, VoidCallback onPressed) {
-    return Card(
-      color: const Color.fromARGB(255, 238, 240, 241),
-      shape: const CircleBorder(),
-      child: IconButton(
-        icon: Icon(icon),
-        onPressed: onPressed,
-        tooltip: tooltip,
       ),
     );
   }

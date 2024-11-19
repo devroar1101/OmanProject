@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
-import 'package:tenderboard/common/screens/widgets/scanner.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 void main() {
@@ -20,9 +20,10 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tenderboard App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppTheme.getTheme(isDarkMode: false), // Light theme
+      darkTheme: AppTheme.getTheme(isDarkMode: true), // Dark theme
+      themeMode: ThemeMode
+          .system, // Automatically switch between light/dark based on system setting
       builder: (context, child) {
         // Apply directionality based on selected language (Arabic or English)
         return Directionality(

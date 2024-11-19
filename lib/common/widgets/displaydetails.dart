@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 
 class DisplayDetails extends StatefulWidget {
   final List<String> headers;
   final List<String> data;
   final List<Map<String, dynamic>> details;
   final bool expandable;
+  final Function(int)? onTap;
 
   const DisplayDetails({
     super.key,
@@ -12,6 +14,7 @@ class DisplayDetails extends StatefulWidget {
     required this.data,
     required this.details,
     this.expandable = false,
+    this.onTap,
   });
 
   @override
@@ -44,7 +47,7 @@ class _DisplayDetailsState extends State<DisplayDetails> {
         // Header Row with colorful background
         Container(
           decoration: const BoxDecoration(
-            color: Colors.blueAccent,
+            color: AppTheme.displayHeaderColor,
           ),
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
@@ -69,83 +72,94 @@ class _DisplayDetailsState extends State<DisplayDetails> {
         Expanded(
           child: ListView.builder(
             itemCount: widget.details.length,
-            itemBuilder: (context, rowIndex) {
+            itemBuilder: (context,int rowIndex) {
               final row = widget.details[rowIndex];
               bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Main row with full background
-                  Container(
-                    color: Colors.grey[100], // Full background color
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: widget.data.take(headerColumns).map((key) {
-                        return Expanded(
-                          child: Text(
-                            row[key]?.toString() ?? '',
-                            style: const TextStyle(fontSize: 14),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+              return InkWell(
+                splashColor: Colors.amber,
+                onTap: (){
+                 if(widget.onTap != null)
+                 {
+                     widget.onTap!(rowIndex);
+                 }
+                     
 
-                  // Divider and Expand/Collapse Icon
-                  if (hasMoreThanMaxColumns && widget.expandable)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 1.5,
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            expandedRows.contains(rowIndex)
-                                ? Icons.arrow_drop_up
-                                : Icons.arrow_drop_down,
-                            color: Colors.blueAccent,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              if (expandedRows.contains(rowIndex)) {
-                                expandedRows.remove(rowIndex);
-                              } else {
-                                expandedRows.add(rowIndex);
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-
-                  // Expanded Section with gradient background
-                  if (expandedRows.contains(rowIndex))
+                }, // Trigger onTap if it’s not null
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Main row with full background
                     Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue[50]!, Colors.blue[100]!],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                      color: Colors.grey[100], // Full background color
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: widget.data.take(headerColumns).map((key) {
+                          return Expanded(
+                            child: Text(
+                              row[key]?.toString() ?? '',
+                              style: const TextStyle(fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                    // Divider and Expand/Collapse Icon
+                    if (hasMoreThanMaxColumns && widget.expandable)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              thickness: 1.5,
+                              color: Colors.grey[300],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              expandedRows.contains(rowIndex)
+                                  ? Icons.arrow_drop_up
+                                  : Icons.arrow_drop_down,
+                              color: Colors.blueAccent,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (expandedRows.contains(rowIndex)) {
+                                  expandedRows.remove(rowIndex);
+                                } else {
+                                  expandedRows.add(rowIndex);
+                                }
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+
+                    // Expanded Section with gradient background
+                    if (expandedRows.contains(rowIndex))
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue[50]!, Colors.blue[100]!],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 6, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          children: _buildExpandedRows(row, headerColumns),
                         ),
                       ),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 6, horizontal: 8),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        children: _buildExpandedRows(row, headerColumns),
+                    if (expandedRows.contains(rowIndex))
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Divider(),
                       ),
-                    ),
-                  if (expandedRows.contains(rowIndex))
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Divider(),
-                    ),
-                ],
+                  ],
+                ),
               );
             },
           ),
