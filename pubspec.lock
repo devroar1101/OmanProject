@@ -128,11 +128,27 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_twain_scanner:
+    dependency: "direct main"
+    description:
+      name: flutter_twain_scanner
+      sha256: a7ef7c2a8eb9d80ee311f62c8de64d2e9ae6752246f352ab10b3d5f817da2cf2
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
   http_parser:
     dependency: transitive
     description:

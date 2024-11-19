@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
+import 'package:tenderboard/common/screens/widgets/scanner.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: Scanner()));
 }
 
 class MyApp extends ConsumerWidget {
