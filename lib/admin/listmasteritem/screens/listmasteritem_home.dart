@@ -74,7 +74,7 @@ class _ListMasterItemHomeState extends State<ListMasterItemHome> {
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                ListMasterItemSearchForm(),
+                const ListMasterItemSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

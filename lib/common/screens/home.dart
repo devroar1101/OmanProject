@@ -10,7 +10,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Widget _currentWidget = Dashboard(); // Default widget to show
+  Widget _currentWidget = const Dashboard(); // Default widget to show
 
   // Callback function to update the current widget based on the sidebar item clicked
   void _onNavigate(Widget widget) {
@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
                 color: Colors.grey.withOpacity(0.5), // Shadow color
                 spreadRadius: 1, // Spread radius
                 blurRadius: 5, // Blur radius
-                offset: Offset(0, 3), // Offset in x and y direction
+                offset: const Offset(0, 3), // Offset in x and y direction
               ),
             ],
           ),

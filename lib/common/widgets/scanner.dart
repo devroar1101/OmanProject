@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twain_scanner/dynamsoft_service.dart';
 
 class Scanner extends StatefulWidget {
-  Scanner({super.key});
+  const Scanner({super.key});
   @override
   _ScannerAppState createState() => _ScannerAppState();
 }
 
 class _ScannerAppState extends State<Scanner> {
   final DynamsoftService dynamsoftService = DynamsoftService();
-  String host = 'http://127.0.0.1:18622'; // Ensure this host is correct
+  String host = 'http://127.0.0.1:18622';
 
   List<Map<String, dynamic>> devices = [];
   List<String> scannerNames = [];
@@ -25,33 +25,92 @@ class _ScannerAppState extends State<Scanner> {
   bool ifShowUI = false;
 
   @override
+  void initState() {
+    super.initState();
+    _listScanners(); // Initialize scanner list on startup
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Modern Scanner App'),
-          backgroundColor: Colors.blueAccent,
-        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Scanner Control Panel
-              _buildScannerControlPanel(),
-              const SizedBox(height: 20),
-
-              // Image Scanning Options (Scan button, etc.)
-              _buildScanOptions(),
-              const SizedBox(height: 20),
-
-              // Image Pagination and Display
-              _buildImagePagination(),
-              const SizedBox(height: 10),
-              _buildImageGallery(),
-            ],
+          child: SingleChildScrollView(
+            // Make the entire content scrollable
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: IconButton(
+                          onPressed: () {
+                            showAlertBox(context);
+                          },
+                          icon: const Icon(Icons.menu),
+                        ),
+                        trailing: MaterialButton(
+                          textColor: Colors.white,
+                          color: Colors.green,
+                          onPressed:
+                              _selectedScanner != null ? _startScan : null,
+                          child: const Text('Scan Document'),
+                        ),
+                        title: DropdownButton<String>(
+                          value: _selectedScanner,
+                          hint: const Text('Select Scanner'),
+                          items: scannerNames.map((String scanner) {
+                            return DropdownMenuItem<String>(
+                              value: scanner,
+                              child: Text(scanner),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedScanner = value;
+                            });
+                          },
+                        ),
+                      ),
+                      // Image Gallery Stack
+                      Stack(
+                        children: [
+                          _buildImageGallery(),
+                          Positioned(child: _buildImagePagination())
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                    height: 20), // Add spacing between the components
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  // Alert Box with Scanner Control Panel
+  void showAlertBox(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: _buildScannerControlPanel(),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -71,16 +130,14 @@ class _ScannerAppState extends State<Scanner> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Resolution',
+                const Text('Resolution',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 DropdownButton<int>(
                   value: resolution,
                   items: [150, 200, 300, 400]
                       .map((e) => DropdownMenuItem<int>(
-                            value: e,
-                            child: Text('$e DPI'),
-                          ))
+                          value: e, child: Text('$e DPI')))
                       .toList(),
                   onChanged: (newValue) {
                     setState(() {
@@ -96,7 +153,7 @@ class _ScannerAppState extends State<Scanner> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Duplex Enabled',
+                const Text('Duplex Enabled',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Switch(
@@ -113,7 +170,7 @@ class _ScannerAppState extends State<Scanner> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Feeder Enabled',
+                const Text('Feeder Enabled',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Switch(
@@ -132,7 +189,7 @@ class _ScannerAppState extends State<Scanner> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Show UI',
+                const Text('Show UI',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 Switch(
@@ -151,85 +208,67 @@ class _ScannerAppState extends State<Scanner> {
     );
   }
 
-  // Widget for Image Scanning Options (Scan button, etc.)
-  Widget _buildScanOptions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        MaterialButton(
-          textColor: Colors.white,
-          color: Colors.blueAccent,
-          onPressed: _listScanners,
-          child: const Text('List Scanners'),
-        ),
-        MaterialButton(
-          textColor: Colors.white,
-          color: Colors.green,
-          onPressed: _selectedScanner != null ? _startScan : null,
-          child: const Text('Scan Document'),
-        ),
-      ],
-    );
-  }
-
-  // Widget for Image Pagination and Display
+  // Image Pagination Widget
   Widget _buildImagePagination() {
     return imagePaths.isEmpty
         ? Container()
-        : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: currentPage > 0
-                    ? () {
-                        setState(() {
-                          currentPage--;
-                        });
-                      }
-                    : null,
-              ),
-              Text(
-                '${currentPage + 1} / ${imagePaths.length}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: currentPage < imagePaths.length - 1
-                    ? () {
-                        setState(() {
-                          currentPage++;
-                        });
-                      }
-                    : null,
-              ),
-            ],
+        : Center(
+            child: Text(
+              '${currentPage + 1} / ${imagePaths.length}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           );
   }
 
-  // Widget to display scanned images
+  // Image Gallery
   Widget _buildImageGallery() {
     if (imagePaths.isEmpty) {
-      return Center(
-          child: Image.asset(
-              'images/default.png')); // Placeholder for unscanned state
+      return const Center(
+          child: Icon(
+        Icons.scanner,
+        size: 100,
+      ));
     }
 
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.memory(
-                imagePaths[currentPage],
-                fit: BoxFit.cover,
-                height: 600,
-                width: 600,
-              ),
+    return Container(
+      alignment: Alignment.center,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.memory(
+            imagePaths[currentPage],
+            fit: BoxFit.cover,
+            height: 600,
+            width: 600,
+          ),
+          Positioned(
+            left: 10,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, size: 30, color: Colors.amber),
+              onPressed: currentPage > 0
+                  ? () {
+                      setState(() {
+                        currentPage--;
+                      });
+                    }
+                  : null,
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            right: 10,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_forward,
+                  size: 30, color: Colors.amber),
+              onPressed: currentPage < imagePaths.length - 1
+                  ? () {
+                      setState(() {
+                        currentPage++;
+                      });
+                    }
+                  : null,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -237,7 +276,6 @@ class _ScannerAppState extends State<Scanner> {
   // Function to List Scanners
   Future<void> _listScanners() async {
     try {
-      print("Listing scanners..."); // Debug log
       final scanners = await dynamsoftService.getDevices(
         host,
         ScannerType.TWAINSCANNER | ScannerType.TWAINX64SCANNER,
@@ -246,7 +284,6 @@ class _ScannerAppState extends State<Scanner> {
       devices.clear();
       scannerNames.clear();
 
-      // Add scanners and avoid duplicates in scannerNames
       for (var scanner in scanners) {
         if (!scannerNames.contains(scanner['name'])) {
           devices.add(scanner);
@@ -259,25 +296,21 @@ class _ScannerAppState extends State<Scanner> {
           _selectedScanner = scannerNames[0];
         }
       });
-      print("Scanners found: $scannerNames"); // Debug log
     } catch (error) {
       print('An error occurred: $error');
     }
   }
 
-  // Function to Start Document Scan
+  // Start scanning based on the selected device
   Future<void> _startScan() async {
-    print("Scan Document button pressed..."); // Debug log
-    if (_selectedScanner != null) {
-      int index = scannerNames.indexOf(_selectedScanner!);
-      await _scanDocument(index);
+    final selectedIndex = scannerNames.indexOf(_selectedScanner!);
+    if (selectedIndex >= 0) {
+      await _scanDocument(selectedIndex);
     }
   }
 
-  // Function to Scan Document
   Future<void> _scanDocument(int index) async {
-    print(
-        "Starting scan for scanner: ${devices[index]['device']}"); // Debug log
+    print("Starting scan for scanner: ${devices[index]['device']}");
     final Map<String, dynamic> parameters = {
       'license':
           't01898AUAAFI2dqdd6qhAtJwiVbIp3yqHm5pca2Zjq8ifagRJqUBodcZouee2X5hR39JwyO7iYhwFJ6EhrEisEZjbDoEDHbbdfjnVwGn1nYb6TjZw6pITeEzDOJ92+MblAGXgOQG2XocVYAnMueyAoVtyowfIA8wBzMuBHnC6iuPmC/sCKf/+c6CjUw2cVt9ZFkgdJxs4dcmZCqSPCO+02vdcICxvzgaQB9gpwOUhOxQI9oA8wA5AIKIF0wcsczF3',
@@ -296,7 +329,7 @@ class _ScannerAppState extends State<Scanner> {
       final String jobId =
           await dynamsoftService.scanDocument(host, parameters);
 
-      print("Scan job started with jobId: $jobId"); // Debug log
+      print("Scan job started with jobId: $jobId");
       if (jobId != '') {
         List<Uint8List> paths =
             await dynamsoftService.getImageStreams(host, jobId);
@@ -307,7 +340,7 @@ class _ScannerAppState extends State<Scanner> {
             imagePaths = paths; // Update image list
             currentPage = 0; // Reset pagination
           });
-          print("Scan completed and images loaded"); // Debug log
+          print("Scan completed and images loaded");
         }
       }
     } catch (error) {

@@ -6,7 +6,6 @@ import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
 
-
 class CustomSidebar extends StatefulWidget {
   final Function(Widget)
       onNavigate; // Callback function to navigate to new widget
@@ -31,32 +30,52 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.outbox,
         'navigate': const OutboxScreen()
       },
-      {'title': 'CC', 'icon': Icons.mail, 'navigate': Dashboard()},
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': Dashboard()},
+      {'title': 'CC', 'icon': Icons.mail, 'navigate': const Dashboard()},
+      {'title': 'eJob', 'icon': Icons.business, 'navigate': const Dashboard()},
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': DocumentSearchHome()
+        'navigate': const DocumentSearchHome()
       },
-      {'title': 'Circular', 'icon': Icons.circle, 'navigate': ScanAndIndexScreen()},
+      {
+        'title': 'Circular',
+        'icon': Icons.circle,
+        'navigate': const ScanAndIndexScreen()
+      },
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': DocumentSearchHome()
+        'navigate': const DocumentSearchHome()
       },
     ],
     'Admin': [
-      {'title': 'DG', 'icon': Icons.account_balance, 'navigate': Dashboard()},
-      {'title': 'Department', 'icon': Icons.business, 'navigate': Dashboard()},
-      {'title': 'Section', 'icon': Icons.folder, 'navigate': Dashboard()},
-      {'title': 'ListMaster', 'icon': Icons.list, 'navigate': Dashboard()},
-      {'title': 'Cabinet', 'icon': Icons.storage, 'navigate': Dashboard()},
+      {
+        'title': 'DG',
+        'icon': Icons.account_balance,
+        'navigate': const Dashboard()
+      },
+      {
+        'title': 'Department',
+        'icon': Icons.business,
+        'navigate': const Dashboard()
+      },
+      {'title': 'Section', 'icon': Icons.folder, 'navigate': const Dashboard()},
+      {
+        'title': 'ListMaster',
+        'icon': Icons.list,
+        'navigate': const Dashboard()
+      },
+      {
+        'title': 'Cabinet',
+        'icon': Icons.storage,
+        'navigate': const Dashboard()
+      },
       {
         'title': 'ExternAllocation',
         'icon': Icons.account_tree,
-        'navigate': Dashboard()
+        'navigate': const Dashboard()
       },
-      {'title': 'User', 'icon': Icons.person, 'navigate': Dashboard()},
+      {'title': 'User', 'icon': Icons.person, 'navigate': const Dashboard()},
     ]
   };
 
@@ -86,7 +105,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3), // Shadow color
-            offset: Offset(3, 0), // Move shadow to the right
+            offset: const Offset(3, 0), // Move shadow to the right
             blurRadius: 5, // Blur radius
             spreadRadius: 1, // Spread radius
           ),
@@ -118,7 +137,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
                     iconColor: Theme.of(context).iconTheme.color,
-                    leading: Icon(Icons.folder),
+                    leading: const Icon(Icons.folder),
                     title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
                       _changeCategory(toggleCategory);

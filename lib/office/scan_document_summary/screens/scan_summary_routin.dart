@@ -1,9 +1,9 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class ScanRouting extends StatelessWidget {
   final Map<String, String> details;
 
-  const ScanRouting({Key? key, required this.details}) : super(key: key);
+  const ScanRouting({super.key, required this.details});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class ScanRouting extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4.0,
@@ -60,5 +60,3 @@ class ScanRouting extends StatelessWidget {
     );
   }
 }
-
-

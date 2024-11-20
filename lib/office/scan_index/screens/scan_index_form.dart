@@ -46,8 +46,9 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Column 1 - Reference #
-              _buildTextField("Reference # : ", controller: _referenceController),
-              SizedBox(height: 5),
+              _buildTextField("Reference # : ",
+                  controller: _referenceController),
+              const SizedBox(height: 5),
 
               // Column 2 - Year, Cabinet, Folder (3 fields in a row)
               Row(
@@ -57,14 +58,14 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                           value: _selectedYear,
                           onChanged: (value) =>
                               setState(() => _selectedYear = value!))),
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                       child: _buildDropdownField(
                           "Cabinet", ["Cabinet 1", "Cabinet 2"],
                           value: _selectedCabinet,
                           onChanged: (value) =>
                               setState(() => _selectedCabinet = value!))),
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                       child: _buildDropdownField(
                           "Folder", ["Folder A", "Folder B"],
@@ -73,7 +74,7 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                               setState(() => _selectedFolder = value!))),
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 3 - Direction, Direction Type, Location Type
               Row(
@@ -87,7 +88,7 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                           setState(() => _selectedDirection = value!),
                     ),
                   ),
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: _buildRadioField(
                       label: "Direction Type",
@@ -97,7 +98,7 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                           setState(() => _selectedDirectionType = value!),
                     ),
                   ),
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: _buildRadioField(
                       label: "Location Type",
@@ -110,16 +111,16 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                 ],
               ),
 
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 4 - External Location
               _buildTextField("External Location : ",
                   controller: _externalLocationController),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 5 - Send To
               _buildTextField("Send To : ", controller: _sendToController),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 6 - Received From, Priority, Classification
               _buildRow([
@@ -138,33 +139,33 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                         setState(() => _selectedClassification = value!)),
                 _buildTextField("Created By")
               ]),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 7 - DG
               _buildTextField("DG : "),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 8 - Department
               _buildTextField("Department : "),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 9 - User
               _buildTextField("User : "),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 10 - Summary, Action to be Taken
               _buildRow([
                 _buildTextField("Summary : ", controller: _summaryController),
                 _buildTextField("Action to be Taken : ")
               ]),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Column 11 - Letter Subject
               _buildTextField("Letter Subject :   ",
                   controller: _letterSubjectController),
 
               // Save button
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -195,7 +196,7 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
                         letterSubject);
                   }
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           ),
@@ -247,23 +248,24 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
       controller: controller,
       decoration: InputDecoration(
         prefixIcon: Container(
-         
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(label,style: TextStyle(fontSize: 15),),
-            
-            
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 15),
+            ),
           ),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.grey),
+          borderSide: const BorderSide(color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         filled: true,
         fillColor: Colors.grey[200],
       ),
@@ -288,20 +290,21 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.grey),
+          borderSide: const BorderSide(color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         filled: true,
         fillColor: Colors.grey[200],
       ),
       items: options.map((option) {
         return DropdownMenuItem(
-          child: Text(option, style: TextStyle(fontSize: 14)),
           value: option,
+          child: Text(option, style: const TextStyle(fontSize: 14)),
         );
       }).toList(),
       onChanged: onChanged,
@@ -326,7 +329,7 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
         ...options.map((option) {
           return RadioListTile<String>(
@@ -338,9 +341,9 @@ class _ScanIndexHomeFormState extends State<ScanIndexHomeForm> {
             groupValue: groupValue,
             onChanged: onChanged,
             activeColor: Colors.blue,
-            contentPadding: EdgeInsets.symmetric(horizontal: 0),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
           );
-        }).toList(),
+        }),
       ],
     );
   }

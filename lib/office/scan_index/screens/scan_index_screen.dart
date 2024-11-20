@@ -9,13 +9,14 @@ class ScanAndIndexScreen extends StatefulWidget {
 }
 
 class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? const Center(
+              child: CircularProgressIndicator()) // Show loading indicator
           : Row(
               children: [
                 // Left Side - ScanIndexFormScreen widget (50% width)
@@ -28,7 +29,7 @@ class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
                         constraints: BoxConstraints(
                           minHeight: MediaQuery.of(context).size.height,
                         ),
-                        child: IntrinsicHeight(
+                        child: const IntrinsicHeight(
                           child: ScanIndexHomeForm(),
                         ),
                       ),

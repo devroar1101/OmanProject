@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 class FollowUpJobsForm extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  FollowUpJobsForm({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -45,7 +46,8 @@ class FollowUpJobsForm extends StatelessWidget {
                     if (_formKey.currentState!.validate()) {
                       // Perform save logic here
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Data Saved Successfully!')),
+                        const SnackBar(
+                            content: Text('Data Saved Successfully!')),
                       );
                     }
                   },
@@ -63,7 +65,7 @@ class FollowUpJobsForm extends StatelessWidget {
     return TextFormField(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 10.0,
           horizontal: 12.0,
@@ -78,4 +80,3 @@ class FollowUpJobsForm extends StatelessWidget {
     );
   }
 }
-

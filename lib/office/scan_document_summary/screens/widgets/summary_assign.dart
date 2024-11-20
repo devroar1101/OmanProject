@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class JobAssignForm extends StatefulWidget {
+  const JobAssignForm({super.key});
+
   @override
   _JobAssignFormState createState() => _JobAssignFormState();
 }
@@ -10,17 +12,20 @@ class _JobAssignFormState extends State<JobAssignForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for each TextFormField
-  final TextEditingController _classificationController = TextEditingController();
+  final TextEditingController _classificationController =
+      TextEditingController();
   final TextEditingController _followUpDateController = TextEditingController();
   final TextEditingController _priorityController = TextEditingController();
   final TextEditingController _replyDateController = TextEditingController();
-  final TextEditingController _personalGroupController = TextEditingController();
+  final TextEditingController _personalGroupController =
+      TextEditingController();
   final TextEditingController _dgController = TextEditingController();
   final TextEditingController _departmentController = TextEditingController();
   final TextEditingController _sectionController = TextEditingController();
   final TextEditingController _commentTypeController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
-  final TextEditingController _modifyCommentController = TextEditingController();
+  final TextEditingController _modifyCommentController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,7 @@ class _JobAssignFormState extends State<JobAssignForm> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,  // Attach the GlobalKey to the Form
+          key: _formKey, // Attach the GlobalKey to the Form
           child: Column(
             children: [
               Text(
@@ -66,15 +71,16 @@ class _JobAssignFormState extends State<JobAssignForm> {
                   if (_formKey.currentState!.validate()) {
                     // Perform save action
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Form Saved!')),
+                      const SnackBar(content: Text('Form Saved!')),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fill all fields correctly.')),
+                      const SnackBar(
+                          content: Text('Please fill all fields correctly.')),
                     );
                   }
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           ),
@@ -109,7 +115,7 @@ class _JobAssignFormState extends State<JobAssignForm> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 12), // Smaller label font size
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           contentPadding: const EdgeInsets.symmetric(
             vertical: 6.0,
             horizontal: 10.0,
@@ -137,8 +143,9 @@ class _JobAssignFormState extends State<JobAssignForm> {
               style: const TextStyle(fontSize: 14), // Smaller font size
               decoration: InputDecoration(
                 labelText: label,
-                labelStyle: const TextStyle(fontSize: 12), // Smaller label font size
-                border: OutlineInputBorder(),
+                labelStyle:
+                    const TextStyle(fontSize: 12), // Smaller label font size
+                border: const OutlineInputBorder(),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 6.0,
                   horizontal: 10.0,

@@ -7,7 +7,8 @@ class SearchableDropdown<T> extends StatefulWidget {
   final String hint;
   final TextEditingController? controller;
 
-  SearchableDropdown({
+  const SearchableDropdown({
+    super.key,
     required this.options,
     required this.onChanged,
     this.hint = 'Search...',
@@ -20,7 +21,7 @@ class SearchableDropdown<T> extends StatefulWidget {
 
 class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
   late List<SelectOption<T>> filteredOptions;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   bool isFocused = false;
 
   @override
@@ -47,7 +48,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
           controller: widget.controller ?? _searchController,
           decoration: InputDecoration(
             hintText: widget.hint,
-            border: OutlineInputBorder(),
+            border: const OutlineInputBorder(),
             suffixIcon: Icon(
               isFocused && filteredOptions.isNotEmpty
                   ? Icons.arrow_drop_up // Show up icon when search list is open
