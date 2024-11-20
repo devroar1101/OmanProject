@@ -6,7 +6,7 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 void main() {
-  runApp(ProviderScope(child: Scanner()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
