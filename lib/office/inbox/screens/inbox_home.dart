@@ -18,7 +18,6 @@ class _InboxHomeState extends State<InboxHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: FutureBuilder<List<ListInbox>>(
         future: _repository.fetchListInboxItems(
           toUserObjectId: 'C792ED5F-8763-46E9-BF31-7ED8201EEB96',
@@ -55,19 +54,21 @@ class _InboxHomeState extends State<InboxHome> {
 
             // Pass the converted list to DisplayDetails
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left                
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // Align text to the left
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0), // Add some padding around the title
+                  padding: const EdgeInsets.all(
+                      16.0), // Add some padding around the title
                   child: Text(
                     'Inbox', // Your page title
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold, 
+                          fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                   ),
                 ),
-                InboxSearchForm(),
+                const InboxSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -79,10 +80,14 @@ class _InboxHomeState extends State<InboxHome> {
                             data: dataKeys,
                             details: details, // Pass the list of maps
                             expandable: true,
-                            onTap: (int Index){
+                            onTap: (int Index) {
                               final jobId = items[Index].scanDocumentObjectId;
-    
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ScanDocumentSummaryScreen(jobId)));
+
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ScanDocumentSummaryScreen(jobId)));
                             }, // Set false to expand by default
                           ),
                         ),

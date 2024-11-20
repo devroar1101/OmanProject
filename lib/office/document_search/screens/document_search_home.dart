@@ -69,13 +69,13 @@ class _DocumentSearchHomeState extends State<DocumentSearchHome> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (_isFormVisible) const DocumentSearchForm(),
-                        
+
                         // DisplayDetails widget
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: DisplayDetails(
-                              headers: [
+                              headers: const [
                                 'Subject',
                                 'Location',
                                 'Reference #',
@@ -83,7 +83,7 @@ class _DocumentSearchHomeState extends State<DocumentSearchHome> {
                                 'Tender Number',
                                 'Date of Letter',
                               ],
-                              data: [
+                              data: const [
                                 'subject',
                                 'location',
                                 'jobReferenceNumber',

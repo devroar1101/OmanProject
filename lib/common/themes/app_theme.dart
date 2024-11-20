@@ -4,9 +4,12 @@ class AppTheme {
   // Define your color palette
   static const Color primaryColor = Color(0xFFD4B492);
   static const Color secondaryColor = Color(0xFF03DAC5); // Secondary color
-  static const Color backgroundColor = Color.fromARGB(0, 212, 123, 49); // Light background color
-  static const Color darkBackgroundColor = Color.fromARGB(255, 250, 249, 249); // Dark background color
-  static const Color activeColor = Color.fromARGB(255, 6, 163, 129); // Active color for focus and selection
+  static const Color backgroundColor =
+      Color.fromARGB(0, 212, 123, 49); // Light background color
+  static const Color darkBackgroundColor =
+      Color.fromARGB(255, 250, 249, 249); // Dark background color
+  static const Color activeColor =
+      Color.fromARGB(255, 6, 163, 129); // Active color for focus and selection
   static const Color buttonColor = Color(0xFFD4B492); // Button color
   static const Color buttonTextColor = Color(0xFF222F47); // Button text color
   static const Color textColor = Colors.black; // Set to black
@@ -55,17 +58,16 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         surface: isDarkMode ? darkBackgroundColor : backgroundColor,
-        background: isDarkMode ? darkBackgroundColor : backgroundColor,
         error: Colors.red,
         onPrimary: textColor,
         onSecondary: buttonTextColor,
         onSurface: textColor,
-        onBackground: textColor,
         onError: const Color.fromARGB(255, 180, 81, 81),
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
       ),
       radioTheme: RadioThemeData(
-        fillColor: WidgetStateProperty.all(activeColor), // Set selected color for radio button
+        fillColor: WidgetStateProperty.all(
+            activeColor), // Set selected color for radio button
       ),
       iconTheme: iconTheme, // Set the global icon theme here
       buttonTheme: const ButtonThemeData(
@@ -76,8 +78,7 @@ class AppTheme {
       textTheme: _textTheme,
       appBarTheme: const AppBarTheme(
         color: Color.fromARGB(0, 187, 57, 57),
-        iconTheme:
-            IconThemeData(color: iconColor), // Icon color in AppBar
+        iconTheme: IconThemeData(color: iconColor), // Icon color in AppBar
         titleTextStyle: TextStyle(
           color: buttonTextColor,
           fontSize: 20.0,

@@ -53,7 +53,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                ListMasterSearchForm(),
+                const ListMasterSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

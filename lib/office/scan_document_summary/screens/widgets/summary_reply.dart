@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ReplyJobForm extends StatefulWidget {
+  const ReplyJobForm({super.key});
+
   @override
   _ReplyJobFormState createState() => _ReplyJobFormState();
 }
@@ -10,14 +12,14 @@ class _ReplyJobFormState extends State<ReplyJobForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for the fields
-  final TextEditingController _classificationController = TextEditingController();
+  final TextEditingController _classificationController =
+      TextEditingController();
   final TextEditingController _priorityController = TextEditingController();
   final TextEditingController _replyDateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -52,11 +54,11 @@ class _ReplyJobFormState extends State<ReplyJobForm> {
                     if (_formKey.currentState!.validate()) {
                       // Handle save action here
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Form Saved!')),
+                        const SnackBar(content: Text('Form Saved!')),
                       );
                     }
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ),
             ],
@@ -72,7 +74,7 @@ class _ReplyJobFormState extends State<ReplyJobForm> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {

@@ -18,7 +18,8 @@ class SelectUserWidget extends StatefulWidget {
   final List<User> selectedUsers;
   final Function(List<User>) onSelectionChanged;
 
-  SelectUserWidget({
+  const SelectUserWidget({
+    super.key,
     required this.userList,
     required this.selectedUsers,
     required this.onSelectionChanged,
@@ -92,11 +93,11 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
           children: [
             ElevatedButton(
               onPressed: _selectAll,
-              child: Text('Select All'),
+              child: const Text('Select All'),
             ),
             ElevatedButton(
               onPressed: _removeAll,
-              child: Text('Remove All'),
+              child: const Text('Remove All'),
             ),
           ],
         ),
@@ -120,8 +121,8 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
   }) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(8),
@@ -132,7 +133,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: ListView.builder(
@@ -159,7 +160,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
 }
 
 class MyApp2 extends StatefulWidget {
-  MyApp2({super.key});
+  const MyApp2({super.key});
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -188,7 +189,7 @@ class _MyAppState extends State<MyApp2> {
         textDirection: TextDirection
             .ltr, // You can switch this to TextDirection.rtl for RTL mode
         child: Scaffold(
-          appBar: AppBar(title: Text('User Selection')),
+          appBar: AppBar(title: const Text('User Selection')),
           body: Center(
             child: SelectUserWidget(
               userList: userList,
