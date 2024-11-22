@@ -4,10 +4,9 @@ import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
-import 'package:tenderboard/common/widgets/scanner.dart';
 
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
