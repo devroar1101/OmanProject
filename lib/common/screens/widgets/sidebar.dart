@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
@@ -7,7 +8,7 @@ import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
 
 class CustomSidebar extends StatefulWidget {
-  final Function(Widget)
+  final Function(Widget, String, String?)
       onNavigate; // Callback function to navigate to new widget
 
   const CustomSidebar({super.key, required this.onNavigate});
@@ -17,9 +18,10 @@ class CustomSidebar extends StatefulWidget {
 }
 
 class _CustomSidebarState extends State<CustomSidebar> {
-  bool _isMinimized = false; // Controls whether the sidebar is minimized
-  String _currentCategory = 'Office'; // Tracks the current category
-  String? _activeItem; // Tracks the currently active menu item
+  bool _isMinimized = false;
+
+  String _currentCategory =
+      'Office'; // Tracks the current category (Office or Admin)
 
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
@@ -35,7 +37,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': const DocumentSearchHome(),
+        'navigate':
+            const DocumentSearchHome() // Custom action for hiding sidebar
       },
       {
         'title': 'Circular',
@@ -63,7 +66,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'ListMaster',
         'icon': Icons.list,
-        'navigate': const Dashboard()
+        'navigate': const ListMasterHome()
       },
       {
         'title': 'Cabinet',
@@ -79,11 +82,24 @@ class _CustomSidebarState extends State<CustomSidebar> {
     ]
   };
 
+  // Function to handle category switching
+  void _changeCategory(String category) {
+    setState(() {
+      _currentCategory = category;
+      widget.onNavigate(ListMasterHome(), 'ListMasterHome', category);
+    });
+  }
+
   // Function to minimize/expand the sidebar
   void _toggleMinimize() {
     setState(() {
       _isMinimized = !_isMinimized;
     });
+  }
+
+  // Function to handle the navigation and hide sidebar if needed
+  void _navigate(Widget screen, String name) {
+    widget.onNavigate(screen, name, _currentCategory);
   }
 
   @override

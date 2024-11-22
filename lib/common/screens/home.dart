@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/screens/widgets/app_bar.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/screens/widgets/sidebar.dart';
+import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,72 +12,34 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Widget _currentWidget = const Dashboard(); // Default widget to show
+  Widget _currentWidget = const Dashboard(); 
+  
+  bool documentSearch =  false;
+  String side ='Office';
 
   // Callback function to update the current widget based on the sidebar item clicked
-  void _onNavigate(Widget widget) {
+  void _onNavigate(Widget widget,String screenName,String? side) {
     setState(() {
       _currentWidget = widget;
+      if(screenName == 'Document Search')
+      {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>widget));
+        _currentWidget = const Dashboard();
+      }
+      if(side != null){
+        this.side = side;
+      }
+      
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5), // Shadow color
-                spreadRadius: 1, // Spread radius
-                blurRadius: 5, // Blur radius
-                offset: const Offset(0, 3), // Offset in x and y direction
-              ),
-            ],
-          ),
-          child: AppBar(
-            automaticallyImplyLeading: false, // Removes the pop-back icon
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                'assets/gstb_logo.png',
-                height: 40,
-                fit: BoxFit.contain,
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.dashboard),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.inbox),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.outbox),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: CustomAppBar.build(side: side),
       body: Row(
         children: [
-          CustomSidebar(onNavigate: _onNavigate), // Pass the callback function
+        CustomSidebar(onNavigate: _onNavigate), // Pass the callback function
           Expanded(child: _currentWidget), // Display the current widget
         ],
       ),

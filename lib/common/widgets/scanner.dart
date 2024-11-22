@@ -32,8 +32,7 @@ class _ScannerAppState extends State<Scanner> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
@@ -90,8 +89,7 @@ class _ScannerAppState extends State<Scanner> {
             ),
           ),
         ),
-      ),
-    );
+      );  
   }
 
   // Alert Box with Scanner Control Panel

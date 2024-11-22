@@ -1,103 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/office/document_search/model/document_search.dart';
-import 'package:tenderboard/office/document_search/model/document_search_repo.dart';
+import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_form.dart';
 
 class DocumentSearchHome extends StatefulWidget {
   const DocumentSearchHome({super.key});
-
   @override
-  _DocumentSearchHomeState createState() => _DocumentSearchHomeState();
+  _StackWithSliderState createState() => _StackWithSliderState();
 }
 
-class _DocumentSearchHomeState extends State<DocumentSearchHome> {
-  final DocumentSearchRepository _repository = DocumentSearchRepository();
-  bool _isFormVisible = true; // Sidebar visible on load
-  List<DocumentSearch> _items = [];
-  bool _isLoading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  void _fetchData() async {
-    try {
-      final items = await _repository.fetchListDocumentSearch(
-        userObjectId: 'C792ED5F-8763-46E9-BF31-7ED8201EEB96',
-      );
-      setState(() {
-        _items = items;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  void toggleSidebar() {
-    setState(() {
-      _isFormVisible = !_isFormVisible; // Toggle sidebar visibility
-    });
-  }
+class _StackWithSliderState extends State<DocumentSearchHome> {
+  bool _isSliderVisible = false; // Controls the slider visibility
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Document Search'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: toggleSidebar,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5), // Shadow color
+                spreadRadius: 1, // Spread radius
+                blurRadius: 5, // Blur radius
+                offset: const Offset(0, 3), // Offset in x and y direction
+              ),
+            ],
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false, // Removes the pop-back icon
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                'assets/gstb_logo.png',
+                height: 40,
+                fit: BoxFit.contain,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.dashboard),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    _isSliderVisible = !_isSliderVisible;
+                  });
+                },
+              ),
+             
+            ],
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          // Base layer: Row with DisplayDetails and Scanner
+           const Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: DisplayDetails(
+                  headers:  [
+                    
+                    'Subject',
+                    'Reference #',
+                    'Received Date',
+                    'Tender Number',
+                  ],
+                  data:  [
+                    'subject'
+                        'jobReferenceNumber',
+                    'receivedDate',
+                    'tenderNumber',
+                  ],
+                  details: [],
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Scanner(),
+              ),
+            ],
+          ),
+          // Sliding DocumentSearchForm
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 300),
+            right:
+                _isSliderVisible ? 0 : -MediaQuery.of(context).size.width * 0.5,
+            top: 0,
+            bottom: 0,
+            width: MediaQuery.of(context).size.width * 0.5, // Slider width
+            child: const Material(
+              elevation: 0,
+              color: Colors.white,
+              child: DocumentSearchForm(),
+            ),
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text('Error: $_error'))
-              : _items.isEmpty
-                  ? const Center(child: Text('No items found'))
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (_isFormVisible) const DocumentSearchForm(),
-
-                        // DisplayDetails widget
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: DisplayDetails(
-                              headers: const [
-                                'Subject',
-                                'Location',
-                                'Reference #',
-                                'Received Date',
-                                'Tender Number',
-                                'Date of Letter',
-                              ],
-                              data: const [
-                                'subject',
-                                'location',
-                                'jobReferenceNumber',
-                                'receivedDate',
-                                'tenderNumber',
-                                'dateOntheLetter',
-                              ],
-                              details: DocumentSearch.listToMap(_items),
-                              expandable: true,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
     );
   }
 }
+
+// Example Widgets: DisplayDetails, Scanner, DocumentSearchForm
+
+
+  
+
+
+
+
+
