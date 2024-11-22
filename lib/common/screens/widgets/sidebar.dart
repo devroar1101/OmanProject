@@ -18,8 +18,8 @@ class CustomSidebar extends StatefulWidget {
 
 class _CustomSidebarState extends State<CustomSidebar> {
   bool _isMinimized = false; // Controls whether the sidebar is minimized
-  String _currentCategory =
-      'Office'; // Tracks the current category (Office or Admin)
+  String _currentCategory = 'Office'; // Tracks the current category
+  String? _activeItem; // Tracks the currently active menu item
 
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
@@ -35,17 +35,17 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': const DocumentSearchHome()
+        'navigate': const DocumentSearchHome(),
       },
       {
         'title': 'Circular',
         'icon': Icons.circle,
-        'navigate': const ScanAndIndexScreen()
+        'navigate': const ScanAndIndexScreen(),
       },
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': const DocumentSearchHome()
+        'navigate': const DocumentSearchHome(),
       },
     ],
     'Admin': [
@@ -79,13 +79,6 @@ class _CustomSidebarState extends State<CustomSidebar> {
     ]
   };
 
-  // Function to handle category switching
-  void _changeCategory(String category) {
-    setState(() {
-      _currentCategory = category;
-    });
-  }
-
   // Function to minimize/expand the sidebar
   void _toggleMinimize() {
     setState(() {
@@ -95,69 +88,89 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if the layout direction is RTL
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
-      width: _isMinimized ? 60 : 250, // Width changes based on minimized state
-      // color: Colors.blueGrey[50],
+      margin: const EdgeInsets.all(16), // Detached sidebar with margin
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withOpacity(0.8), // Lighter background
+        borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3), // Shadow color
-            offset: const Offset(3, 0), // Move shadow to the right
-            blurRadius: 5, // Blur radius
-            spreadRadius: 1, // Spread radius
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(2, 4),
           ),
         ],
       ),
-      child: Column(
-        children: [
-          // Minimize Button at top-left or top-right corner of sidebar based on RTL
-          Align(
-            alignment: isRtl ? Alignment.topLeft : Alignment.topRight,
-            child: IconButton(
-              icon: Icon(
-                _isMinimized
-                    ? (isRtl ? Icons.arrow_back : Icons.arrow_forward)
-                    : (isRtl ? Icons.arrow_forward : Icons.arrow_back),
-              ),
-              onPressed: _toggleMinimize,
-            ),
-          ),
-          // Display menu items for the selected category
-          Expanded(
-            child: ListView.builder(
-              itemCount: _menuItems[_currentCategory]!.length +
-                  1, // Add 1 for the "Admin/Office" button at the end
-              itemBuilder: (context, index) {
-                // If this is the last item, show the toggle to switch between categories
-                if (index == _menuItems[_currentCategory]!.length) {
-                  final toggleCategory =
-                      _currentCategory == 'Office' ? 'Admin' : 'Office';
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300), // Smooth animation
+        width: _isMinimized ? 60 : 220,
+        child: Column(
+          children: [
+            // Sidebar items
+            Expanded(
+              child: ListView.builder(
+                itemCount: _menuItems[_currentCategory]!.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == _menuItems[_currentCategory]!.length) {
+                    final toggleCategory =
+                        _currentCategory == 'Office' ? 'Admin' : 'Office';
+                    return ListTile(
+                      iconColor: Theme.of(context).iconTheme.color,
+                      leading: const Icon(Icons.swap_horiz),
+                      title: _isMinimized ? null : Text(toggleCategory),
+                      onTap: () {
+                        setState(() {
+                          _currentCategory = toggleCategory;
+                        });
+                      },
+                    );
+                  }
+                  final item = _menuItems[_currentCategory]![index];
+                  final bool isActive = _activeItem == item['title'];
+
                   return ListTile(
-                    iconColor: Theme.of(context).iconTheme.color,
-                    leading: const Icon(Icons.folder),
-                    title: _isMinimized ? null : Text(toggleCategory),
+                    leading: Icon(
+                      item['icon'],
+                      color: isActive ? Colors.blueAccent : AppTheme.iconColor,
+                    ),
+                    title: _isMinimized
+                        ? null
+                        : Text(
+                            item['title'],
+                            style: TextStyle(
+                              fontWeight: isActive
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color:
+                                  isActive ? Colors.blueAccent : Colors.black87,
+                            ),
+                          ),
+                    tileColor: isActive ? Colors.blue.withOpacity(0.1) : null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     onTap: () {
-                      _changeCategory(toggleCategory);
+                      setState(() {
+                        _activeItem = item['title'];
+                      });
+                      widget.onNavigate(item['navigate']);
                     },
                   );
-                }
-                // Render menu items normally
-                final item = _menuItems[_currentCategory]![index];
-                return ListTile(
-                  leading: Icon(item['icon'],
-                      color: AppTheme.iconColor), // Apply the theme color here
-                  title: _isMinimized ? null : Text(item['title']),
-                  onTap: () {
-                    widget.onNavigate(item['navigate']);
-                  },
-                );
-              },
+                },
+              ),
             ),
-          ),
-        ],
+            // Toggle minimize button at the bottom
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                icon: Icon(
+                  _isMinimized ? Icons.arrow_forward : Icons.arrow_back,
+                ),
+                onPressed: _toggleMinimize,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
