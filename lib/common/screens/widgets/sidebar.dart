@@ -19,6 +19,7 @@ class CustomSidebar extends StatefulWidget {
 
 class _CustomSidebarState extends State<CustomSidebar> {
   bool _isMinimized = false;
+  String? _activeItem;
 
   String _currentCategory =
       'Office'; // Tracks the current category (Office or Admin)
@@ -169,7 +170,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       setState(() {
                         _activeItem = item['title'];
                       });
-                      widget.onNavigate(item['navigate']);
+                      widget.onNavigate(
+                          item['navigate'], item['title'], _currentCategory);
                     },
                   );
                 },
