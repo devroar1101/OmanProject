@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
@@ -7,8 +8,7 @@ import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
 
 class CustomSidebar extends StatefulWidget {
-  final Function(Widget)
-      onNavigate; // Callback function to navigate to new widget
+  final Function(Widget,String,String?) onNavigate; // Callback function to navigate to new widget
 
   const CustomSidebar({super.key, required this.onNavigate});
 
@@ -17,9 +17,9 @@ class CustomSidebar extends StatefulWidget {
 }
 
 class _CustomSidebarState extends State<CustomSidebar> {
-  bool _isMinimized = false; // Controls whether the sidebar is minimized
-  String _currentCategory =
-      'Office'; // Tracks the current category (Office or Admin)
+  bool _isMinimized = false;
+  
+  String _currentCategory = 'Office'; // Tracks the current category (Office or Admin)
 
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
@@ -35,7 +35,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': const DocumentSearchHome()
+        'navigate': const DocumentSearchHome() // Custom action for hiding sidebar
       },
       {
         'title': 'Circular',
@@ -63,7 +63,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'ListMaster',
         'icon': Icons.list,
-        'navigate': const Dashboard()
+        'navigate': const ListMasterHome()
       },
       {
         'title': 'Cabinet',
@@ -83,6 +83,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
+      widget.onNavigate(ListMasterHome(),'ListMasterHome',category);
     });
   }
 
@@ -93,13 +94,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
     });
   }
 
+  // Function to handle the navigation and hide sidebar if needed
+  void _navigate(Widget screen, String name) {
+    
+    widget.onNavigate(screen,name,_currentCategory);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Determine if the layout direction is RTL
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
-      width: _isMinimized ? 60 : 250, // Width changes based on minimized state
-      // color: Colors.blueGrey[50],
+      width: (_isMinimized ? 60 : 250) , // Sidebar is hidden conditionally
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         boxShadow: [
@@ -151,7 +157,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       color: AppTheme.iconColor), // Apply the theme color here
                   title: _isMinimized ? null : Text(item['title']),
                   onTap: () {
-                    widget.onNavigate(item['navigate']);
+                    // For Document Search, hide sidebar on navigation
+                    _navigate(item['navigate'],
+                        item['title']);
                   },
                 );
               },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_form.dart';
 
 class ScanAndIndexScreen extends StatefulWidget {
@@ -40,7 +41,8 @@ class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    color: Colors.white, // Optional: Set to match your design
+                    color: Colors.white,
+                    child: Scanner(), // Optional: Set to match your design
                   ),
                 ),
               ],

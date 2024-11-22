@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary_repo.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_form.dart';
@@ -139,8 +140,9 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
                     // Right Side - Empty Space
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        color: Colors.white,
+                       child: Container(
+                        color: Colors.grey[200], // Optional background color
+                        child: Scanner(), // Your scanner widget here
                       ),
                     ),
                   ],

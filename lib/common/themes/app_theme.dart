@@ -22,13 +22,22 @@ class AppTheme {
 
   // Common elevated button theme
   static final elevatedButtonTheme = ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: buttonColor,
-      foregroundColor: textColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return activeColor; // Active color when pressed
+        }
+        return buttonColor; // Default button color
+      }),
+      foregroundColor: WidgetStateProperty.all(textColor),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: WidgetStateProperty.all(
+        const EdgeInsets.symmetric(vertical: 12),
+      ),
     ),
   );
 
@@ -65,20 +74,12 @@ class AppTheme {
         onError: const Color.fromARGB(255, 180, 81, 81),
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
       ),
-      radioTheme: RadioThemeData(
-        fillColor: WidgetStateProperty.all(
-            activeColor), // Set selected color for radio button
-      ),
-      iconTheme: iconTheme, // Set the global icon theme here
-      buttonTheme: const ButtonThemeData(
-        buttonColor: buttonColor,
-        textTheme: ButtonTextTheme.primary,
-      ),
-      elevatedButtonTheme: elevatedButtonTheme,
+      iconTheme: iconTheme,
+      elevatedButtonTheme: elevatedButtonTheme, // Use the updated button theme
       textTheme: _textTheme,
       appBarTheme: const AppBarTheme(
         color: Color.fromARGB(0, 187, 57, 57),
-        iconTheme: IconThemeData(color: iconColor), // Icon color in AppBar
+        iconTheme: IconThemeData(color: iconColor),
         titleTextStyle: TextStyle(
           color: buttonTextColor,
           fontSize: 20.0,
