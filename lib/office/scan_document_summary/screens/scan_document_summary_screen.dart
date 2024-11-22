@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary_repo.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_form.dart';
@@ -17,8 +18,7 @@ class ScanDocumentSummaryScreen extends StatefulWidget {
       _ScanDocumentSummaryScreenState();
 }
 
-class _ScanDocumentSummaryScreenState
-    extends State<ScanDocumentSummaryScreen> {
+class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
   final ScanSummaryRepository _repository = ScanSummaryRepository();
   ScanDocumentSummary? _singleScanIndexItem;
   bool _isLoading = true;
@@ -54,7 +54,7 @@ class _ScanDocumentSummaryScreenState
         title: Row(
           children: [
             Container(
-             // width: MediaQuery.of(context).size.width * 0.5,
+              // width: MediaQuery.of(context).size.width * 0.5,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -140,8 +140,9 @@ class _ScanDocumentSummaryScreenState
                     // Right Side - Empty Space
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        color: Colors.white,
+                       child: Container(
+                        color: Colors.grey[200], // Optional background color
+                        child: Scanner(), // Your scanner widget here
                       ),
                     ),
                   ],
@@ -154,21 +155,21 @@ class _ScanDocumentSummaryScreenState
       case "Details":
         return ScanDocumentSummaryForm(_singleScanIndexItem!);
       case "Routing":
-        return Center(child: Text("Routing Content Placeholder"));
+        return const Center(child: Text("Routing Content Placeholder"));
       case "Attachment":
-        return Center(child: Text("Attachment Content Placeholder"));
+        return const Center(child: Text("Attachment Content Placeholder"));
       case "Assign Job":
-        return JobAssignForm();
+        return const JobAssignForm();
       case "Follo_UP Job":
         return FollowUpJobsForm(); // Display JobAssignForm widget here
       case "Reply Job":
-        return ReplyJobForm(); // Display JobAssignForm widget here
+        return const ReplyJobForm(); // Display JobAssignForm widget here
       case "Suspent Job":
-        return SuspendJobForm(); // Display JobAssignForm widget here
+        return const SuspendJobForm(); // Display JobAssignForm widget here
       case "Close Job":
-        return CloseJobForm(); // Display JobAssignForm widget here
+        return const CloseJobForm(); // Display JobAssignForm widget here
       default:
-        return Center(child: Text("Invalid Tab"));
+        return const Center(child: Text("Invalid Tab"));
     }
   }
 }

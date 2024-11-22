@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 //import 'package:html/html.dart' as html;
 
 class CloseJobForm extends StatefulWidget {
+  const CloseJobForm({super.key});
+
   @override
   _CloseJobFormState createState() => _CloseJobFormState();
 }
@@ -40,11 +42,11 @@ class _CloseJobFormState extends State<CloseJobForm> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Form Saved!')),
+                        const SnackBar(content: Text('Form Saved!')),
                       );
                     }
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ),
             ],
@@ -60,7 +62,7 @@ class _CloseJobFormState extends State<CloseJobForm> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -78,7 +80,7 @@ class _CloseJobFormState extends State<CloseJobForm> {
       maxLines: 6, // Adjust height for multi-line input
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         alignLabelWithHint: true, // Align label for multi-line
       ),
       validator: (value) {
@@ -103,7 +105,7 @@ class _CloseJobFormState extends State<CloseJobForm> {
           ),
         ),
         IconButton(
-          icon: Icon(Icons.attach_file),
+          icon: const Icon(Icons.attach_file),
           onPressed: () {
             // final html.FileUploadInputElement uploadInput = html.FileUploadInputElement()
             //   ..accept = '*/*'; // Accept all file types

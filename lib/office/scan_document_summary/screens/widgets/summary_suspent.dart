@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 class SuspendJobForm extends StatefulWidget {
+  const SuspendJobForm({super.key});
+
   @override
   _SuspendJobFormState createState() => _SuspendJobFormState();
 }
@@ -17,7 +19,6 @@ class _SuspendJobFormState extends State<SuspendJobForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -42,11 +43,11 @@ class _SuspendJobFormState extends State<SuspendJobForm> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Form Saved!')),
+                        const SnackBar(content: Text('Form Saved!')),
                       );
                     }
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ),
             ],
@@ -61,7 +62,7 @@ class _SuspendJobFormState extends State<SuspendJobForm> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -84,16 +85,16 @@ class _SuspendJobFormState extends State<SuspendJobForm> {
           ),
         ),
         IconButton(
-          icon: Icon(Icons.attach_file),
+          icon: const Icon(Icons.attach_file),
           onPressed: () async {
-            print('File picker opened');  // Debugging line
+            print('File picker opened'); // Debugging line
             FilePickerResult? result = await FilePicker.platform.pickFiles();
 
             if (result != null) {
               setState(() {
                 _attachmentFileName = result.files.single.name;
               });
-              print('File selected: ${_attachmentFileName}'); // Debugging line
+              print('File selected: $_attachmentFileName'); // Debugging line
             } else {
               print('No file selected'); // Debugging line
               setState(() {

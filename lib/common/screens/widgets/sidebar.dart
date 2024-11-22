@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
@@ -6,10 +7,8 @@ import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
 
-
 class CustomSidebar extends StatefulWidget {
-  final Function(Widget)
-      onNavigate; // Callback function to navigate to new widget
+  final Function(Widget,String,String?) onNavigate; // Callback function to navigate to new widget
 
   const CustomSidebar({super.key, required this.onNavigate});
 
@@ -18,9 +17,9 @@ class CustomSidebar extends StatefulWidget {
 }
 
 class _CustomSidebarState extends State<CustomSidebar> {
-  bool _isMinimized = false; // Controls whether the sidebar is minimized
-  String _currentCategory =
-      'Office'; // Tracks the current category (Office or Admin)
+  bool _isMinimized = false;
+  
+  String _currentCategory = 'Office'; // Tracks the current category (Office or Admin)
 
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
@@ -31,32 +30,52 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.outbox,
         'navigate': const OutboxScreen()
       },
-      {'title': 'CC', 'icon': Icons.mail, 'navigate': Dashboard()},
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': Dashboard()},
+      {'title': 'CC', 'icon': Icons.mail, 'navigate': const Dashboard()},
+      {'title': 'eJob', 'icon': Icons.business, 'navigate': const Dashboard()},
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate': DocumentSearchHome()
+        'navigate': const DocumentSearchHome() // Custom action for hiding sidebar
       },
-      {'title': 'Circular', 'icon': Icons.circle, 'navigate': ScanAndIndexScreen()},
+      {
+        'title': 'Circular',
+        'icon': Icons.circle,
+        'navigate': const ScanAndIndexScreen()
+      },
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': DocumentSearchHome()
+        'navigate': const DocumentSearchHome()
       },
     ],
     'Admin': [
-      {'title': 'DG', 'icon': Icons.account_balance, 'navigate': Dashboard()},
-      {'title': 'Department', 'icon': Icons.business, 'navigate': Dashboard()},
-      {'title': 'Section', 'icon': Icons.folder, 'navigate': Dashboard()},
-      {'title': 'ListMaster', 'icon': Icons.list, 'navigate': Dashboard()},
-      {'title': 'Cabinet', 'icon': Icons.storage, 'navigate': Dashboard()},
+      {
+        'title': 'DG',
+        'icon': Icons.account_balance,
+        'navigate': const Dashboard()
+      },
+      {
+        'title': 'Department',
+        'icon': Icons.business,
+        'navigate': const Dashboard()
+      },
+      {'title': 'Section', 'icon': Icons.folder, 'navigate': const Dashboard()},
+      {
+        'title': 'ListMaster',
+        'icon': Icons.list,
+        'navigate': const ListMasterHome()
+      },
+      {
+        'title': 'Cabinet',
+        'icon': Icons.storage,
+        'navigate': const Dashboard()
+      },
       {
         'title': 'ExternAllocation',
         'icon': Icons.account_tree,
-        'navigate': Dashboard()
+        'navigate': const Dashboard()
       },
-      {'title': 'User', 'icon': Icons.person, 'navigate': Dashboard()},
+      {'title': 'User', 'icon': Icons.person, 'navigate': const Dashboard()},
     ]
   };
 
@@ -64,6 +83,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
+      widget.onNavigate(ListMasterHome(),'ListMasterHome',category);
     });
   }
 
@@ -74,19 +94,24 @@ class _CustomSidebarState extends State<CustomSidebar> {
     });
   }
 
+  // Function to handle the navigation and hide sidebar if needed
+  void _navigate(Widget screen, String name) {
+    
+    widget.onNavigate(screen,name,_currentCategory);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Determine if the layout direction is RTL
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
-      width: _isMinimized ? 60 : 250, // Width changes based on minimized state
-      // color: Colors.blueGrey[50],
+      width: (_isMinimized ? 60 : 250) , // Sidebar is hidden conditionally
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3), // Shadow color
-            offset: Offset(3, 0), // Move shadow to the right
+            offset: const Offset(3, 0), // Move shadow to the right
             blurRadius: 5, // Blur radius
             spreadRadius: 1, // Spread radius
           ),
@@ -118,7 +143,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       _currentCategory == 'Office' ? 'Admin' : 'Office';
                   return ListTile(
                     iconColor: Theme.of(context).iconTheme.color,
-                    leading: Icon(Icons.folder),
+                    leading: const Icon(Icons.folder),
                     title: _isMinimized ? null : Text(toggleCategory),
                     onTap: () {
                       _changeCategory(toggleCategory);
@@ -132,7 +157,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       color: AppTheme.iconColor), // Apply the theme color here
                   title: _isMinimized ? null : Text(item['title']),
                   onTap: () {
-                    widget.onNavigate(item['navigate']);
+                    // For Document Search, hide sidebar on navigation
+                    _navigate(item['navigate'],
+                        item['title']);
                   },
                 );
               },

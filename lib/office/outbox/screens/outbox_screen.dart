@@ -55,7 +55,7 @@ class _OutboxScreenState extends State<OutboxScreen> {
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                OutboxSearchForm(),
+                const OutboxSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

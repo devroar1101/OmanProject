@@ -18,9 +18,9 @@ class _ListMasterHomeState extends State<ListMasterHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ListMaster'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('ListMaster'),
+      // ),
       body: FutureBuilder<List<ListMaster>>(
         future: _repository.fetchListMasters(),
         builder: (context, snapshot) {
@@ -53,7 +53,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                ListMasterSearchForm(),
+                const ListMasterSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

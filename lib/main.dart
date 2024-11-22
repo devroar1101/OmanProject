@@ -4,9 +4,10 @@ import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/common/widgets/scanner.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -22,7 +23,8 @@ class MyApp extends ConsumerWidget {
       title: 'Tenderboard App',
       theme: AppTheme.getTheme(isDarkMode: false), // Light theme
       darkTheme: AppTheme.getTheme(isDarkMode: true), // Dark theme
-      themeMode: ThemeMode.system, // Automatically switch between light/dark based on system setting
+      themeMode: ThemeMode
+          .system, // Automatically switch between light/dark based on system setting
       builder: (context, child) {
         // Apply directionality based on selected language (Arabic or English)
         return Directionality(
@@ -33,7 +35,7 @@ class MyApp extends ConsumerWidget {
         );
       },
       // If authenticated, go to the Home Screen; otherwise, stay on the Login Screen
-      home: authState.isAuthenticated ? Home() : const LoginScreen(),
+      home: authState.isAuthenticated ? const Home() : const LoginScreen(),
     );
   }
 }
