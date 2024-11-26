@@ -1,12 +1,14 @@
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 
 class ListMaster {
+  int id;
   String objectId;
   String nameArabic;
   String nameEnglish;
   List<ListMasterItem> items;
 
   ListMaster({
+    required this.id,
     required this.objectId,
     required this.nameArabic,
     required this.nameEnglish,
@@ -16,6 +18,7 @@ class ListMaster {
   // Convert a Map to a ListMaster object
   factory ListMaster.fromMap(Map<String, dynamic> map) {
     return ListMaster(
+      id: map['id'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
@@ -29,6 +32,7 @@ class ListMaster {
   // Convert a ListMaster object to a Map
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'objectId': objectId,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,

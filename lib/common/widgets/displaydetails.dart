@@ -7,15 +7,19 @@ class DisplayDetails extends StatefulWidget {
   final List<Map<String, dynamic>> details;
   final bool expandable;
   final Function(int)? onTap;
+  final Function()? onLongPress;
+  final int isSelected;
 
   const DisplayDetails({
     super.key,
     required this.headers,
     required this.data,
     required this.details,
-    this.expandable = false,
+    this.expandable = true,
     this.onTap,
-  });
+    this.onLongPress,
+    int? selectedNo,
+  }) : isSelected = selectedNo ?? -1;
 
   @override
   _DisplayDetailsState createState() => _DisplayDetailsState();
@@ -45,53 +49,62 @@ class _DisplayDetailsState extends State<DisplayDetails> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header Row with colorful background
-        Container(
-          decoration: const BoxDecoration(
-            color: AppTheme.displayHeaderColor,
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: widget.headers.take(headerColumns).map((header) {
-              return Expanded(
-                child: Text(
-                  header,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
+        headerColumns != 1
+            ? Container(
+                decoration: const BoxDecoration(
+                  color: AppTheme.displayHeaderColor,
                 ),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 10),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  children: widget.headers.take(headerColumns).map((header) {
+                    return Expanded(
+                      child: Text(
+                        header,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              )
+            : const SizedBox.shrink(),
+        headerColumns != 1
+            ? const SizedBox(height: 10)
+            : const SizedBox.shrink(),
 
         // Data Rows
         Expanded(
           child: ListView.builder(
             itemCount: widget.details.length,
-            itemBuilder: (context,int rowIndex) {
+            itemBuilder: (context, int rowIndex) {
               final row = widget.details[rowIndex];
               bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
 
               return InkWell(
-                splashColor: Colors.amber,
-                onTap: (){
-                 if(widget.onTap != null)
-                 {
-                     widget.onTap!(rowIndex);
-                 }
-                     
-
+                onTap: () {
+                  if (widget.onTap != null) {
+                    widget.onTap!(row['id'] as int);
+                  }
+                },
+                onLongPress: () {
+                  if (widget.onLongPress != null) {
+                    widget.onLongPress!();
+                  }
                 }, // Trigger onTap if it’s not null
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Main row with full background
                     Container(
-                      color: Colors.grey[100], // Full background color
+                      color: widget.isSelected != row['id'] as int
+                          ? (row['id'] as int) % 2 == 0
+                              ? Colors.grey[100]
+                              : Colors.grey[200]
+                          : const Color.fromARGB(255, 185, 241, 190),
                       padding: const EdgeInsets.all(12),
                       child: Row(
                         children: widget.data.take(headerColumns).map((key) {

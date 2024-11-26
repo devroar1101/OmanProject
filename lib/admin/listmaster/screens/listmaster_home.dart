@@ -64,7 +64,9 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
-                            expandable: true, // Set false to expand by default
+                            expandable: true,
+                            selectedNo: -1,
+                            // Set false to expand by default
                           ),
                         ),
                       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
+import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
@@ -72,12 +74,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Cabinet',
         'icon': Icons.storage,
-        'navigate': const Dashboard()
+        'navigate': const CabinetHome()
       },
       {
-        'title': 'ExternAllocation',
+        'title': 'Folder Permission',
         'icon': Icons.account_tree,
-        'navigate': const Dashboard()
+        'navigate': const FolderPermissionHome()
       },
       {'title': 'User', 'icon': Icons.person, 'navigate': const Dashboard()},
     ]
