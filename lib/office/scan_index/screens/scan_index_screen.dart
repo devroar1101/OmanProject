@@ -42,7 +42,8 @@ class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
                   flex: 1,
                   child: Container(
                     color: Colors.white,
-                    child: Scanner(), // Optional: Set to match your design
+                    child:
+                        const Scanner(), // Optional: Set to match your design
                   ),
                 ),
               ],

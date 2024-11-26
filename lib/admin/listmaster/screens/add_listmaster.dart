@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AddListmasterScreen extends StatefulWidget {
+  const AddListmasterScreen({super.key});
+
   @override
   _AddListmasterScreenState createState() => _AddListmasterScreenState();
 }
@@ -52,7 +54,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Listmaster Name (English)',
@@ -68,7 +70,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 24.0),
+              const SizedBox(height: 24.0),
               Center(
                 child: ElevatedButton(
                   onPressed: _saveForm,

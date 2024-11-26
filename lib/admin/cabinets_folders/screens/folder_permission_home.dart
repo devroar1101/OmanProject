@@ -33,7 +33,7 @@ class _FolderPermissionHomeState extends State<FolderPermissionHome>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Tabs at the top
-          Container(
+          SizedBox(
             width: 500,
             child: TabBar(
               controller: _tabController,

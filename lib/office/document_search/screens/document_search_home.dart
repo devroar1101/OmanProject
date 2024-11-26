@@ -48,7 +48,6 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
                   Navigator.pop(context);
                 },
               ),
-              
               IconButton(
                 icon: const Icon(Icons.search),
                 onPressed: () {
@@ -57,7 +56,6 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
                   });
                 },
               ),
-             
             ],
           ),
         ),
@@ -65,19 +63,18 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
       body: Stack(
         children: [
           // Base layer: Row with DisplayDetails and Scanner
-           const Row(
+          const Row(
             children: [
               Expanded(
                 flex: 1,
                 child: DisplayDetails(
-                  headers:  [
-                    
+                  headers: [
                     'Subject',
                     'Reference #',
                     'Received Date',
                     'Tender Number',
                   ],
-                  data:  [
+                  data: [
                     'subject'
                         'jobReferenceNumber',
                     'receivedDate',
@@ -94,7 +91,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
           ),
           // Sliding DocumentSearchForm
           AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             right:
                 _isSliderVisible ? 0 : -MediaQuery.of(context).size.width * 0.5,
             top: 0,

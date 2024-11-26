@@ -101,7 +101,7 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
               },
             ),
           ),
-          VerticalDivider(),
+          const VerticalDivider(),
           // Third Pane: Users
           Expanded(
             child: UserPane(

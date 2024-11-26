@@ -157,7 +157,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
 }
 
 class SelectFieldApp extends StatelessWidget {
-  const SelectFieldApp();
+  const SelectFieldApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -173,6 +173,8 @@ class SelectFieldApp extends StatelessWidget {
 }
 
 class DropdownFormExample extends StatefulWidget {
+  const DropdownFormExample({super.key});
+
   @override
   _DropdownFormExampleState createState() => _DropdownFormExampleState();
 }

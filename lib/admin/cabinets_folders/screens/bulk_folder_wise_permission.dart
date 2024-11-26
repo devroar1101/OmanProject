@@ -42,7 +42,8 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
   void addPermissions() {
     if (selectedFolderIds.isEmpty || selectedUserIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Select at least one folder and one user')),
+        const SnackBar(
+            content: Text('Select at least one folder and one user')),
       );
       return;
     }
@@ -130,13 +131,13 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
               ],
             ),
           ),
-          VerticalDivider(),
+          const VerticalDivider(),
           // Right Pane: Users
           Expanded(
             child: Column(
               children: [
                 TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Search Users',
                     prefixIcon: Icon(Icons.search),
                   ),
@@ -188,7 +189,7 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
               ),
               ElevatedButton(
                 onPressed: addPermissions,
-                child: Text('Add Permissions'),
+                child: const Text('Add Permissions'),
               ),
             ],
           ),

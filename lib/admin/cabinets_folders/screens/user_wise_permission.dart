@@ -114,13 +114,13 @@ class _UserWisePermissionState extends State<UserWisePermission> {
               ],
             ),
           ),
-          VerticalDivider(),
+          const VerticalDivider(),
           // Second Pane: Cabinets and Folders
           Expanded(
             child: Column(
               children: [
                 TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Search Cabinets',
                     prefixIcon: Icon(Icons.search),
                   ),
@@ -131,7 +131,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                   },
                 ),
                 if (selectedUserId == null)
-                  Center(
+                  const Center(
                     child: Text('Select a user to view cabinets and folders'),
                   )
                 else
@@ -159,7 +159,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                                     ? Colors.green
                                     : Colors.grey,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(cabinet.name),
                             ],
                           ),

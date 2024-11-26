@@ -140,9 +140,9 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
                     // Right Side - Empty Space
                     Expanded(
                       flex: 1,
-                       child: Container(
+                      child: Container(
                         color: Colors.grey[200], // Optional background color
-                        child: Scanner(), // Your scanner widget here
+                        child: const Scanner(), // Your scanner widget here
                       ),
                     ),
                   ],

@@ -10,6 +10,7 @@ class UserPane extends StatelessWidget {
   final Function(int) onTogglePermission;
 
   const UserPane({
+    super.key,
     required this.users,
     required this.permissions,
     required this.cabinetId,

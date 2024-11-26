@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DocumentSearchForm extends StatefulWidget {
-  const DocumentSearchForm({Key? key}) : super(key: key);
+  const DocumentSearchForm({super.key});
 
   @override
   _DocumentSearchFormState createState() => _DocumentSearchFormState();
@@ -321,7 +321,6 @@ class _DocumentSearchFormState extends State<DocumentSearchForm> {
                         controller: _tenderNumberController,
                         decoration: InputDecoration(
                           labelText: 'Tender Number',
-                          
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),

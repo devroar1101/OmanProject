@@ -89,7 +89,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
-      widget.onNavigate(ListMasterHome(), 'ListMasterHome', category);
+      widget.onNavigate(const ListMasterHome(), 'ListMasterHome', category);
     });
   }
 
