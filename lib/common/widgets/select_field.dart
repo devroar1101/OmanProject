@@ -163,8 +163,8 @@ class SelectFieldApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Text('Searchable Dropdown Example')),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
+        body: const Padding(
+          padding: EdgeInsets.all(16.0),
           child: DropdownFormExample(),
         ),
       ),

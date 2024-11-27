@@ -4,7 +4,6 @@ import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
-import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
@@ -105,7 +104,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
-      widget.onNavigate(ListMasterHome(), 'ListMasterHome', category);
+      widget.onNavigate(const ListMasterHome(), 'ListMasterHome', category);
     });
   }
 

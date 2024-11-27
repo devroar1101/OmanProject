@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AddDGmasterScreen extends StatefulWidget {
+  const AddDGmasterScreen({super.key});
+
   @override
   _AddDGmasterScreenState createState() => _AddDGmasterScreenState();
 }

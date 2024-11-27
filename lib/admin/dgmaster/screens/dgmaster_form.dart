@@ -22,7 +22,6 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
 
-
     // Perform search logic
   }
 

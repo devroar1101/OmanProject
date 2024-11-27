@@ -3,6 +3,8 @@ import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class AddSectionMaster extends StatefulWidget {
+  const AddSectionMaster({super.key});
+
   @override
   _AddSectionMasterState createState() => _AddSectionMasterState();
 }

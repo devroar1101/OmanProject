@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AddLetterSubject extends StatefulWidget {
+  const AddLetterSubject({super.key});
+
   @override
   _AddLetterSubjectState createState() => _AddLetterSubjectState();
 }
