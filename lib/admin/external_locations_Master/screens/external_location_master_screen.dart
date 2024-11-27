@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
+import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class ExternalLocationMasterScreen extends StatefulWidget {
+  const ExternalLocationMasterScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _ExternalLocationMasterScreenState createState() => _ExternalLocationMasterScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _ExternalLocationMasterScreenState extends State<ExternalLocationMasterScreen> {
+  final ExternalLocationMasterRepository _repository = ExternalLocationMasterRepository();
+  final List<ExternalLocationMaster> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<ExternalLocationMaster>>(
+        future: _repository.fetchExternalLocationMaster(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -38,20 +35,26 @@ class _ListMasterHomeState extends State<ListMasterHome> {
               'code',
               'Name Arabic',
               'Name English',
+              'Type',
+              'Active',
+              'Location(New)',
             ];
             final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
+              'locationCode',
+              'locationNameArabic',
+              'locationNameEnglish',
+              'typeNameEnglish',
+              'active',
+              'isYes',
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = ExternalLocationMaster.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                const ListMasterSearchForm(),
+                const ExternalLocationMasterSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

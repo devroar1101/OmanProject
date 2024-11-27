@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/section_master/model/section_master.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
+import 'package:tenderboard/admin/section_master/screens/section_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class SectionMasterScreen extends StatefulWidget {
+  const SectionMasterScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _SectionMasterScreenState createState() => _SectionMasterScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _SectionMasterScreenState extends State<SectionMasterScreen> {
+  final SectionMasterRepository _repository = SectionMasterRepository();
+  final List<SectionMaster> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<SectionMaster>>(
+        future: _repository.fetchSections(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -38,20 +35,22 @@ class _ListMasterHomeState extends State<ListMasterHome> {
               'code',
               'Name Arabic',
               'Name English',
+              'Department',
             ];
             final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
+              'sectionCode',
+              'sectionNameArabic',
+              'sectionNameEnglish',
+              'departmentNameEnglish',
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = SectionMaster.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                const ListMasterSearchForm(),
+                const SectionMasterSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [

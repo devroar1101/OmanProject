@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
+import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
+import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
+import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
+import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
@@ -8,7 +14,8 @@ import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
 
 class CustomSidebar extends StatefulWidget {
-  final Function(Widget,String,String?) onNavigate; // Callback function to navigate to new widget
+  final Function(Widget, String, String?)
+      onNavigate; // Callback function to navigate to new widget
 
   const CustomSidebar({super.key, required this.onNavigate});
 
@@ -52,14 +59,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'DG',
         'icon': Icons.account_balance,
-        'navigate': const Dashboard()
+        'navigate': const DgMasterScreen()
       },
       {
         'title': 'Department',
         'icon': Icons.business,
-        'navigate': const Dashboard()
+        'navigate': const DepartmentMasterScreen()
       },
-      {'title': 'Section', 'icon': Icons.folder, 'navigate': const Dashboard()},
+      {
+        'title': 'Section',
+        'icon': Icons.folder,
+        'navigate': const SectionMasterScreen()
+      },
       {
         'title': 'ListMaster',
         'icon': Icons.list,
@@ -71,11 +82,20 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const Dashboard()
       },
       {
-        'title': 'ExternAllocation',
-        'icon': Icons.account_tree,
-        'navigate': const Dashboard()
+        'title': 'SubjectMaster',
+        'icon': Icons.subject,
+        'navigate': const LetterSubjectMasterScreen()
       },
-      {'title': 'User', 'icon': Icons.person, 'navigate': const Dashboard()},
+      {
+        'title': 'ExternalLocation',
+        'icon': Icons.account_tree,
+        'navigate': const ExternalLocationMasterScreen()
+      },
+      {
+        'title': 'User',
+        'icon': Icons.person,
+        'navigate': const UserMasterScreen()
+      },
     ]
   };
 
@@ -83,7 +103,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
-      widget.onNavigate(ListMasterHome(),'ListMasterHome',category);
+      widget.onNavigate(ListMasterHome(), 'ListMasterHome', category);
     });
   }
 
@@ -96,8 +116,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   // Function to handle the navigation and hide sidebar if needed
   void _navigate(Widget screen, String name) {
-    
-    widget.onNavigate(screen,name,_currentCategory);
+    widget.onNavigate(screen, name, _currentCategory);
   }
 
   @override
@@ -133,9 +152,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       leading: const Icon(Icons.swap_horiz),
                       title: _isMinimized ? null : Text(toggleCategory),
                       onTap: () {
-                        setState(() {
-                          _currentCategory = toggleCategory;
-                        });
+                        _changeCategory(toggleCategory);
                       },
                     );
                   }
@@ -168,8 +185,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                         _activeItem = item['title'];
                       });
                       // For Document Search, hide sidebar on navigation
-                    _navigate(item['navigate'],
-                        item['title']);
+                      _navigate(item['navigate'], item['title']);
                     },
                   );
                 },

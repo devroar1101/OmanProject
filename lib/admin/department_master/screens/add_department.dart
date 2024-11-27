@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/widgets/select_field.dart';
 
-class AddListmasterScreen extends StatefulWidget {
+class AddDepartmentMaster extends StatefulWidget {
   @override
-  _AddListmasterScreenState createState() => _AddListmasterScreenState();
+  _AddDepartmentMasterState createState() => _AddDepartmentMasterState();
 }
 
-class _AddListmasterScreenState extends State<AddListmasterScreen> {
+class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _listmasterNameArabic;
-  String? _listmasterNameEnglish;
+  String? _DepartmentNameArabic;
+  String? _DepartmentNameEnglish;
+  String? _selectedDG;
+
+  final List<SelectOption<String>> _DGOptions = [
+    SelectOption(displayName: 'Finance', key: 'finance', value: 'Finance'),
+    SelectOption(displayName: 'HR', key: 'hr', value: 'HR'),
+    SelectOption(displayName: 'IT', key: 'it', value: 'IT'),
+    SelectOption(displayName: 'Operations', key: 'operations', value: 'Operations'),
+  ];
 
   void _saveForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // Create a model or perform any necessary action
-      print('Arabic Name: $_listmasterNameArabic');
-      print('English Name: $_listmasterNameEnglish');
-      // Navigate or display a success message
+      // Perform save actions
+      print('Arabic Name: $_DepartmentNameArabic');
+      print('English Name: $_DepartmentNameEnglish');
+      print('Selected Department: $_selectedDG');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listmaster added successfully!')),
+        const SnackBar(content: Text('Department master added successfully!')),
       );
       Navigator.pop(context); // Close the modal after saving
     }
@@ -42,19 +52,19 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Add Listmaster',
+                  'Add Department Master',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
-                  width: 450.0, // Reduced width for the field
+                  width: 450.0,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Name (Arabic)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameArabic = value;
+                      _DepartmentNameArabic = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -66,14 +76,14 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
-                  width: 450.0, // Reduced width for the field
+                  width: 450.0,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Name (English)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameEnglish = value;
+                      _DepartmentNameEnglish = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -81,6 +91,19 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                       }
                       return null;
                     },
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: 450.0,
+                  child: SearchableDropdown<String>(
+                    options: _DGOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDG = value;
+                      });
+                    },
+                    hint: 'Select a Department',
                   ),
                 ),
                 const SizedBox(height: 24.0),

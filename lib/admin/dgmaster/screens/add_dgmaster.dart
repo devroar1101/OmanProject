@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
-class AddListmasterScreen extends StatefulWidget {
+class AddDGmasterScreen extends StatefulWidget {
   @override
-  _AddListmasterScreenState createState() => _AddListmasterScreenState();
+  _AddDGmasterScreenState createState() => _AddDGmasterScreenState();
 }
 
-class _AddListmasterScreenState extends State<AddListmasterScreen> {
+class _AddDGmasterScreenState extends State<AddDGmasterScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _listmasterNameArabic;
-  String? _listmasterNameEnglish;
+  String? _dgNameArabic;
+  String? _dgNameEnglish;
 
   void _saveForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       // Create a model or perform any necessary action
-      print('Arabic Name: $_listmasterNameArabic');
-      print('English Name: $_listmasterNameEnglish');
+      print('Arabic Name: $_dgNameArabic');
+      print('English Name: $_dgNameEnglish');
       // Navigate or display a success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listmaster added successfully!')),
+        const SnackBar(content: Text('DG master added successfully!')),
       );
       Navigator.pop(context); // Close the modal after saving
     }
@@ -42,7 +42,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Add Listmaster',
+                  'Add DGmaster',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
@@ -54,7 +54,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameArabic = value;
+                      _dgNameArabic = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -73,7 +73,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameEnglish = value;
+                      _dgNameEnglish = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {

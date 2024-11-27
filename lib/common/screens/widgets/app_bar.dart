@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/department_master/screens/add_department.dart';
+import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
+import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
+import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
+import 'package:tenderboard/admin/section_master/screens/add_section_master.dart'; // Import the screen
 
 class CustomAppBar {
   /// A method to create and return a custom AppBar widget.
   static PreferredSizeWidget build({
+    required BuildContext context, // Pass BuildContext here
     required String side,
+    required String screenName,
   }) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -19,64 +26,126 @@ class CustomAppBar {
             ),
           ],
         ),
-        child:side == 'Admin'? AppBar(
-          automaticallyImplyLeading: false, // Removes the pop-back icon
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/gstb_logo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
-          ),
-          actions: [
-              IconButton(
-                icon: const Icon(Icons.dashboard),
-                onPressed: () {},
+        child: side == 'Admin'
+            ? AppBar(
+                automaticallyImplyLeading: false, // Removes the pop-back icon
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/gstb_logo.png',
+                    height: 40,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.dashboard),
+                    onPressed: () {
+                      debugPrint('Dashboard clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      // Show AddListmasterScreen as a modal
+                      _showModal(context: context, screenName: screenName);
+                    },
+                  ),
+                ],
+              )
+            : AppBar(
+                automaticallyImplyLeading: false, // Removes the pop-back icon
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/gstb_logo.png',
+                    height: 40,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.dashboard),
+                    onPressed: () {
+                      debugPrint('Dashboard clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.inbox),
+                    onPressed: () {
+                      debugPrint('Inbox clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.outbox),
+                    onPressed: () {
+                      debugPrint('Outbox clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      debugPrint('Search clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.person),
+                    onPressed: () {
+                      debugPrint('Profile clicked');
+                    },
+                  ),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {},
-              ),
-            ],
-        ): AppBar(
-          automaticallyImplyLeading: false, // Removes the pop-back icon
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/gstb_logo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
-          ),
-          actions: [
-              IconButton(
-                icon: const Icon(Icons.dashboard),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.inbox),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.outbox),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {},
-              ),
-            ],
-        ),
       ),
     );
+  }
+
+  /// Show a modal dialog based on the screen name.
+  static void _showModal({
+    required BuildContext context,
+    required String screenName,
+  }) {
+    if (screenName == 'ListMaster') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddListmasterScreen();
+        },
+      );
+    } else if (screenName == 'DG') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddDGmasterScreen();
+        },
+      );
+    } else if (screenName == 'Department') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddDepartmentMaster();
+        },
+      );
+    } else if (screenName == 'Section') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddSectionMaster();
+        },
+      );
+    } else if (screenName == 'SubjectMaster') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddLetterSubject();
+        },
+      );
+    } else {
+      debugPrint('Unhandled screenName: $screenName');
+    }
   }
 }
