@@ -11,7 +11,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Load the language preference from SharedPreferences
   Future<void> _loadLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final savedLanguage = prefs.getString('selectedLanguage') ?? 'English';
+    final savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
     state = state.copyWith(selectedLanguage: savedLanguage);
   }
 

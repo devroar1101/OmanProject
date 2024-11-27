@@ -4,8 +4,11 @@ import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/common/utilities/language_mannager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalizationManager().init();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -27,9 +30,8 @@ class MyApp extends ConsumerWidget {
       builder: (context, child) {
         // Apply directionality based on selected language (Arabic or English)
         return Directionality(
-          textDirection: selectedLanguage == 'Arabic'
-              ? TextDirection.rtl
-              : TextDirection.ltr,
+          textDirection:
+              selectedLanguage == 'ar' ? TextDirection.rtl : TextDirection.ltr,
           child: child!,
         );
       },

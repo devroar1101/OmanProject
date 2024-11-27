@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -16,7 +17,7 @@ class Dashboard extends StatelessWidget {
               spacing: 10, // Horizontal space between cards
               runSpacing: 10, // Vertical space between cards
               children: [
-                _buildColorfulCard('Inbox', '5'),
+                _buildColorfulCard(getTranslation('Inbox'), '5'),
                 _buildColorfulCard('Outbox', '3'),
                 _buildColorfulCard('CC', '10'),
                 _buildColorfulCard('Circular', '2'),

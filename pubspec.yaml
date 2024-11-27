@@ -71,6 +71,8 @@ flutter:
   assets:
     - assets/tb_login.jpg
     - assets/gstb_logo.png
+    - assets/lang/ar.json
+    - assets/lang/en.json
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

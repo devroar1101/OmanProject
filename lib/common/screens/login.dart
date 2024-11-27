@@ -15,7 +15,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isPasswordVisible = false;
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedLanguage = 'English'; // Initially set to 'English'
+  String _selectedLanguage = 'en'; // Initially set to 'English'
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off, 
+            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
           ),
           onPressed: () {
             setState(() {
@@ -158,27 +158,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         GestureDetector(
           onTap: () {
             setState(() {
-              _selectedLanguage = 'Arabic';
+              _selectedLanguage = 'ar';
             });
           },
           child: Text(
             'Arabic',
-            style:
-                _selectedLanguage == 'Arabic' ? selectedStyle : unselectedStyle,
+            style: _selectedLanguage == 'ar' ? selectedStyle : unselectedStyle,
           ),
         ),
         const SizedBox(width: 30),
         GestureDetector(
           onTap: () {
             setState(() {
-              _selectedLanguage = 'English';
+              _selectedLanguage = 'en';
             });
           },
           child: Text(
             'English',
-            style: _selectedLanguage == 'English'
-                ? selectedStyle
-                : unselectedStyle,
+            style: _selectedLanguage == 'en' ? selectedStyle : unselectedStyle,
           ),
         ),
       ],
