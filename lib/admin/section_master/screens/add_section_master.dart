@@ -1,27 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/widgets/select_field.dart';
 
-class AddListmasterScreen extends StatefulWidget {
-  const AddListmasterScreen({super.key});
-
+class AddSectionMaster extends StatefulWidget {
   @override
-  _AddListmasterScreenState createState() => _AddListmasterScreenState();
+  _AddSectionMasterState createState() => _AddSectionMasterState();
 }
 
-class _AddListmasterScreenState extends State<AddListmasterScreen> {
+class _AddSectionMasterState extends State<AddSectionMaster> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _listmasterNameArabic;
-  String? _listmasterNameEnglish;
+  String? _sectionNameArabic;
+  String? _sectionNameEnglish;
+  String? _selectedDG;
+  String? _selectedDepartment;
+
+  final List<SelectOption<String>> _DGOptions = [
+    SelectOption(displayName: 'Finance', key: 'finance', value: 'Finance'),
+    SelectOption(displayName: 'HR', key: 'hr', value: 'HR'),
+    SelectOption(displayName: 'IT', key: 'it', value: 'IT'),
+    SelectOption(displayName: 'Operations', key: 'operations', value: 'Operations'),
+  ];
+
+  final List<SelectOption<String>> _departmentOptions = [
+    SelectOption(displayName: 'Department A', key: 'deptA', value: 'Department A'),
+    SelectOption(displayName: 'Department B', key: 'deptB', value: 'Department B'),
+    SelectOption(displayName: 'Department C', key: 'deptC', value: 'Department C'),
+    SelectOption(displayName: 'Department D', key: 'deptD', value: 'Department D'),
+  ];
 
   void _saveForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // Create a model or perform any necessary action
-      print('Arabic Name: $_listmasterNameArabic');
-      print('English Name: $_listmasterNameEnglish');
-      // Navigate or display a success message
+      // Perform save actions
+      print('Arabic Name: $_sectionNameArabic');
+      print('English Name: $_sectionNameEnglish');
+      print('Selected DG: $_selectedDG');
+      print('Selected Department: $_selectedDepartment');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listmaster added successfully!')),
+        const SnackBar(content: Text('Section master added successfully!')),
       );
       Navigator.pop(context); // Close the modal after saving
     }
@@ -44,19 +61,19 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Add Listmaster',
+                  'Add Section Master',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
-                  width: 450.0, // Reduced width for the field
+                  width: 450.0,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Name (Arabic)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameArabic = value;
+                      _sectionNameArabic = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -68,14 +85,14 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
-                  width: 450.0, // Reduced width for the field
+                  width: 450.0,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Name (English)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _listmasterNameEnglish = value;
+                      _sectionNameEnglish = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -83,6 +100,32 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                       }
                       return null;
                     },
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: 450.0,
+                  child: SearchableDropdown<String>(
+                    options: _DGOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDG = value;
+                      });
+                    },
+                    hint: 'Select a DG',
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: 450.0,
+                  child: SearchableDropdown<String>(
+                    options: _departmentOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDepartment = value;
+                      });
+                    },
+                    hint: 'Select a Department',
                   ),
                 ),
                 const SizedBox(height: 24.0),

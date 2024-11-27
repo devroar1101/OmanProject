@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/widgets/select_user.dart';
+
 
 class JobAssignForm extends StatefulWidget {
   const JobAssignForm({super.key});
@@ -12,20 +14,34 @@ class _JobAssignFormState extends State<JobAssignForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for each TextFormField
-  final TextEditingController _classificationController =
-      TextEditingController();
+  final TextEditingController _classificationController = TextEditingController();
   final TextEditingController _followUpDateController = TextEditingController();
   final TextEditingController _priorityController = TextEditingController();
   final TextEditingController _replyDateController = TextEditingController();
-  final TextEditingController _personalGroupController =
-      TextEditingController();
+  final TextEditingController _personalGroupController = TextEditingController();
   final TextEditingController _dgController = TextEditingController();
   final TextEditingController _departmentController = TextEditingController();
   final TextEditingController _sectionController = TextEditingController();
   final TextEditingController _commentTypeController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
-  final TextEditingController _modifyCommentController =
-      TextEditingController();
+  final TextEditingController _modifyCommentController = TextEditingController();
+
+  // User selection data
+  List<User> userList = [
+    User(id: '1', nameArabic: 'أحمد', nameEnglish: 'Ahmed'),
+    User(id: '2', nameArabic: 'سارة', nameEnglish: 'Sara'),
+    User(id: '3', nameArabic: 'محمد', nameEnglish: 'Mohamed'),
+    User(id: '4', nameArabic: 'فاطمة', nameEnglish: 'Fatima'),
+    User(id: '5', nameArabic: 'علي', nameEnglish: 'Ali'),
+  ];
+
+  List<User> selectedUsers = [];
+
+  void _onSelectionChanged(List<User> selectedUsers) {
+    setState(() {
+      this.selectedUsers = selectedUsers;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +81,20 @@ class _JobAssignFormState extends State<JobAssignForm> {
               const SizedBox(height: 8.0),
               _buildSingleField('Modify Comment', _modifyCommentController),
               const SizedBox(height: 16.0),
+
+              // Add the SelectUserWidget
+              const Text(
+                'Assign Users',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8.0),
+              SelectUserWidget(
+                userList: userList,
+                selectedUsers: selectedUsers,
+                onSelectionChanged: _onSelectionChanged,
+              ),
+              const SizedBox(height: 16.0),
+
               ElevatedButton(
                 onPressed: () {
                   // Validate the form
@@ -73,10 +103,10 @@ class _JobAssignFormState extends State<JobAssignForm> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Form Saved!')),
                     );
+                    print('Selected Users: ${selectedUsers.map((u) => u.nameEnglish).toList()}');
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Please fill all fields correctly.')),
+                      const SnackBar(content: Text('Please fill all fields correctly.')),
                     );
                   }
                 },
@@ -143,8 +173,7 @@ class _JobAssignFormState extends State<JobAssignForm> {
               style: const TextStyle(fontSize: 14), // Smaller font size
               decoration: InputDecoration(
                 labelText: label,
-                labelStyle:
-                    const TextStyle(fontSize: 12), // Smaller label font size
+                labelStyle: const TextStyle(fontSize: 12), // Smaller label font size
                 border: const OutlineInputBorder(),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 6.0,

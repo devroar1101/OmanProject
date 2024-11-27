@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
+import 'package:tenderboard/admin/letter_subject/screens/letter_subject_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class LetterSubjectMasterScreen extends StatefulWidget {
+  const LetterSubjectMasterScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _LetterSubjectMasterScreenState createState() => _LetterSubjectMasterScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _LetterSubjectMasterScreenState extends State<LetterSubjectMasterScreen> {
+  final LetterSubjectMasterRepository _repository = LetterSubjectMasterRepository();
+  final List<LetterSubjecct> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<LetterSubjecct>>(
+        future: _repository.fetchLetterSubjects(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -35,23 +32,21 @@ class _ListMasterHomeState extends State<ListMasterHome> {
 
             // Define headers and data keys
             final headers = [
-              'code',
-              'Name Arabic',
-              'Name English',
+              'Tender Number',
+              'Subject',
             ];
             final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
+              'tenderNumber',
+              'subjectNameEnglish',
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = LetterSubjecct.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                const ListMasterSearchForm(),
+                const LetterSubjectSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -62,9 +57,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
-                            expandable: true,
-                            selectedNo: -1,
-                            // Set false to expand by default
+                            expandable: true, // Set false to expand by default
                           ),
                         ),
                       ),

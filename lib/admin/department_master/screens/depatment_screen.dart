@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
+import 'package:tenderboard/admin/department_master/screens/deparment_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class DepartmentMasterScreen extends StatefulWidget {
+  const DepartmentMasterScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _DepartmentMasterScreenState createState() => _DepartmentMasterScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _DepartmentMasterScreenState extends State<DepartmentMasterScreen> {
+  final DepartmentMasterRepository _repository = DepartmentMasterRepository();
+  final List<Department> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<Department>>(
+        future: _repository.fetchDepartments(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -38,20 +35,22 @@ class _ListMasterHomeState extends State<ListMasterHome> {
               'code',
               'Name Arabic',
               'Name English',
+              'DG',
             ];
             final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
+              'departmentCode',
+              'departmentNameArabic',
+              'departmentNameEnglish',
+              'dgNameEnglish',
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = Department.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                const ListMasterSearchForm(),
+                const DepartmentSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -62,9 +61,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
-                            expandable: true,
-                            selectedNo: -1,
-                            // Set false to expand by default
+                            expandable: true, // Set false to expand by default
                           ),
                         ),
                       ),

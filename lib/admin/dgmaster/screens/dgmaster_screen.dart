@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/dgmaster/screens/dgmaster_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
-import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
-  const ListMasterHome({super.key});
+class DgMasterScreen extends StatefulWidget {
+  const DgMasterScreen({super.key});
 
   @override
-  _ListMasterHomeState createState() => _ListMasterHomeState();
+  _DgMasterScreenState createState() => _DgMasterScreenState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _DgMasterScreenState extends State<DgMasterScreen> {
+  final DgMasterRepository _repository = DgMasterRepository();
+  final List<DgMaster> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+      body: FutureBuilder<List<DgMaster>>(
+        future: _repository.fetchDgMasters(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -46,12 +43,12 @@ class _ListMasterHomeState extends State<ListMasterHome> {
             ];
 
             // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
+            final details = DgMaster.listToMap(items);
 
             // Pass the converted list to DisplayDetails
             return Column(
               children: [
-                const ListMasterSearchForm(),
+                const DgMasterSearchForm(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -62,9 +59,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
-                            expandable: true,
-                            selectedNo: -1,
-                            // Set false to expand by default
+                            expandable: true, // Set false to expand by default
                           ),
                         ),
                       ),

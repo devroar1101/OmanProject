@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
+import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
+import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
+import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
+import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
@@ -20,11 +26,9 @@ class CustomSidebar extends StatefulWidget {
 }
 
 class _CustomSidebarState extends State<CustomSidebar> {
-  bool _isMinimized = false;
-  String? _activeItem;
-
-  String _currentCategory =
-      'Office'; // Tracks the current category (Office or Admin)
+  bool _isMinimized = false; // Controls whether the sidebar is minimized
+  String _currentCategory = 'Office'; // Tracks the current category
+  String? _activeItem; // Tracks the currently active menu item
 
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
@@ -40,8 +44,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Document Search',
         'icon': Icons.search,
-        'navigate':
-            const DocumentSearchHome() // Custom action for hiding sidebar
+        'navigate': const DocumentSearchHome(),
       },
       {
         'title': 'Circular',
@@ -58,14 +61,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'DG',
         'icon': Icons.account_balance,
-        'navigate': const Dashboard()
+        'navigate': const DgMasterScreen()
       },
       {
         'title': 'Department',
         'icon': Icons.business,
-        'navigate': const Dashboard()
+        'navigate': const DepartmentMasterScreen()
       },
-      {'title': 'Section', 'icon': Icons.folder, 'navigate': const Dashboard()},
+      {
+        'title': 'Section',
+        'icon': Icons.folder,
+        'navigate': const SectionMasterScreen()
+      },
       {
         'title': 'ListMaster',
         'icon': Icons.list,
@@ -77,11 +84,20 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const CabinetHome()
       },
       {
-        'title': 'Folder Permission',
-        'icon': Icons.account_tree,
-        'navigate': const FolderPermissionHome()
+        'title': 'SubjectMaster',
+        'icon': Icons.subject,
+        'navigate': const LetterSubjectMasterScreen()
       },
-      {'title': 'User', 'icon': Icons.person, 'navigate': const Dashboard()},
+      {
+        'title': 'ExternalLocation',
+        'icon': Icons.account_tree,
+        'navigate': const ExternalLocationMasterScreen()
+      },
+      {
+        'title': 'User',
+        'icon': Icons.person,
+        'navigate': const UserMasterScreen()
+      },
     ]
   };
 
@@ -89,7 +105,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   void _changeCategory(String category) {
     setState(() {
       _currentCategory = category;
-      widget.onNavigate(const ListMasterHome(), 'ListMasterHome', category);
+      widget.onNavigate(ListMasterHome(), 'ListMasterHome', category);
     });
   }
 
@@ -138,9 +154,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       leading: const Icon(Icons.swap_horiz),
                       title: _isMinimized ? null : Text(toggleCategory),
                       onTap: () {
-                        setState(() {
-                          _currentCategory = toggleCategory;
-                        });
+                        _changeCategory(toggleCategory);
                       },
                     );
                   }
@@ -172,8 +186,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       setState(() {
                         _activeItem = item['title'];
                       });
-                      widget.onNavigate(
-                          item['navigate'], item['title'], _currentCategory);
+                      // For Document Search, hide sidebar on navigation
+                      _navigate(item['navigate'], item['title']);
                     },
                   );
                 },

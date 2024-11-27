@@ -3,6 +3,7 @@ import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 class ListMaster {
   int id;
   String objectId;
+  int listMasterCode;
   String nameArabic;
   String nameEnglish;
   List<ListMasterItem> items;
@@ -10,6 +11,7 @@ class ListMaster {
   ListMaster({
     required this.id,
     required this.objectId,
+    required this.listMasterCode,
     required this.nameArabic,
     required this.nameEnglish,
     required this.items,
@@ -20,6 +22,7 @@ class ListMaster {
     return ListMaster(
       id: map['id'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
+      listMasterCode: map['listMasterCode'] ?? 0 , // Defaulting to empty string if null
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
       // Assuming that 'items' is a list of maps that needs to be converted to ListMasterItem
@@ -34,6 +37,7 @@ class ListMaster {
     return {
       'id': id,
       'objectId': objectId,
+      'listMasterCode': listMasterCode,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       // Convert the ListMaster objects back to maps
