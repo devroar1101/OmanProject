@@ -44,6 +44,7 @@ dependencies:
   html: ^0.15.5
   flutter_twain_scanner: ^1.0.1
   shimmer: ^3.0.0
+  image: ^4.3.0
 
 dev_dependencies:
   flutter_test:
