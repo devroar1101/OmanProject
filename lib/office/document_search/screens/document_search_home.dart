@@ -69,6 +69,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
               Expanded(
                 flex: 1,
                 child: DisplayDetails(
+                  detailKey: 'objectId',
                   headers: [
                     'Subject',
                     'Reference #',

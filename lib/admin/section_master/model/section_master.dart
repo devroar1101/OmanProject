@@ -1,31 +1,31 @@
 class SectionMaster {
-  String sectionCode;
+  String code;
   String sectionNameArabic;
   String sectionNameEnglish;
   String departmentNameEnglish;
   String departmentNameArabic;
-  String sectionObjectId;
+  String objectId;
   int sectionId;
 
   SectionMaster({
-    required this.sectionCode,
+    required this.code,
     required this.sectionNameArabic,
     required this.sectionNameEnglish,
     required this.departmentNameEnglish,
     required this.departmentNameArabic,
-    required this.sectionObjectId,
+    required this.objectId,
     required this.sectionId,
   });
 
   // Create a SectionMaster instance from a map (e.g., from JSON)
   factory SectionMaster.fromMap(Map<String, dynamic> map) {
     return SectionMaster(
-      sectionCode: map['sectionCode'] ?? '',
+      code: map['sectionCode'] ?? '',
       sectionNameArabic: map['sectionNameArabic'] ?? '',
       sectionNameEnglish: map['sectionNameEnglish'] ?? '',
       departmentNameEnglish: map['departmentNameEnglish'] ?? '',
       departmentNameArabic: map['departmentNameArabic'] ?? '',
-      sectionObjectId: map['sectionObjectId'] ?? '',
+      objectId: map['sectionObjectId'] ?? '',
       sectionId: map['sectionId'] ?? '',
     );
   }
@@ -33,12 +33,12 @@ class SectionMaster {
   // Convert a SectionMaster instance to a map (e.g., for JSON)
   Map<String, dynamic> toMap() {
     return {
-      'sectionCode': sectionCode,
+      'code': code,
       'sectionNameArabic': sectionNameArabic,
       'sectionNameEnglish': sectionNameEnglish,
       'departmentNameEnglish': departmentNameEnglish,
       'departmentNameArabic': departmentNameArabic,
-      'sectionObjectId': sectionObjectId,
+      'objectId': objectId,
       'sectionId': sectionId,
     };
   }

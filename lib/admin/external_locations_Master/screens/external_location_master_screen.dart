@@ -62,6 +62,7 @@ class _ExternalLocationMasterScreenState extends State<ExternalLocationMasterScr
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DisplayDetails(
+                            detailKey: 'objectId',
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps

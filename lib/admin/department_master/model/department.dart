@@ -1,17 +1,17 @@
 
 class Department {
-  String departmentCode;
+  String code;
   String departmentNameArabic;
   String departmentNameEnglish;
-  String departmentObjectId;
+  String objectId;
   String dgNameEnglish;
   String dgNameArabic;
 
   Department({
-    required this.departmentCode,
+    required this.code,
     required this.departmentNameArabic,
     required this.departmentNameEnglish,
-    required this.departmentObjectId,
+    required this.objectId,
     required this.dgNameEnglish,
     required this.dgNameArabic,
   });
@@ -19,10 +19,10 @@ class Department {
   /// Convert a Map to a Department object
   factory Department.fromMap(Map<String, dynamic> map) {
     return Department(
-      departmentCode: map['departmentCode'] ?? '',
+      code: map['departmentCode'] ?? '',
       departmentNameArabic: map['departmentNameArabic'] ?? '',
       departmentNameEnglish: map['departmentNameEnglish'] ?? '',
-      departmentObjectId: map['departmentObjectId'] ?? '',
+      objectId: map['departmentObjectId'] ?? '',
       dgNameEnglish: map['dgNameEnglish'] ?? '',
       dgNameArabic: map['dgNameArabic'] ?? '',
     );
@@ -31,10 +31,10 @@ class Department {
   /// Convert a Department object to a Map
   Map<String, dynamic> toMap() {
     return {
-      'departmentCode': departmentCode,
+      'departmentCode': code,
       'departmentNameArabic': departmentNameArabic,
       'departmentNameEnglish': departmentNameEnglish,
-      'departmentObjectId': departmentObjectId,
+      'departmentObjectId': objectId,
       'dgNameEnglish': dgNameEnglish,
       'dgNameArabic': dgNameArabic,
     };

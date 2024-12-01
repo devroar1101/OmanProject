@@ -56,6 +56,7 @@ class _DgMasterScreenState extends State<DgMasterScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DisplayDetails(
+                            detailKey: 'objectId',
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps

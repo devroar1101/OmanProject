@@ -53,7 +53,9 @@ class FolderSection extends StatelessWidget {
                 headers: headers,
                 data: dataKeys,
                 details: details,
-                selectedNo: selectedFolderId,
+                selected: selectedFolderId.toString(),
+                
+                detailKey: 'id',
                 onTap: (index) {
                   onSelectFolder(index);
                 },

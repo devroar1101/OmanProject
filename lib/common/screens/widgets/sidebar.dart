@@ -10,6 +10,8 @@ import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
+import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
+import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
@@ -39,7 +41,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const OutboxScreen()
       },
       {'title': 'CC', 'icon': Icons.mail, 'navigate': const Dashboard()},
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': const Dashboard()},
+      {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
         'title': 'Document Search',
         'icon': Icons.search,
@@ -53,7 +55,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': const DocumentSearchHome(),
+        'navigate': const EjobSummaryScreen(),
       },
     ],
     'Admin': [
