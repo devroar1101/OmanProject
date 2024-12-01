@@ -3,7 +3,8 @@ import 'package:tenderboard/admin/department_master/screens/add_department.dart'
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
-import 'package:tenderboard/admin/section_master/screens/add_section_master.dart'; // Import the screen
+import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
+import 'package:tenderboard/admin/user_master/screens/add_user_master.dart'; // Import the screen
 
 class CustomAppBar {
   /// A method to create and return a custom AppBar widget.
@@ -142,6 +143,13 @@ class CustomAppBar {
         context: context,
         builder: (BuildContext context) {
           return const AddLetterSubject();
+        },
+      );
+    } else if (screenName == 'User') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AddUserMasterScreen();
         },
       );
     } else {

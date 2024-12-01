@@ -58,6 +58,7 @@ class _DepartmentMasterScreenState extends State<DepartmentMasterScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DisplayDetails(
+                            detailKey: 'objectId',
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps

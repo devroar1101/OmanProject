@@ -7,6 +7,7 @@ class DocumentSearch {
   DateTime recievedDate;
   String tenderNumber;
   DateTime dateOntheLetter;
+  String objectId;
 
   DocumentSearch({
     required this.subject,
@@ -15,6 +16,7 @@ class DocumentSearch {
     required this.recievedDate,
     required this.tenderNumber,
     required this.dateOntheLetter,
+    required this.objectId
   });
 
 
@@ -27,6 +29,7 @@ class DocumentSearch {
       recievedDate: parseDate(map['recievedDate']),
       tenderNumber: map['tenderNumber'] ?? '',
       dateOntheLetter: parseDate(map['dateOntheLetter']),
+      objectId: map['scanTypeObjectId'] ?? '',
     );
   }
 
@@ -48,6 +51,7 @@ class DocumentSearch {
       'recievedDate': recievedDate.toIso8601String(),
       'tenderNumber': tenderNumber,
       'dateOntheLetter': dateOntheLetter.toIso8601String(),
+      'objectId': objectId,
     };
   }
 

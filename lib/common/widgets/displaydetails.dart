@@ -8,7 +8,8 @@ class DisplayDetails extends StatefulWidget {
   final bool expandable;
   final Function(int)? onTap;
   final Function()? onLongPress;
-  final int isSelected;
+  final String isSelected;
+  final String detailKey;
 
   const DisplayDetails({
     super.key,
@@ -18,8 +19,9 @@ class DisplayDetails extends StatefulWidget {
     this.expandable = true,
     this.onTap,
     this.onLongPress,
-    int? selectedNo,
-  }) : isSelected = selectedNo ?? -1;
+    String? selected,
+    required this.detailKey,
+  }) : isSelected = selected ?? '';
 
   @override
   _DisplayDetailsState createState() => _DisplayDetailsState();
@@ -87,7 +89,7 @@ class _DisplayDetailsState extends State<DisplayDetails> {
               return InkWell(
                 onTap: () {
                   if (widget.onTap != null) {
-                    widget.onTap!(row['id'] as int);
+                    widget.onTap!(row[widget.detailKey]);
                   }
                 },
                 onLongPress: () {
@@ -100,8 +102,8 @@ class _DisplayDetailsState extends State<DisplayDetails> {
                   children: [
                     // Main row with full background
                     Container(
-                      color: widget.isSelected != row['id'] as int
-                          ? (row['id'] as int) % 2 == 0
+                      color: widget.isSelected != row[widget.detailKey] 
+                          ? (rowIndex) % 2 == 0
                               ? Colors.grey[100]
                               : Colors.grey[200]
                           : const Color.fromARGB(255, 185, 241, 190),

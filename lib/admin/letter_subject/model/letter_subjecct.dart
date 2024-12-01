@@ -1,12 +1,12 @@
 class LetterSubjecct {
   String subjectNameEnglish;
   String tenderNumber;
-  String subjectObjectId;
+  String objectId;
 
   LetterSubjecct({
     required this.subjectNameEnglish,
     required this.tenderNumber,
-    required this.subjectObjectId,
+    required this.objectId,
   });
 
   // fromMap: Converts a Map to a LetterSubjecct instance
@@ -14,7 +14,7 @@ class LetterSubjecct {
     return LetterSubjecct(
       subjectNameEnglish: map['subjectNameEnglish'] ?? '',
       tenderNumber: map['tenderNumber'] ?? '',
-      subjectObjectId: map['subjectObjectId'] ?? '',
+      objectId: map['subjectObjectId'] ?? '',
     );
   }
 
@@ -23,7 +23,7 @@ class LetterSubjecct {
     return {
       'subjectNameEnglish': subjectNameEnglish,
       'tenderNumber': tenderNumber,
-      'subjectObjectId': subjectObjectId,
+      'objectId': objectId,
     };
   }
 

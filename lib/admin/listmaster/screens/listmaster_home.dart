@@ -59,11 +59,11 @@ class _ListMasterHomeState extends State<ListMasterHome> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DisplayDetails(
+                            detailKey: 'id',
                             headers: headers,
                             data: dataKeys,
                             details: details, // Pass the list of maps
                             expandable: true,
-                            selectedNo: -1,
                             // Set false to expand by default
                           ),
                         ),

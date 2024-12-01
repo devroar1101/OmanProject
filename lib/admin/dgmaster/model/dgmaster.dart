@@ -2,13 +2,13 @@ class DgMaster {
   String nameArabic;
   String nameEnglish;
   String code;
-  String dgObjectId;
+  String objectId;
 
   DgMaster({
     required this.nameArabic,
     required this.nameEnglish,
     required this.code,
-    required this.dgObjectId,
+    required this.objectId,
   });
 
   /// Convert a Map to a DgMaster object
@@ -17,7 +17,7 @@ class DgMaster {
       nameArabic: map['nameArabic'] ?? '', // Default to empty string if null
       nameEnglish: map['nameEnglish'] ?? '',
       code: map['code'] ?? '',
-      dgObjectId: map['dgObjectId'] ?? '',
+      objectId: map['dgObjectId'] ?? '',
     );
   }
 
@@ -27,7 +27,7 @@ class DgMaster {
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       'code': code,
-      'dgObjectId': dgObjectId,
+      'objectId': objectId,
     };
   }
 

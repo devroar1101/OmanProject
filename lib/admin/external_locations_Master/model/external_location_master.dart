@@ -1,8 +1,8 @@
 class ExternalLocationMaster {
-  int locationCode;
+  int code;
   String locationNameArabic;
   String locationNameEnglish;
-  String externalLocationObjectId;
+  String objectId;
   String typeNameEnglish;
   String typeNameArabic;
   String typeObjectId;
@@ -10,10 +10,10 @@ class ExternalLocationMaster {
   String isYes;
 
   ExternalLocationMaster({
-    required this.locationCode,
+    required this.code,
     required this.locationNameArabic,
     required this.locationNameEnglish,
-    required this.externalLocationObjectId,
+    required this.objectId,
     required this.typeNameEnglish,
     required this.typeNameArabic,
     required this.typeObjectId,
@@ -25,9 +25,9 @@ class ExternalLocationMaster {
   factory ExternalLocationMaster.fromMap(Map<String, dynamic> map) {
     return ExternalLocationMaster(
       locationNameArabic: map['locationNameArabic'] ?? 0,
-      locationCode: map['locationCode'] ?? '',
+      code: map['locationCode'] ?? '',
       locationNameEnglish: map['locationNameEnglish'] ?? '',
-      externalLocationObjectId: map['externalLocationObjectId'] ?? '',
+      objectId: map['externalLocationObjectId'] ?? '',
       typeNameEnglish: map['typeNameEnglish'] ?? '',
       typeNameArabic: map['typeNameArabic'] ?? '',
       typeObjectId: map['typeObjectId'] ?? '',
@@ -39,10 +39,10 @@ class ExternalLocationMaster {
   // Method to convert an instance to a Map
   Map<String, dynamic> toMap() {
     return {
-      'locationCode': locationCode,
+      'code': code,
       'locationNameArabic': locationNameArabic,
       'locationNameEnglish': locationNameEnglish,
-      'externalLocationObjectId': externalLocationObjectId,
+      'objectId': objectId,
       'typeNameEnglish': typeNameEnglish,
       'typeNameArabic': typeNameArabic,
       'typeObjectId': typeObjectId,
