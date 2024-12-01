@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:tenderboard/common/model/select_option.dart'; // Ensure this import path matches your structure
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'dart:io';
@@ -111,7 +111,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
   ];
 
   // Method to pick image from gallery or camera
-  Future<void> _pickImage() async {
+  /* Future<void> _pickImage() async {
     final picker = ImagePicker();
     final XFile? pickedFile =
         await picker.pickImage(source: ImageSource.gallery);
@@ -121,7 +121,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
         _profileImage = File(pickedFile.path);
       });
     }
-  }
+  }*/
 
   // Save form logic
   void _saveForm() {
@@ -222,7 +222,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
-                    onTap: _pickImage, // Open image picker when tapped
+                    // Open image picker when tapped
                     child: CircleAvatar(
                       radius: 30, // Adjust size for the circle
                       backgroundColor:

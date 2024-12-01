@@ -58,7 +58,7 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
                       data: dataKeys,
                       details: details,
                       expandable: true,
-                      selectedNo: -1,
+                      detailKey: 'code',
                     ),
                   ),
                 ),
