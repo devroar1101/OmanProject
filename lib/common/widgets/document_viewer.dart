@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:tenderboard/common/test/editimagescreen.dart';
-
-// Import the new edit screen
 
 class DocumentViewer extends StatefulWidget {
   final List<Uint8List> imagePaths;
@@ -62,6 +61,40 @@ class _DocumentViewerState extends State<DocumentViewer> {
     final int? targetPage = int.tryParse(_pageController.text);
     if (targetPage != null) {
       _changePage(targetPage - 1);
+    }
+  }
+
+  Future<void> _saveImage(Uint8List imageData) async {
+    const String apiUrl = "http://192.168.1.3:8081/api/FileInformation/Create1";
+    try {
+      final response = await Dio().post(
+        apiUrl,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer YOUR_API_TOKEN", // Replace with your token
+            "Content-Type": "application/json",
+          },
+        ),
+        data: {
+          "Data": imageData,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data["IsSuccess"] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Image saved successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text("Failed to save image: ${response.data['Message']}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error saving image: $e")),
+      );
     }
   }
 
@@ -178,6 +211,13 @@ class _DocumentViewerState extends State<DocumentViewer> {
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      icon: Icon(Icons.save),
+                      onPressed: widget.imagePaths.isNotEmpty
+                          ? () =>
+                              _saveImage(widget.imagePaths[validCurrentPage])
+                          : null,
+                    ),
                     IconButton(
                       icon: Icon(Icons.edit), // Change to edit icon
                       onPressed: _editImage, // Open edit image screen

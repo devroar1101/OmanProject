@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
 
-class ListMasterHome extends StatefulWidget {
+class ListMasterHome extends ConsumerStatefulWidget {
   const ListMasterHome({super.key});
 
   @override
   _ListMasterHomeState createState() => _ListMasterHomeState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
-
+class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
   @override
   Widget build(BuildContext context) {
+    final repository =
+        ref.watch(listMasterRepositoryProvider); // Access the repository
+
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
       body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
+        future: repository.fetchListMasters(), // Use the repository here
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -35,7 +33,7 @@ class _ListMasterHomeState extends State<ListMasterHome> {
 
             // Define headers and data keys
             final headers = [
-              'code',
+              'Code',
               'Name Arabic',
               'Name English',
             ];
@@ -48,27 +46,19 @@ class _ListMasterHomeState extends State<ListMasterHome> {
             // Convert ListMasterItem list to map list with sno
             final details = ListMaster.listToMap(items);
 
-            // Pass the converted list to DisplayDetails
             return Column(
               children: [
                 const ListMasterSearchForm(),
                 Expanded(
-                  child: Stack(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DisplayDetails(
-                            headers: headers,
-                            data: dataKeys,
-                            details: details, // Pass the list of maps
-                            expandable: true,
-                            selectedNo: -1,
-                            // Set false to expand by default
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DisplayDetails(
+                      headers: headers,
+                      data: dataKeys,
+                      details: details,
+                      expandable: true,
+                      selectedNo: -1,
+                    ),
                   ),
                 ),
               ],

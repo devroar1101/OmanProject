@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/language_mannager.dart';
-import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalizationManager().init();
+  await dotenv.load(fileName: "assets/env/tb.env");
 
-  runApp(const ProviderScope(child: MaterialApp(home: DocumentSearchHome())));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

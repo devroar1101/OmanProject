@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_twain_scanner/dynamsoft_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tenderboard/common/widgets/document_viewer.dart';
 
 class Scanner extends StatefulWidget {
@@ -11,7 +12,7 @@ class Scanner extends StatefulWidget {
 
 class _ScannerAppState extends State<Scanner> {
   final DynamsoftService dynamsoftService = DynamsoftService();
-  String host = 'http://127.0.0.1:18622';
+  String host = dotenv.env['HOST_ADDRESS']!;
 
   List<Map<String, dynamic>> devices = [];
   List<String> scannerNames = [];
@@ -258,8 +259,7 @@ class _ScannerAppState extends State<Scanner> {
   Future<void> _scanDocument(int index) async {
     print("Starting scan for scanner: ${devices[index]['device']}");
     final Map<String, dynamic> parameters = {
-      'license':
-          't01908AUAAImaB5ICYsaAEXWylnzhe+0R5a7v/2aB40y0kfLdYIbPe25Uonq63Mnvlu6PKrpHbZ6w5yKa65e6I7T3pnjzrwHt8cupCk4r7zSUd7KCU7ecQDcP43LazTxvmqAReM2AbddhA5gDSy0HoA9rbfQAeYA5gHk10AMuV3HefOEYkPzrPwc6OVXBaeWdeUDKOFnBqVvOFJBnRDOk1Q5LQJjfnB0gD7BLgOuP7BQQHAF5gJ2ARm3ahIAvEqY2OQ==',
+      'license': dotenv.env['SCANNER_LICENSE'],
       'device': devices[index]['device'],
     };
     print('1111$colorMode,$resolution,$ifFeederEnabled,$ifDuplexEnabled');
