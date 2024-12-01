@@ -15,8 +15,9 @@ class ListMasterHome extends ConsumerStatefulWidget {
 class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
   @override
   Widget build(BuildContext context) {
-    final repository =
-        ref.watch(listMasterRepositoryProvider); // Access the repository
+    final repository = ref.watch(listMasterRepositoryProvider);
+
+    // Access the repository
 
     return Scaffold(
       body: FutureBuilder<List<ListMaster>>(
