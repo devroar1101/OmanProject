@@ -66,18 +66,16 @@ class _DocumentViewerState extends State<DocumentViewer> {
 
   Future<void> _saveImage(Uint8List imageData) async {
     const String apiUrl = "http://192.168.1.3:8081/api/FileInformation/Create1";
+
     try {
       final response = await Dio().post(
         apiUrl,
         options: Options(
           headers: {
-            "Authorization": "Bearer YOUR_API_TOKEN", // Replace with your token
-            "Content-Type": "application/json",
+            "Content-Type": "application/octet-stream", // Correct Content-Type
           },
         ),
-        data: {
-          "Data": imageData,
-        },
+        data: imageData, // Directly send the raw Uint8List image data
       );
 
       if (response.statusCode == 200 && response.data["IsSuccess"] == true) {
@@ -87,8 +85,8 @@ class _DocumentViewerState extends State<DocumentViewer> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content:
-                  Text("Failed to save image: ${response.data['Message']}")),
+            content: Text("Failed to save image: ${response.data['Message']}"),
+          ),
         );
       }
     } catch (e) {
