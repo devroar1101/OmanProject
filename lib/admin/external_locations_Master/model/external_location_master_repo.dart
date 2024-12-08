@@ -1,20 +1,19 @@
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
+
+final ExternalLocationMasterRepositoryProvider = Provider((ref) => ExternalLocationMasterRepository(ref));
 
 class ExternalLocationMasterRepository {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://eofficetbdevdal.cloutics.net/api/AdminstratorQueries',
-    headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json-patch+json',
-    },
-  ));
+  final Ref ref;
+  ExternalLocationMasterRepository(this.ref);
 
   /// Fetch Departments from the API
   Future<List<ExternalLocationMaster>> fetchExternalLocationMaster({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
+    final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'paginationDetail': {
         'pageSize': pageSize,
@@ -22,8 +21,8 @@ class ExternalLocationMasterRepository {
       }
     };
     try {
-      final response = await _dio.post(
-        '/SearchAndListExternalLocations',
+      final response = await dio.post(
+        '/AdminstratorQueries/SearchAndListExternalLocations',
         data: requestBody,
       );
       // Check if the response is successful

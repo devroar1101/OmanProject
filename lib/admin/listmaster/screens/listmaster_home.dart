@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_home.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
@@ -14,58 +15,47 @@ class ListMasterHome extends ConsumerStatefulWidget {
 
 class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
   @override
-  Widget build(BuildContext context) {
-    final repository = ref.watch(listMasterRepositoryProvider);
+  void initState() {
+    super.initState();
+    ref.read(listMasterRepositoryProvider.notifier).fetchListMasters();
+  }
 
-    // Access the repository
+  @override
+  Widget build(BuildContext context) {
+    final listMasters = ref.watch(listMasterRepositoryProvider);
 
     return Scaffold(
-      body: FutureBuilder<List<ListMaster>>(
-        future: repository.fetchListMasters(), // Use the repository here
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No items found'));
-          } else {
-            final items = snapshot.data!;
-
-            // Define headers and data keys
-            final headers = [
-              'Code',
-              'Name Arabic',
-              'Name English',
-            ];
-            final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
-            ];
-
-            // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
-
-            return Column(
-              children: [
-                const ListMasterSearchForm(),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DisplayDetails(
-                      headers: headers,
-                      data: dataKeys,
-                      details: details,
-                      expandable: true,
-                      detailKey: 'code',
-                    ),
-                  ),
+      body: Column(
+        children: [
+          const ListMasterSearchForm(),
+          if (listMasters.isEmpty)
+            const Center(child: Text('No items found'))
+          else
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayDetails(
+                  headers: const ['Code', 'Name Arabic', 'Name English'],
+                  data: const ['code', 'nameArabic', 'nameEnglish'],
+                  details: ListMaster.listToMap(listMasters),
+                  expandable: true,
+                  onTap: (int index) {
+                    final ListMaster currentListMaster = listMasters.firstWhere((listmaster)=>listmaster.id == index);
+                    final int currentListMasterId = currentListMaster.id;
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ListMasterItemHome(currentListMasterId: currentListMasterId,);
+                          // return AddListmasterScreen(
+                          //   currentListMaster: currentListMaster,
+                          // );
+                        });
+                  },
+                  detailKey: 'id',
                 ),
-              ],
-            );
-          }
-        },
+              ),
+            ),
+        ],
       ),
     );
   }

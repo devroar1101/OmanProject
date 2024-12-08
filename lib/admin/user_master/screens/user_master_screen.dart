@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_form.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 
-class UserMasterScreen extends StatefulWidget {
+class UserMasterScreen extends ConsumerStatefulWidget {
   const UserMasterScreen({super.key});
 
   @override
   _UserMasterScreenState createState() => _UserMasterScreenState();
 }
 
-class _UserMasterScreenState extends State<UserMasterScreen> with SingleTickerProviderStateMixin {
-  final UserMasterRepository _repository = UserMasterRepository();
+class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with SingleTickerProviderStateMixin {
+  
   bool _isSearchFormVisible = false;
   late Future<List<UserMaster>> _userFuture;
   late AnimationController _animationController;
@@ -21,8 +24,9 @@ class _UserMasterScreenState extends State<UserMasterScreen> with SingleTickerPr
 
   @override
   void initState() {
+    final repository = ref.watch(UserMasterRepositoryProvider);
     super.initState();
-    _userFuture = _repository.fetchUsers();
+    _userFuture = repository.fetchUsers();
 
     // Initialize animation controller
     _animationController = AnimationController(

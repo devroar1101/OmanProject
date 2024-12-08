@@ -3,6 +3,7 @@ import 'package:tenderboard/admin/department_master/screens/add_department.dart'
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
+import 'package:tenderboard/admin/listmasteritem/screens/add_listmasteritem.dart';
 import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart'; // Import the screen
 
@@ -114,28 +115,28 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddListmasterScreen();
+          return  AddListmasterScreen();
         },
       );
     } else if (screenName == 'DG') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddDGmasterScreen();
+          return  AddDGmasterScreen();
         },
       );
     } else if (screenName == 'Department') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddDepartmentMaster();
+          return  AddDepartmentMaster();
         },
       );
     } else if (screenName == 'Section') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddSectionMaster();
+          return  AddSectionMaster();
         },
       );
     } else if (screenName == 'SubjectMaster') {
@@ -150,6 +151,13 @@ class CustomAppBar {
         context: context,
         builder: (BuildContext context) {
           return const AddUserMasterScreen();
+        },
+      );
+    } else if (screenName == 'ListMasterItem') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return  AddListMasterItemScreen(currentListMasterId: 1,);
         },
       );
     } else {

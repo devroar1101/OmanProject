@@ -22,5 +22,6 @@ class AppConfig {
   Map<String, String> get headers => {
         // "Authorization": "Bearer $appToken",
         "Content-Type": "application/json",
+        "accept":"text/plain"
       };
 }

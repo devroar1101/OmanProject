@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 
-class LetterSubjectMasterScreen extends StatefulWidget {
+class LetterSubjectMasterScreen extends ConsumerStatefulWidget {
   const LetterSubjectMasterScreen({super.key});
 
   @override
   _LetterSubjectMasterScreenState createState() => _LetterSubjectMasterScreenState();
 }
 
-class _LetterSubjectMasterScreenState extends State<LetterSubjectMasterScreen> {
-  final LetterSubjectMasterRepository _repository = LetterSubjectMasterRepository();
-  final List<LetterSubjecct> items = [];
+class _LetterSubjectMasterScreenState extends ConsumerState<LetterSubjectMasterScreen> {
+   final List<LetterSubjecct> items = [];
 
   @override
   Widget build(BuildContext context) {
+    final repository = ref.watch(LetterSubjectMasterRepositoryProvider);
     return Scaffold(
       body: FutureBuilder<List<LetterSubjecct>>(
-        future: _repository.fetchLetterSubjects(),
+        future: repository.fetchLetterSubjects(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

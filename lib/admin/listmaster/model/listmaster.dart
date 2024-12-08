@@ -3,7 +3,7 @@ import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 class ListMaster {
   int id;
   String objectId;
-  int listMasterCode;
+  String listMasterCode;
   String nameArabic;
   String nameEnglish;
   List<ListMasterItem> items;
@@ -20,11 +20,11 @@ class ListMaster {
   // Convert a Map to a ListMaster object
   factory ListMaster.fromMap(Map<String, dynamic> map) {
     return ListMaster(
-      id: map['id'],
+      id: map['listMasterId'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
-      listMasterCode: map['listMasterCode'] ?? 0 , // Defaulting to empty string if null
-      nameArabic: map['nameArabic'] ?? '',
-      nameEnglish: map['nameEnglish'] ?? '',
+      listMasterCode: map['code'] ?? '' , // Defaulting to empty string if null
+      nameArabic: map['listMasterNameArabic'] ?? '',
+      nameEnglish: map['listMasterNameEnglish'] ?? '',
       // Assuming that 'items' is a list of maps that needs to be converted to ListMasterItem
       items: List<ListMasterItem>.from(
         map['items']?.map((item) => ListMasterItem.fromMap(item)) ?? [],

@@ -1,34 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 
-class AddListmasterScreen extends StatefulWidget {
-  const AddListmasterScreen({super.key});
+// ignore: must_be_immutable
+class AddListmasterScreen extends ConsumerWidget {
+   AddListmasterScreen({super.key,this.currentListMaster});
 
-  @override
-  _AddListmasterScreenState createState() => _AddListmasterScreenState();
-}
+  final ListMaster? currentListMaster;
+ 
 
-class _AddListmasterScreenState extends State<AddListmasterScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _listmasterNameArabic;
+  String? _listmasterNameArabic ;
+
   String? _listmasterNameEnglish;
 
-  void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // Create a model or perform any necessary action
-      print('Arabic Name: $_listmasterNameArabic');
-      print('English Name: $_listmasterNameEnglish');
-      // Navigate or display a success message
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+
+    try {
+      currentListMaster == null? await ref.read(listMasterRepositoryProvider.notifier).addListMaster(
+        nameEnglish: _listmasterNameEnglish!,
+        nameArabic: _listmasterNameArabic!,
+      ):await ref.read(listMasterRepositoryProvider.notifier).editListMaster(
+        id: currentListMaster!.id,
+        nameEnglish: _listmasterNameEnglish!,
+        nameArabic: _listmasterNameArabic!,
+      ) ;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listmaster added successfully!')),
+        SnackBar(content: Text(
+          currentListMaster != null?
+          'Listmaster edit successfully!': 'Listmaster added successfully!')),
       );
+
       Navigator.pop(context); // Close the modal after saving
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add Listmaster: $e')),
+      );
     }
   }
+}
+
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
@@ -43,14 +62,16 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
               mainAxisSize: MainAxisSize.min, // Makes the dialog height dynamic
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Add Listmaster',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  currentListMaster == null ?
+                  'Add Listmaster': 'Edit Listmaster',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: 450.0, // Reduced width for the field
                   child: TextFormField(
+                    initialValue: currentListMaster != null ? currentListMaster!.nameArabic:'',
                     decoration: const InputDecoration(
                       labelText: 'Name (Arabic)',
                       border: OutlineInputBorder(),
@@ -70,6 +91,7 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                 SizedBox(
                   width: 450.0, // Reduced width for the field
                   child: TextFormField(
+                    initialValue: currentListMaster != null ? currentListMaster!.nameEnglish:'',
                     decoration: const InputDecoration(
                       labelText: 'Name (English)',
                       border: OutlineInputBorder(),
@@ -90,7 +112,9 @@ class _AddListmasterScreenState extends State<AddListmasterScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: _saveForm,
+                      onPressed: (){
+                        _saveForm(context,ref);
+                      },
                       child: const Text('Save'),
                     ),
                     OutlinedButton(
