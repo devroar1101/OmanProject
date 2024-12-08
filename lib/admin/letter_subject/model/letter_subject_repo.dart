@@ -1,20 +1,20 @@
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
+
+final LetterSubjectMasterRepositoryProvider = Provider((ref) => LetterSubjectMasterRepository(ref));
+
 
 class LetterSubjectMasterRepository {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://eofficetbdevdal.cloutics.net/api/AdminstratorQueries',
-    headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json-patch+json',
-    },
-  ));
+ final Ref ref;
+ LetterSubjectMasterRepository(this.ref);
 
   /// Fetch Departments from the API
   Future<List<LetterSubjecct>> fetchLetterSubjects({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
+    final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'paginationDetail': {
         'pageSize': pageSize,
@@ -22,8 +22,8 @@ class LetterSubjectMasterRepository {
       }
     };
     try {
-      final response = await _dio.post(
-        '/SearchAndListSubjects',
+      final response = await dio.post(
+        '/AdminstratorQueries/SearchAndListSubjects',
         data: requestBody,
       );
       // Check if the response is successful

@@ -1,20 +1,20 @@
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
+
+
+final UserMasterRepositoryProvider = Provider((ref) => UserMasterRepository(ref));
 
 class UserMasterRepository {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://eofficetbdevdal.cloutics.net/api/AdminstratorQueries',
-    headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json-patch+json',
-    },
-  ));
+  final Ref ref;
+  UserMasterRepository(this.ref);
 
   /// Fetch Departments from the API
   Future<List<UserMaster>> fetchUsers({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
+    final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'paginationDetail': {
         'pageSize': pageSize,
@@ -22,8 +22,8 @@ class UserMasterRepository {
       }
     };
     try {
-      final response = await _dio.post(
-        '/SearchAndListUser',
+      final response = await dio.post(
+        '/AdminstratorQueries/SearchAndListUser',
         data: requestBody,
       );
       // Check if the response is successful

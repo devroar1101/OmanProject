@@ -2,46 +2,89 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final listMasterRepositoryProvider =
-    Provider((ref) => ListMasterRepository(ref));
+final listMasterRepositoryProvider = StateNotifierProvider<ListMasterRepository, List<ListMaster>>((ref) {
+  return ListMasterRepository(ref);
+});
 
-class ListMasterRepository {
+class ListMasterRepository extends StateNotifier<List<ListMaster>> {
+  ListMasterRepository(this.ref) : super([]);
   final Ref ref;
 
-  ListMasterRepository(this.ref);
-
-  /// Fetch ListMasters from the API
-  Future<List<ListMaster>> fetchListMasters() async {
+  //Add
+  Future<void> addListMaster({required String nameEnglish, required String nameArabic}) async {
     final dio = ref.watch(dioProvider);
+    Map<String, dynamic> requestBody = {
+      'listMasterNameEnglish': nameEnglish,
+      'listMasterNameArabic': nameArabic,
+    };
 
     try {
-      final response = await dio.get('/ListMaster/LookUpListMaster');
+      await dio.post('/ListMaster/Create', data: requestBody);
+
+      // After adding a ListMaster, we update the state to trigger a rebuild
+      state = [ ListMaster(nameEnglish: nameEnglish, nameArabic: nameArabic,id: 0,listMasterCode: '0',objectId: '1111',items: []),...state];
+    } catch (e) {
+      throw Exception('Error occurred while adding ListMaster: $e');
+    }
+  }
+  //Onload
+  Future<List<ListMaster>> fetchListMasters() async {
+    final dio = ref.watch(dioProvider);
+    Map<String, dynamic> requestBody = {
+      'paginationDetail': {
+        'pageSize': 15,
+        'pageNumber': 1,
+      }
+    };
+
+    try {
+      final response = await dio.post('/Master/SearchAndListMaster', data: requestBody);
 
       if (response.statusCode == 200) {
-        // Parse the response data into a list of ListMaster
-        List data = response.data as List;
-        return data.map((item) => ListMaster.fromMap(item)).toList();
+        final List<dynamic> data = response.data as List;
+        state = data.map((item) => ListMaster.fromMap(item as Map<String, dynamic>)).toList();
       } else {
         throw Exception('Failed to load ListMasters: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error occurred while fetching ListMasters: $e');
     }
+    return state;
   }
 
-  /// Search and filter ListMasters by Arabic and English names
-  Future<List<ListMaster>> searchAndFilter(List<ListMaster> listMasters,
-      {String? nameArabic, String? nameEnglish}) async {
-    // Filter the list based on the provided nameArabic and nameEnglish filters
-    var filteredList = listMasters.where((listMaster) {
-      final matchesArabic =
-          nameArabic == null || listMaster.nameArabic.contains(nameArabic);
-      final matchesEnglish =
-          nameEnglish == null || listMaster.nameEnglish.contains(nameEnglish);
+  //Edit
+  Future<void> editListMaster({required int id, required String nameEnglish, required String nameArabic}) async {
+  final dio = ref.watch(dioProvider);
+  Map<String, dynamic> requestBody = {
+    'listMasterNameEnglish': nameEnglish,
+    'listMasterNameArabic': nameArabic,
+  };
 
-      return matchesArabic && matchesEnglish;
-    }).toList();
+  try {
+    // Make a PUT or PATCH request to edit the existing ListMaster
+    await dio.put(
+      '/ListMaster/Update',  // Assuming you're using a RESTful API where you pass the ID in the URL
+      data: requestBody,
+    );
 
-    return filteredList;
+    // After successfully editing, update the state by replacing the old ListMaster with the updated one
+    final updatedListMaster = ListMaster(
+      id: id, // Ensure the id remains the same as the existing ListMaster
+      nameEnglish: nameEnglish,
+      nameArabic: nameArabic,
+      listMasterCode: 'UpdatedCode', // Optionally update this if you receive a new value from the backend
+      objectId: 'UpdatedObjectId',  // Optionally update this if you receive a new value from the backend
+      items: [], // Update if there are any changes to the items list, otherwise leave as is
+    );
+
+    // Update the state to reflect the edited ListMaster
+    state = [
+      for (var listMaster in state)
+        if (listMaster.id == id) updatedListMaster else listMaster
+    ];
+  } catch (e) {
+    throw Exception('Error occurred while editing ListMaster: $e');
   }
+}
+
 }

@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 
-class ExternalLocationMasterScreen extends StatefulWidget {
+class ExternalLocationMasterScreen extends ConsumerStatefulWidget {
   const ExternalLocationMasterScreen({super.key});
 
   @override
   _ExternalLocationMasterScreenState createState() => _ExternalLocationMasterScreenState();
 }
 
-class _ExternalLocationMasterScreenState extends State<ExternalLocationMasterScreen> {
-  final ExternalLocationMasterRepository _repository = ExternalLocationMasterRepository();
+class _ExternalLocationMasterScreenState extends ConsumerState<ExternalLocationMasterScreen> {
+  
   final List<ExternalLocationMaster> items = [];
 
   @override
   Widget build(BuildContext context) {
+    final repository = ref.watch(ExternalLocationMasterRepositoryProvider);
     return Scaffold(
       body: FutureBuilder<List<ExternalLocationMaster>>(
-        future: _repository.fetchExternalLocationMaster(),
+        future: repository.fetchExternalLocationMaster(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

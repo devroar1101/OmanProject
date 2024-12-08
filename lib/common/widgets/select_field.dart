@@ -29,8 +29,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
 
   @override
   void initState() {
+  TextEditingController? _searchController;
     super.initState();
     filteredOptions = widget.options;
+    _searchController = widget.controller?? TextEditingController();
     _searchController.addListener(_onSearchChanged);
   }
 
