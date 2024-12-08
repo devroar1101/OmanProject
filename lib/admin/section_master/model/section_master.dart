@@ -6,7 +6,7 @@ class SectionMaster {
   String sectionNameArabic;
   String sectionNameEnglish;
   String objectId;
-  String timeStamp;
+ // String timeStamp;
 
   SectionMaster({
     required this.sectionId,
@@ -16,7 +16,7 @@ class SectionMaster {
     required this.sectionNameArabic,
     required this.sectionNameEnglish,
     required this.objectId,
-    required this.timeStamp,
+    //required this.timeStamp,
   });
 
   // Create a SectionMaster instance from a map (e.g., from JSON)
@@ -29,7 +29,7 @@ class SectionMaster {
       sectionNameArabic: map['sectionNameArabic'] ?? '',
       sectionNameEnglish: map['sectionNameEnglish'] ?? '',
       objectId: map['objectId'] ?? '',
-      timeStamp: map['timeStamp'] ?? '',
+     // timeStamp: map['timeStamp'] ?? '',
     );
   }
 
@@ -43,7 +43,7 @@ class SectionMaster {
       'sectionNameArabic': sectionNameArabic,
       'sectionNameEnglish': sectionNameEnglish,
       'objectId': objectId,
-      'timeStamp': timeStamp,
+      //'timeStamp': timeStamp,
     };
   }
 

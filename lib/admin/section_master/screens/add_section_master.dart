@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart'; // Add department repo
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
@@ -63,15 +65,15 @@ class AddSectionMaster extends ConsumerWidget {
           );
         }
 
-        final dgOptions = (snapshot.data![0] as List)
+        final dgOptions = (snapshot.data![0] as List<DgMaster>)
             .map((dg) => SelectOption<String>(
-                  displayName: dg.nameEglish,
+                  displayName: dg.nameEnglish,
                   key: dg.id.toString(),
                   value: dg.id.toString(),
                 ))
             .toList();
 
-        final departmentOptions = (snapshot.data![1] as List)
+        final departmentOptions = (snapshot.data![1] as List<Department>)
             .map((dept) => SelectOption<String>(
                   displayName: dept.departmentNameEnglish,
                   key: dept.id.toString(),
@@ -196,14 +198,15 @@ class AddSectionMaster extends ConsumerWidget {
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     try {
       if (currentSection == null) {
-        await ref.read(SectionMasterRepositoryProvider.notifier).AddSectionMaster(
+        await ref.read(sectionMasterRepositoryProvider.notifier).addSectionMaster(
               nameArabic: _sectionNameArabic!,
               nameEnglish: _sectionNameEnglish!,
               dgId: int.parse(_selectedDG!),
               departmentId: int.parse(_selectedDepartment!), // Save department
             );
       } else {
-        await ref.read(SectionMasterRepositoryProvider.notifier).editSeactionMaster(
+        await ref.read(sectionMasterRepositoryProvider.notifier).editSeactionMaster(
+              currentsectionId: currentSection!.sectionId,
               nameArabic: _sectionNameArabic!,
               nameEnglish: _sectionNameEnglish!,
               currentDgId: int.parse(_selectedDG!),

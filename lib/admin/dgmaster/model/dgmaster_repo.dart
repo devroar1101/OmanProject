@@ -71,6 +71,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     return state;
   }
 
+  //Edit
   Future<void> editDGMaster({
   required String editNameEnglish,
   required String editNameArabic,
@@ -104,7 +105,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       ];
     } else {
       throw Exception(
-          'Failed to update DGMaster. Status code: ${response.statusCode} 11112$currentDGId');
+          'Failed to update DGMaster. Status code: ${response.statusCode}');
     }
   } catch (e) {
     throw Exception('Error occurred while editing DGMaster: $e');
