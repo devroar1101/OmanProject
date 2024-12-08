@@ -5,6 +5,7 @@ class DisplayDetails extends StatefulWidget {
   final List<String> headers;
   final List<String> data;
   final List<Map<String, dynamic>> details;
+  final List<Map<String, dynamic>>? iconButtons; // List of actions with icons
   final bool expandable;
   final Function(int)? onTap;
   final Function()? onLongPress;
@@ -16,6 +17,7 @@ class DisplayDetails extends StatefulWidget {
     required this.headers,
     required this.data,
     required this.details,
+    this.iconButtons,
     this.expandable = true,
     this.onTap,
     this.onLongPress,
@@ -28,12 +30,12 @@ class DisplayDetails extends StatefulWidget {
 }
 
 class _DisplayDetailsState extends State<DisplayDetails> {
-  Set<int> expandedRows = {}; // Track which rows are expanded
+  Set<int> expandedRows = {};
+  int? activeRowIndex; // Track the active row for showing the drawer
 
   @override
   void initState() {
     super.initState();
-    // Expand all rows if expandable is false
     if (!widget.expandable) {
       expandedRows =
           Set<int>.from(List.generate(widget.details.length, (index) => index));
@@ -47,185 +49,198 @@ class _DisplayDetailsState extends State<DisplayDetails> {
         ? widget.headers.length
         : maxColumns;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: [
-        // Header Row with colorful background
-        headerColumns != 1
-            ? Container(
-                decoration: const BoxDecoration(
-                  color: AppTheme.displayHeaderColor,
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  children: widget.headers.take(headerColumns).map((header) {
-                    return Expanded(
-                      child: Text(
-                        header,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
+            Container(
+              decoration: const BoxDecoration(
+                color: AppTheme.displayHeaderColor,
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: widget.headers.take(headerColumns).map((header) {
+                  return Expanded(
+                    child: Text(
+                      header,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 14,
                       ),
-                    );
-                  }).toList(),
-                ),
-              )
-            : const SizedBox.shrink(),
-        headerColumns != 1
-            ? const SizedBox(height: 10)
-            : const SizedBox.shrink(),
-
-        // Data Rows
-        Expanded(
-          child: ListView.builder(
-            itemCount: widget.details.length,
-            itemBuilder: (context, int rowIndex) {
-              final row = widget.details[rowIndex];
-              bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
-
-              return InkWell(
-                onTap: () {
-                  if (widget.onTap != null) {
-                    widget.onTap!(row[widget.detailKey]);
-                  }
-                },
-                onLongPress: () {
-                  if (widget.onLongPress != null) {
-                    widget.onLongPress!();
-                  }
-                }, // Trigger onTap if it’s not null
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Main row with full background
-                    Container(
-                      color: widget.isSelected != row[widget.detailKey]
-                          ? (rowIndex) % 2 == 0
-                              ? Colors.grey[100]
-                              : Colors.grey[200]
-                          : const Color.fromARGB(255, 185, 241, 190),
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: widget.data.take(headerColumns).map((key) {
-                          return Expanded(
-                            child: Text(
-                              row[key]?.toString() ?? '',
-                              style: const TextStyle(fontSize: 14),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                      textAlign: TextAlign.center,
                     ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 10),
 
-                    // Divider and Expand/Collapse Icon
-                    if (hasMoreThanMaxColumns && widget.expandable)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              thickness: 1.5,
-                              color: Colors.grey[300],
+            // Data Rows
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.details.length,
+                itemBuilder: (context, int rowIndex) {
+                  final row = widget.details[rowIndex];
+                  bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
+
+                  return Stack(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          if (widget.onTap != null) {
+                            widget.onTap!(row[widget.detailKey]);
+                          }
+                        },
+                        onLongPress: () {
+                          if (widget.onLongPress != null) {
+                            widget.onLongPress!();
+                          }
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Main row
+                            Container(
+                              color: widget.isSelected != row[widget.detailKey]
+                                  ? rowIndex % 2 == 0
+                                      ? Colors.grey[100]
+                                      : Colors.grey[200]
+                                  : const Color.fromARGB(255, 185, 241, 190),
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  ...widget.data.take(headerColumns).map((key) {
+                                    return Expanded(
+                                      child: Text(
+                                        row[key]?.toString() ?? '',
+                                        style: const TextStyle(fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  if (row['id'] != 0 &&
+                                      widget.iconButtons != null &&
+                                      widget.iconButtons!
+                                          .isNotEmpty) // Show icon only if id = 0
+                                    IconButton(
+                                      icon: const Icon(Icons.more_vert),
+                                      onPressed: () {
+                                        setState(() {
+                                          activeRowIndex =
+                                              activeRowIndex == rowIndex
+                                                  ? null
+                                                  : rowIndex;
+                                        });
+                                      },
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              expandedRows.contains(rowIndex)
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                              color: Colors.blueAccent,
-                            ),
-                            onPressed: () {
+
+                            // Divider and Expand/Collapse Icon
+                            if (hasMoreThanMaxColumns && widget.expandable)
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(
+                                      thickness: 1.5,
+                                      color: Colors.grey[300],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      expandedRows.contains(rowIndex)
+                                          ? Icons.arrow_drop_up
+                                          : Icons.arrow_drop_down,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (expandedRows.contains(rowIndex)) {
+                                          expandedRows.remove(rowIndex);
+                                        } else {
+                                          expandedRows.add(rowIndex);
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      // Drawer-like overlay for icon buttons
+                      if (activeRowIndex == rowIndex)
+                        Positioned.fill(
+                          child: GestureDetector(
+                            onTap: () {
                               setState(() {
-                                if (expandedRows.contains(rowIndex)) {
-                                  expandedRows.remove(rowIndex);
-                                } else {
-                                  expandedRows.add(rowIndex);
-                                }
+                                activeRowIndex = null;
                               });
                             },
-                          ),
-                        ],
-                      ),
-
-                    // Expanded Section with gradient background
-                    if (expandedRows.contains(rowIndex))
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.blue[50]!, Colors.blue[100]!],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Spacer(),
+                                  Container(
+                                    width: 300,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.blue[50]!,
+                                          Colors.blue[100]!
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: widget.iconButtons!
+                                          .map(
+                                            (iconButton) => IconButton(
+                                              icon: Icon(
+                                                iconButton["button"],
+                                                size: 30,
+                                              ),
+                                              onPressed: () {
+                                                iconButton["function"]!(
+                                                    rowIndex);
+                                                setState(() {
+                                                  activeRowIndex = null;
+                                                });
+                                              },
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 6, horizontal: 8),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          children: _buildExpandedRows(row, headerColumns),
-                        ),
-                      ),
-                    if (expandedRows.contains(rowIndex))
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Divider(),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );
-  }
-
-  // Build rows for expanded columns with unified gradient background
-  List<Widget> _buildExpandedRows(Map<String, dynamic> row, int headerColumns) {
-    int maxItemsPerRow = 4;
-    List<Widget> expandedRows = [];
-    List<String> extraDataKeys = widget.data.skip(headerColumns).toList();
-
-    for (int i = 0; i < extraDataKeys.length; i += maxItemsPerRow) {
-      int end = (i + maxItemsPerRow) < extraDataKeys.length
-          ? (i + maxItemsPerRow)
-          : extraDataKeys.length;
-
-      expandedRows.add(
-        Row(
-          children: extraDataKeys.sublist(i, end).map((key) {
-            int headerIndex = widget.data.indexOf(key);
-            String header = widget.headers[headerIndex];
-
-            return Expanded(
-              child: Column(
-                children: [
-                  Text(
-                    header,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueGrey,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    row[key]?.toString() ?? '',
-                    style: const TextStyle(fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      );
-    }
-
-    return expandedRows;
   }
 }

@@ -25,6 +25,10 @@ class CabinetSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final headers = ['Cabinets'];
     final dataKeys = ['name'];
+    final iconButtons = [
+      {"button": Icons.edit, "function": (int id) => print("Edit $id")},
+      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+    ];
 
     // Convert ListMasterItem list to map list with sno
     final details = Cabinet.cabinetsToListOfMaps(cabinets);
@@ -42,6 +46,7 @@ class CabinetSection extends StatelessWidget {
             ),
             Expanded(
               child: DisplayDetails(
+                iconButtons: iconButtons,
                 headers: headers,
                 data: dataKeys,
                 details: details,
