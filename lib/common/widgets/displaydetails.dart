@@ -102,7 +102,7 @@ class _DisplayDetailsState extends State<DisplayDetails> {
                   children: [
                     // Main row with full background
                     Container(
-                      color: widget.isSelected != row[widget.detailKey] 
+                      color: widget.isSelected != row[widget.detailKey]
                           ? (rowIndex) % 2 == 0
                               ? Colors.grey[100]
                               : Colors.grey[200]
