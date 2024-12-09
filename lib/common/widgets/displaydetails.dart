@@ -5,7 +5,7 @@ class DisplayDetails extends StatefulWidget {
   final List<String> headers;
   final List<String> data;
   final List<Map<String, dynamic>> details;
-  final List<Map<String, dynamic>>? iconButtons; // List of actions with icons
+  final List<Map<String, dynamic>>? iconButtons; // Actions with icons
   final bool expandable;
   final Function(int)? onTap;
   final Function()? onLongPress;
@@ -29,18 +29,10 @@ class DisplayDetails extends StatefulWidget {
   _DisplayDetailsState createState() => _DisplayDetailsState();
 }
 
-class _DisplayDetailsState extends State<DisplayDetails> {
-  Set<int> expandedRows = {};
-  int? activeRowIndex; // Track the active row for showing the drawer
-
-  @override
-  void initState() {
-    super.initState();
-    if (!widget.expandable) {
-      expandedRows =
-          Set<int>.from(List.generate(widget.details.length, (index) => index));
-    }
-  }
+class _DisplayDetailsState extends State<DisplayDetails>
+    with SingleTickerProviderStateMixin {
+  int? activeRowIndex; // Active row index for showing the speed dial
+  bool isSpeedDialExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,196 +41,146 @@ class _DisplayDetailsState extends State<DisplayDetails> {
         ? widget.headers.length
         : maxColumns;
 
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Row
-            Container(
-              decoration: const BoxDecoration(
-                color: AppTheme.displayHeaderColor,
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                children: widget.headers.take(headerColumns).map((header) {
-                  return Expanded(
-                    child: Text(
-                      header,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 14,
+        // Header Row
+        Container(
+          decoration: const BoxDecoration(
+            color: AppTheme.displayHeaderColor,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: widget.headers.take(headerColumns).map((header) {
+              return Expanded(
+                child: Text(
+                  header,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // Data Rows
+        Expanded(
+          child: ListView.builder(
+            itemCount: widget.details.length,
+            itemBuilder: (context, int rowIndex) {
+              final row = widget.details[rowIndex];
+              final id = row[widget.detailKey];
+
+              // Check if the row meets the conditions for speed dial
+              bool showSpeedDial =
+                  id != 0 && widget.iconButtons != null && id != null;
+
+              return Stack(
+                children: [
+                  // Main Row
+                  InkWell(
+                    onTap: () {
+                      if (widget.onTap != null) {
+                        widget.onTap!(row[widget.detailKey]);
+                      }
+                      setState(() {
+                        activeRowIndex = null;
+                        isSpeedDialExpanded = false;
+                      });
+                    },
+                    onLongPress: () {
+                      if (widget.onLongPress != null) {
+                        widget.onLongPress!();
+                      }
+                    },
+                    child: Container(
+                      color: widget.isSelected.toString() ==
+                              row[widget.detailKey].toString()
+                          ? const Color.fromARGB(255, 185, 241, 190)
+                          : rowIndex % 2 == 0
+                              ? Colors.grey[100]
+                              : Colors.grey[200],
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          ...widget.data.take(headerColumns).map((key) {
+                            return Expanded(
+                              child: Text(
+                                row[key]?.toString() ?? '',
+                                style: const TextStyle(fontSize: 14),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }).toList(),
+
+                          // Show the vertical speed dial icon
+                          if (showSpeedDial)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  activeRowIndex = activeRowIndex == rowIndex
+                                      ? null
+                                      : rowIndex;
+                                  isSpeedDialExpanded = activeRowIndex != null;
+                                });
+                                if (widget.onTap != null) {
+                                  widget.onTap!(id);
+                                }
+                              },
+                              child: Icon(
+                                isSpeedDialExpanded &&
+                                        activeRowIndex == rowIndex
+                                    ? Icons.close
+                                    : Icons.more_vert,
+                              ),
+                            ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 10),
+                  ),
 
-            // Data Rows
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.details.length,
-                itemBuilder: (context, int rowIndex) {
-                  final row = widget.details[rowIndex];
-                  bool hasMoreThanMaxColumns = widget.data.length > maxColumns;
-
-                  return Stack(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (widget.onTap != null) {
-                            widget.onTap!(row[widget.detailKey]);
-                          }
-                        },
-                        onLongPress: () {
-                          if (widget.onLongPress != null) {
-                            widget.onLongPress!();
-                          }
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Main row
-                            Container(
-                              color: widget.isSelected != row[widget.detailKey]
-                                  ? rowIndex % 2 == 0
-                                      ? Colors.grey[100]
-                                      : Colors.grey[200]
-                                  : const Color.fromARGB(255, 185, 241, 190),
-                              padding: const EdgeInsets.all(12),
-                              child: Row(
-                                children: [
-                                  ...widget.data.take(headerColumns).map((key) {
-                                    return Expanded(
-                                      child: Text(
-                                        row[key]?.toString() ?? '',
-                                        style: const TextStyle(fontSize: 14),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    );
-                                  }).toList(),
-                                  if (row['id'] != 0 &&
-                                      widget.iconButtons != null &&
-                                      widget.iconButtons!
-                                          .isNotEmpty) // Show icon only if id = 0
-                                    IconButton(
-                                      icon: const Icon(Icons.more_vert),
-                                      onPressed: () {
-                                        setState(() {
-                                          activeRowIndex =
-                                              activeRowIndex == rowIndex
-                                                  ? null
-                                                  : rowIndex;
-                                        });
-                                      },
-                                    ),
-                                ],
+                  // Speed Dial Overlay (Icons in Row)
+                  if (isSpeedDialExpanded &&
+                      activeRowIndex == rowIndex &&
+                      widget.isSelected.toString() == id.toString())
+                    Positioned(
+                      right: 16,
+                      top: 0,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ...?widget.iconButtons?.map((iconButton) {
+                            return Card(
+                              color: const Color.fromARGB(255, 238, 240, 241),
+                              shape: const CircleBorder(),
+                              child: IconButton(
+                                icon: Icon(iconButton["button"]),
+                                onPressed: () {
+                                  iconButton["function"]!(id);
+                                  setState(() {
+                                    isSpeedDialExpanded = false;
+                                    activeRowIndex = null;
+                                  });
+                                },
+                                tooltip: iconButton["tooltip"],
                               ),
-                            ),
-
-                            // Divider and Expand/Collapse Icon
-                            if (hasMoreThanMaxColumns && widget.expandable)
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Divider(
-                                      thickness: 1.5,
-                                      color: Colors.grey[300],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      expandedRows.contains(rowIndex)
-                                          ? Icons.arrow_drop_up
-                                          : Icons.arrow_drop_down,
-                                      color: Colors.blueAccent,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        if (expandedRows.contains(rowIndex)) {
-                                          expandedRows.remove(rowIndex);
-                                        } else {
-                                          expandedRows.add(rowIndex);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
+                            );
+                          }).toList(),
+                          const SizedBox(
+                            width: 18,
+                          )
+                        ],
                       ),
-
-                      // Drawer-like overlay for icon buttons
-                      if (activeRowIndex == rowIndex)
-                        Positioned.fill(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                activeRowIndex = null;
-                              });
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const Spacer(),
-                                  Container(
-                                    width: 300,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.blue[50]!,
-                                          Colors.blue[100]!
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: widget.iconButtons!
-                                          .map(
-                                            (iconButton) => IconButton(
-                                              icon: Icon(
-                                                iconButton["button"],
-                                                size: 30,
-                                              ),
-                                              onPressed: () {
-                                                iconButton["function"]!(
-                                                    rowIndex);
-                                                setState(() {
-                                                  activeRowIndex = null;
-                                                });
-                                              },
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ],
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ],
     );
