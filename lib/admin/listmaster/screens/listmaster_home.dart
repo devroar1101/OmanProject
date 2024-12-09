@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
 import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_home.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
@@ -38,14 +39,38 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
                   headers: const ['Code', 'Name Arabic', 'Name English'],
                   data: const ['code', 'nameArabic', 'nameEnglish'],
                   details: ListMaster.listToMap(listMasters),
+                  iconButtons: [
+                    {
+                      "button": Icons.edit,
+                      "function": (int id) {
+                        final ListMaster currentListMaster = listMasters
+                            .firstWhere((listMaster) => listMaster.id == id);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddListmasterScreen(
+                              currentListMaster: currentListMaster,
+                            );
+                          },
+                        );
+                      },
+                    },
+                    {
+                      "button": Icons.delete,
+                      "function": (int id) => print("Delete $id")
+                    },
+                  ],
                   expandable: true,
                   onTap: (int index) {
-                    final ListMaster currentListMaster = listMasters.firstWhere((listmaster)=>listmaster.id == index);
+                    final ListMaster currentListMaster = listMasters
+                        .firstWhere((listmaster) => listmaster.id == index);
                     final int currentListMasterId = currentListMaster.id;
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return ListMasterItemHome(currentListMasterId: currentListMasterId,);
+                          return ListMasterItemHome(
+                            currentListMasterId: currentListMasterId,
+                          );
                           // return AddListmasterScreen(
                           //   currentListMaster: currentListMaster,
                           // );

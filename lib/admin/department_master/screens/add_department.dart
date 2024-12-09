@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
-import 'package:tenderboard/common/model/select_option.dart';
+
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class AddDepartmentMaster extends ConsumerWidget {
@@ -24,7 +25,7 @@ class AddDepartmentMaster extends ConsumerWidget {
     return FutureBuilder(
       future: ref
           .read(dgMasterRepositoryProvider.notifier)
-          .fetchDgMasters(), // Fetch DG options
+          .getDGOptions(), // Fetch DG options
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -44,7 +45,8 @@ class AddDepartmentMaster extends ConsumerWidget {
                   children: [
                     const Text(
                       'Error loading DG options',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16.0),
                     Text('${snapshot.error}'),
@@ -60,13 +62,7 @@ class AddDepartmentMaster extends ConsumerWidget {
           );
         }
 
-        final dgOptions = (snapshot.data as List)
-            .map((dg) => SelectOption<String>(
-                  displayName: dg.nameEnglish,
-                  key: dg.id.toString(),
-                  value: dg.id.toString(),
-                ))
-            .toList();
+        final dgOptions = snapshot.data;
 
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -132,10 +128,17 @@ class AddDepartmentMaster extends ConsumerWidget {
                     const SizedBox(height: 16.0),
                     SizedBox(
                       width: 450.0,
-                      child: SearchableDropdown<String>(
-                        options: dgOptions,
-                        onChanged: (key) {
-                          _selectedDG = key;
+                      child: SearchableDropdown<DgMaster>(
+                        options: dgOptions!,
+                        initialValue: currentDepartment != null
+                            ? dgOptions
+                                .firstWhere((option) =>
+                                    option.key ==
+                                    currentDepartment!.dgId.toString())
+                                .displayName
+                            : null,
+                        onChanged: (DG) {
+                          _selectedDG = DG.id.toString();
                         },
                         hint: 'Select a DG',
                       ),
@@ -183,7 +186,8 @@ class AddDepartmentMaster extends ConsumerWidget {
             );
       } else {
         await ref
-            .read(departmentMasterRepositoryProvider.notifier).editDepartmentMaster(
+            .read(departmentMasterRepositoryProvider.notifier)
+            .editDepartmentMaster(
               currentDepartmentId: currentDepartment!.id,
               nameArabic: _departmentNameArabic!,
               nameEnglish: _departmentNameEnglish!,

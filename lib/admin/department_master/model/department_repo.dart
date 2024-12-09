@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final departmentMasterRepositoryProvider =
@@ -132,5 +133,29 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     }).toList();
 
     return filteredList;
+  }
+
+  Future<List<SelectOption<Department>>> getDepartMentOptions(
+    String currentDGId,
+  ) async {
+    List<Department> departmentList = state;
+
+    if (departmentList.isEmpty) {
+      departmentList = await ref
+          .read(departmentMasterRepositoryProvider.notifier)
+          .fetchDepartments();
+    }
+    departmentList = departmentList
+        .where((deparment) => deparment.dgId.toString() == currentDGId)
+        .toList();
+    List<SelectOption<Department>> options = departmentList
+        .map((depatment) => SelectOption<Department>(
+              displayName: depatment.departmentNameEnglish,
+              key: depatment.id.toString(),
+              value: depatment,
+            ))
+        .toList();
+
+    return options;
   }
 }

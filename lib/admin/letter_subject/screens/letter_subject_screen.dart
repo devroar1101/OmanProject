@@ -49,7 +49,7 @@ class _LetterSubjectMasterScreenState
                   expandable: true,
                   onTap: (int index) {
                     final LetterSubjecct currentSubject = letterSubjects
-                        .firstWhere((subject) => subject.objectId == index);
+                        .firstWhere((subject) => subject.subjectId == index);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -60,7 +60,7 @@ class _LetterSubjectMasterScreenState
                       },
                     );
                   },
-                  detailKey: 'objectId',
+                  detailKey: 'subjectId',
                 ),
               ),
             ),

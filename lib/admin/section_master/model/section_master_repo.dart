@@ -67,10 +67,10 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 
       if (response.statusCode == 200) {
         final updatedDepartment = SectionMaster(
-            code: '0',
+            code: response.data['data']['sectionId'],
             sectionNameArabic: nameArabic,
             sectionNameEnglish: nameEnglish,
-            objectId: 'ds-ds-d',
+            objectId: response.data['data']['objectId'],
             departmentId: currentDepartmentId,
             dgId: currentDgId,
             sectionId: currentsectionId,
@@ -116,6 +116,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
         state = data
             .map((item) => SectionMaster.fromMap(item as Map<String, dynamic>))
             .toList();
+            
       } else {
         throw Exception('Failed to load Sections');
       }

@@ -9,26 +9,37 @@ import 'package:tenderboard/admin/section_master/model/section_master_repo.dart'
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class AddSectionMaster extends ConsumerWidget {
+class AddSectionMaster extends ConsumerStatefulWidget {
   AddSectionMaster({
     super.key,
     this.currentSection,
   });
 
   final SectionMaster? currentSection;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _AddSectionState();
+  }
+}
+
+class _AddSectionState extends ConsumerState<AddSectionMaster> {
   final _formKey = GlobalKey<FormState>();
 
   String? _sectionNameArabic;
   String? _sectionNameEnglish;
-  String? _selectedDG;
-  String? _selectedDepartment; // Add department selection
+  String? _selectedDG = '0';
+  String? _selectedDepartment;
 
+  List<SelectOption<Department>> departmentOptions = [];
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: Future.wait([
-        ref.read(dgMasterRepositoryProvider.notifier).fetchDgMasters(),
-        ref.read(departmentMasterRepositoryProvider.notifier).fetchDepartments(), // Fetch departments
+        ref.read(dgMasterRepositoryProvider.notifier).getDGOptions(),
+        ref
+            .read(departmentMasterRepositoryProvider.notifier)
+            .getDepartMentOptions(_selectedDG!)
       ]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -49,7 +60,8 @@ class AddSectionMaster extends ConsumerWidget {
                   children: [
                     const Text(
                       'Error loading options',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16.0),
                     Text('${snapshot.error}'),
@@ -65,21 +77,9 @@ class AddSectionMaster extends ConsumerWidget {
           );
         }
 
-        final dgOptions = (snapshot.data![0] as List<DgMaster>)
-            .map((dg) => SelectOption<String>(
-                  displayName: dg.nameEnglish,
-                  key: dg.id.toString(),
-                  value: dg.id.toString(),
-                ))
-            .toList();
-
-        final departmentOptions = (snapshot.data![1] as List<Department>)
-            .map((dept) => SelectOption<String>(
-                  displayName: dept.departmentNameEnglish,
-                  key: dept.id.toString(),
-                  value: dept.id.toString(),
-                ))
-            .toList();
+        final dgOptions = snapshot.data![0] as List<SelectOption<DgMaster>>;
+        final departmentOptions =
+            snapshot.data![1] as List<SelectOption<Department>>;
 
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -96,7 +96,7 @@ class AddSectionMaster extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      currentSection != null
+                      widget.currentSection != null
                           ? 'Edit Section Master'
                           : 'Add Section Master',
                       style: const TextStyle(
@@ -106,7 +106,7 @@ class AddSectionMaster extends ConsumerWidget {
                     SizedBox(
                       width: 450.0,
                       child: TextFormField(
-                        initialValue: currentSection?.sectionNameArabic,
+                        initialValue: widget.currentSection?.sectionNameArabic,
                         decoration: const InputDecoration(
                           labelText: 'Name (Arabic)',
                           border: OutlineInputBorder(),
@@ -126,7 +126,7 @@ class AddSectionMaster extends ConsumerWidget {
                     SizedBox(
                       width: 450.0,
                       child: TextFormField(
-                        initialValue: currentSection?.sectionNameEnglish,
+                        initialValue: widget.currentSection?.sectionNameEnglish,
                         decoration: const InputDecoration(
                           labelText: 'Name (English)',
                           border: OutlineInputBorder(),
@@ -145,10 +145,17 @@ class AddSectionMaster extends ConsumerWidget {
                     const SizedBox(height: 16.0),
                     SizedBox(
                       width: 450.0,
-                      child: SearchableDropdown<String>(
+                      child: SearchableDropdown<DgMaster>(
                         options: dgOptions,
-                        onChanged: (key) {
-                          _selectedDG = key;
+                        initialValue: widget.currentSection != null
+                            ? dgOptions
+                                .firstWhere((options) =>
+                                    options.key ==
+                                    widget.currentSection!.dgId.toString())
+                                .displayName
+                            : null,
+                        onChanged: (DgMaster dg) {
+                          _selectedDG = dg.id.toString();
                         },
                         hint: 'Select a DG',
                       ),
@@ -156,10 +163,18 @@ class AddSectionMaster extends ConsumerWidget {
                     const SizedBox(height: 16.0),
                     SizedBox(
                       width: 450.0,
-                      child: SearchableDropdown<String>(
+                      child: SearchableDropdown<Department>(
                         options: departmentOptions,
-                        onChanged: (key) {
-                          _selectedDepartment = key;
+                        initialValue: widget.currentSection != null
+                            ? departmentOptions
+                                .firstWhere((option) =>
+                                    option.key ==
+                                    widget.currentSection!.departmentId
+                                        .toString())
+                                .displayName
+                            : null,
+                        onChanged: (Department dept) {
+                          _selectedDepartment = dept.id.toString();
                         },
                         hint: 'Select a Department',
                       ),
@@ -197,30 +212,36 @@ class AddSectionMaster extends ConsumerWidget {
 
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     try {
-      if (currentSection == null) {
-        await ref.read(sectionMasterRepositoryProvider.notifier).addSectionMaster(
-              nameArabic: _sectionNameArabic!,
-              nameEnglish: _sectionNameEnglish!,
-              dgId: int.parse(_selectedDG!),
-              departmentId: int.parse(_selectedDepartment!), // Save department
-            );
-      } else {
-        await ref.read(sectionMasterRepositoryProvider.notifier).editSeactionMaster(
-              currentsectionId: currentSection!.sectionId,
-              nameArabic: _sectionNameArabic!,
-              nameEnglish: _sectionNameEnglish!,
-              currentDgId: int.parse(_selectedDG!),
-              currentDepartmentId: int.parse(_selectedDepartment!), // Save department
-            );
-      }
-
+      widget.currentSection == null
+          ? await ref
+              .read(sectionMasterRepositoryProvider.notifier)
+              .addSectionMaster(
+                nameArabic: _sectionNameArabic!,
+                nameEnglish: _sectionNameEnglish!,
+                dgId: int.parse(_selectedDG!),
+                departmentId:
+                    int.parse(_selectedDepartment!), // Save department
+              )
+          : await ref
+              .read(sectionMasterRepositoryProvider.notifier)
+              .editSeactionMaster(
+                currentsectionId: widget.currentSection!.sectionId,
+                nameArabic: _sectionNameArabic!,
+                nameEnglish: _sectionNameEnglish!,
+                currentDgId: int.parse(_selectedDG!),
+                currentDepartmentId:
+                    int.parse(_selectedDepartment!), // Save department
+              );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Section master saved successfully!')),
+        SnackBar(
+            content: Text(widget.currentSection != null
+                ? 'Section edit successfully!'
+                : 'Section added successfully!')),
       );
-      Navigator.pop(context);
+      Navigator.pop(context); // Close the modal after saving
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save section master: $e')),
+        SnackBar(content: Text('Failed to add Listmaster: $e')),
       );
     }
   }
