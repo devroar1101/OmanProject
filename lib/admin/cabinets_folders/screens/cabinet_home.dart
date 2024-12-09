@@ -45,7 +45,6 @@ class _CabinetHomeState extends State<CabinetHome> {
               selectedCabinetId: selectedCabinetId,
               onSelectCabinet: (id) {
                 setState(() {
-                  print(id);
                   selectedCabinetId = id;
                   selectedFolderId = null; // Reset selected folder
                 });
