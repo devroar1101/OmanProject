@@ -24,14 +24,14 @@ class CabinetSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final headers = ['Cabinets'];
-    final dataKeys = ['name'];
+    final dataKeys = ['nameArabic'];
     final iconButtons = [
       {"button": Icons.edit, "function": (int id) => print("Edit $id")},
       {"button": Icons.delete, "function": (int id) => print("Delete $id")},
     ];
 
     // Convert ListMasterItem list to map list with sno
-    final details = Cabinet.cabinetsToListOfMaps(cabinets);
+    final details = Cabinet.listToMap(cabinets);
 
     return Stack(
       children: [
@@ -83,7 +83,7 @@ void editCabinet(context, Cabinet cabinet, onEditCabinet) {
   showEditDialog(
     context,
     title: 'Edit Cabinet',
-    currentName: cabinet.name,
+    currentName: cabinet.nameArabic,
     onSave: (name) => onEditCabinet(cabinet.id, name),
   );
 }
