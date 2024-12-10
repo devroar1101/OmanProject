@@ -1,53 +1,45 @@
 class ExternalLocationMaster {
-  int code;
-  String locationNameArabic;
-  String locationNameEnglish;
+  int id;
+  String nameArabic;
+  String nameEnglish;
+  int typeId;
+  String isNew;
+  String isDeleted;
   String objectId;
-  String typeNameEnglish;
-  String typeNameArabic;
-  String typeObjectId;
-  String active;
-  String isYes;
 
   ExternalLocationMaster({
-    required this.code,
-    required this.locationNameArabic,
-    required this.locationNameEnglish,
+    required this.id,
+    required this.nameArabic,
+    required this.nameEnglish,
+    required this.typeId,
+    required this.isNew,
+    required this.isDeleted,
     required this.objectId,
-    required this.typeNameEnglish,
-    required this.typeNameArabic,
-    required this.typeObjectId,
-    required this.active,
-    required this.isYes,
   });
 
   // Factory constructor to create an instance from a Map
   factory ExternalLocationMaster.fromMap(Map<String, dynamic> map) {
     return ExternalLocationMaster(
-      locationNameArabic: map['locationNameArabic'] ?? 0,
-      code: map['locationCode'] ?? '',
-      locationNameEnglish: map['locationNameEnglish'] ?? '',
-      objectId: map['externalLocationObjectId'] ?? '',
-      typeNameEnglish: map['typeNameEnglish'] ?? '',
-      typeNameArabic: map['typeNameArabic'] ?? '',
-      typeObjectId: map['typeObjectId'] ?? '',
-      active: map['active'] ?? '',
-      isYes: map['isYes'] ?? '',
+      id: map['externalLocationId'] ?? 0,
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
+      typeId: map['typeId'] ?? 0,
+      isNew: map['isNew'] ?? bool,
+      isDeleted: map['isDeleted'] ?? bool,
+      objectId: map['objectId'] ?? '',
     );
   }
 
   // Method to convert an instance to a Map
   Map<String, dynamic> toMap() {
     return {
-      'code': code,
-      'locationNameArabic': locationNameArabic,
-      'locationNameEnglish': locationNameEnglish,
+      'id': id,
+      'nameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
       'objectId': objectId,
-      'typeNameEnglish': typeNameEnglish,
-      'typeNameArabic': typeNameArabic,
-      'typeObjectId': typeObjectId,
-      'active': active,
-      'isYes': isYes,
+      'typeId': typeId,
+      'isNew': isNew,
+      'isDeleted': isDeleted,
     };
   }
 

@@ -66,7 +66,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
             }).toList(),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 2),
 
         // Data Rows
         Expanded(

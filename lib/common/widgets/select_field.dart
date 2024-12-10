@@ -6,14 +6,15 @@ class SearchableDropdown<T> extends StatefulWidget {
   final Function(T) onChanged;
   final String hint;
   final TextEditingController? controller;
+  String? initialValue;
 
-  const SearchableDropdown({
-    super.key,
-    required this.options,
-    required this.onChanged,
-    this.hint = 'Search...',
-    this.controller,
-  });
+  SearchableDropdown(
+      {super.key,
+      required this.options,
+      required this.onChanged,
+      this.hint = 'Search...',
+      this.controller,
+      this.initialValue});
 
   @override
   _SearchableDropdownState<T> createState() => _SearchableDropdownState<T>();
@@ -29,10 +30,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
 
   @override
   void initState() {
-  TextEditingController? _searchController;
     super.initState();
     filteredOptions = widget.options;
-    _searchController = widget.controller?? TextEditingController();
+    if (widget.initialValue != null && widget.initialValue != '') {
+      _searchController.text = widget.initialValue!;
+    }
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -44,12 +46,14 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
   }
 
   void _onSearchChanged() {
-    setState(() {
-      String searchText = _searchController.text.toLowerCase();
-      filteredOptions = widget.options.where((option) {
-        return option.displayName.toLowerCase().contains(searchText);
-      }).toList();
-    });
+    if (widget.initialValue != _searchController.text) {
+      setState(() {
+        String searchText = _searchController.text.toLowerCase();
+        filteredOptions = widget.options.where((option) {
+          return option.displayName.toLowerCase().contains(searchText);
+        }).toList();
+      });
+    }
 
     if (_searchController.text.isNotEmpty) {
       _createOrUpdateOverlay();
@@ -114,13 +118,20 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                   return ListTile(
                     title: Text(option.displayName),
                     onTap: () {
-                      widget.onChanged(option.value);
-                      setState(() {
-                        _searchController.text = option.displayName;
-                        filteredOptions = widget.options;
-                      });
-                      _removeOverlay();
-                    },
+  
+  // Use Future.microtask to defer the state change
+  Future.microtask(() {
+    if (mounted) {
+      setState(() {
+        _searchController.text = option.displayName;
+        filteredOptions = widget.options;
+      });
+    }
+  });
+  _removeOverlay();
+  widget.onChanged(option.value);
+},
+
                   );
                 },
               ),

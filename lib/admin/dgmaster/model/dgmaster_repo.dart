@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final dgMasterRepositoryProvider =
@@ -10,6 +11,9 @@ final dgMasterRepositoryProvider =
 class DgMasterRepository extends StateNotifier<List<DgMaster>> {
   DgMasterRepository(this.ref) : super([]);
   final Ref ref;
+
+
+
 
 //Add
   Future<void> addDgMaster(
@@ -71,6 +75,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     return state;
   }
 
+  //Edit
   Future<void> editDGMaster({
   required String editNameEnglish,
   required String editNameArabic,
@@ -104,7 +109,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       ];
     } else {
       throw Exception(
-          'Failed to update DGMaster. Status code: ${response.statusCode} 11112$currentDGId');
+          'Failed to update DGMaster. Status code: ${response.statusCode}');
     }
   } catch (e) {
     throw Exception('Error occurred while editing DGMaster: $e');
@@ -126,4 +131,29 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
     return filteredList;
   }
+
+  Future<List<SelectOption<DgMaster>>> getDGOptions() async{
+     
+     List<DgMaster> DGList = state;
+
+    if(DGList.isEmpty)
+    {
+      DGList =  await ref.read(dgMasterRepositoryProvider.notifier).fetchDgMasters();
+    }
+
+    final List<SelectOption<DgMaster>> options =  DGList.map((dg) => SelectOption<DgMaster>(
+                  displayName: dg.nameEnglish,
+                  key: dg.id.toString(),
+                  value: dg,
+                ))
+            .toList();
+
+            return options;
+
+  }
 }
+
+
+final dgOptionsProvider = FutureProvider<List<SelectOption<DgMaster>>>((ref) async {
+  return ref.read(dgMasterRepositoryProvider.notifier).getDGOptions();
+});

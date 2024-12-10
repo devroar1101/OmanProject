@@ -18,12 +18,12 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
   void initState() {
     super.initState();
     // Fetch initial sections when the screen initializes
-    ref.read(SectionMasterRepositoryProvider.notifier).fetchSections();
+    ref.read(sectionMasterRepositoryProvider.notifier).fetchSections();
   }
 
   @override
   Widget build(BuildContext context) {
-    final sections = ref.watch(SectionMasterRepositoryProvider);
+    final sections = ref.watch(sectionMasterRepositoryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +59,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return AddSectionMaster();
+                        return AddSectionMaster(currentSection: currentSection,);
                       },
                     );
                   },

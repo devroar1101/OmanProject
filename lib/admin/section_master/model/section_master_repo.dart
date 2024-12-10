@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final SectionMasterRepositoryProvider =
+final sectionMasterRepositoryProvider =
     StateNotifierProvider<SectionMasterRepository, List<SectionMaster>>((ref) {
   return SectionMasterRepository(ref);
 });
@@ -13,7 +13,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
   final Ref ref;
 
   //Add
-  Future<void> AddSectionMaster(
+  Future<void> addSectionMaster(
       {required String nameEnglish,
       required String nameArabic,
       required int departmentId,
@@ -36,8 +36,8 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
             code: response.data['data']['code'],
             sectionNameArabic: nameArabic,
             sectionNameEnglish: nameEnglish,
-            objectId: response.data['data']['objectId'],
-            timeStamp: response.data['data']['timeStamp']),
+            objectId: response.data['data']['objectId']),
+            //timeStamp: response.data['data']['timeStamp'],
         ...state
       ];
     } catch (e) {
@@ -48,6 +48,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 //Edit
   Future<void> editSeactionMaster({
     required int currentDepartmentId,
+    required int currentsectionId,
     required String nameArabic,
     required String nameEnglish,
     required int currentDgId,
@@ -55,6 +56,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'departmentId': currentDepartmentId,
+      'sectionId': currentsectionId,
       'dgId': currentDgId,
       'sectionNameEnglish': nameEnglish,
       'sectionNameArabic': nameArabic,
@@ -65,19 +67,19 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 
       if (response.statusCode == 200) {
         final updatedDepartment = SectionMaster(
-            code: '0',
+            code: response.data['data']['sectionId'],
             sectionNameArabic: nameArabic,
             sectionNameEnglish: nameEnglish,
-            objectId: 'ds-ds-d',
+            objectId: response.data['data']['objectId'],
             departmentId: currentDepartmentId,
             dgId: currentDgId,
-            sectionId: response.data['data']['sectionId'],
-            timeStamp: response.data['data']['timeStamp']);
+            sectionId: currentsectionId,
+            );
 
         // Update the state with the edited DgMaster
         state = [
           for (var sectionMaster in state)
-            if (sectionMaster.sectionId == response.data['data']['sectionId'])
+            if (sectionMaster.sectionId == currentsectionId)
               updatedDepartment
             else
               sectionMaster
@@ -114,6 +116,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
         state = data
             .map((item) => SectionMaster.fromMap(item as Map<String, dynamic>))
             .toList();
+            
       } else {
         throw Exception('Failed to load Sections');
       }

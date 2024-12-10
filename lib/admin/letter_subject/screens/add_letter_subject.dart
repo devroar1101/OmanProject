@@ -1,34 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
 
-class AddLetterSubject extends StatefulWidget {
-  const AddLetterSubject({super.key});
+class AddLetterSubject extends ConsumerWidget {
+  AddLetterSubject({
+    super.key,
+    this.currentSubject,
+  });
 
-  @override
-  _AddLetterSubjectState createState() => _AddLetterSubjectState();
-}
+  final LetterSubjecct? currentSubject;
 
-class _AddLetterSubjectState extends State<AddLetterSubject> {
   final _formKey = GlobalKey<FormState>();
 
   String? _tenderNumber;
   String? _subject;
 
-  void _saveForm() {
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // Perform necessary actions (e.g., create a model or save data)
-      print('Tender Number: $_tenderNumber');
-      print('Subject: $_subject');
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('subject added successfully!')),
-      );
-      Navigator.pop(context); // Close the modal after saving
+      try {
+        currentSubject == null ?
+         await ref.read(LetterSubjectMasterRepositoryProvider.notifier).addLetterSubject
+         (subjectName: _subject!, 
+         tenderNumber: _tenderNumber!
+         ) : await ref.read(LetterSubjectMasterRepositoryProvider.notifier).editLetterSubject(
+          currentSubjectId: currentSubject!.subjectId,
+          subjectName: _subject!,
+          tenderNumber: _tenderNumber!,
+         );
+
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Subject ${currentSubject == null ? "added" : "updated"} successfully!')),
+        );
+        Navigator.pop(context); // Close the modal
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save subject: $e')),
+        );
+      }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
@@ -43,14 +60,17 @@ class _AddLetterSubjectState extends State<AddLetterSubject> {
               mainAxisSize: MainAxisSize.min, // Makes the dialog height dynamic
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Add Letter Subject',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  currentSubject != null
+                      ? 'Edit Letter Subject'
+                      : 'Add Letter Subject',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: 450.0, // Reduced width for the field
                   child: TextFormField(
+                    initialValue: currentSubject?.tenderNumber,
                     decoration: const InputDecoration(
                       labelText: 'Tender Number',
                       border: OutlineInputBorder(),
@@ -70,6 +90,7 @@ class _AddLetterSubjectState extends State<AddLetterSubject> {
                 SizedBox(
                   width: 450.0, // Reduced width for the field
                   child: TextFormField(
+                    initialValue: currentSubject?.subject,
                     decoration: const InputDecoration(
                       labelText: 'Subject',
                       border: OutlineInputBorder(),
@@ -90,7 +111,7 @@ class _AddLetterSubjectState extends State<AddLetterSubject> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: _saveForm,
+                      onPressed: () => _saveForm(context, ref),
                       child: const Text('Save'),
                     ),
                     OutlinedButton(
