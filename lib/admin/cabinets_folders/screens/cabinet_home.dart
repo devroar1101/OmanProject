@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
+
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
-import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+
 import 'package:tenderboard/admin/cabinets_folders/model/folder_repo.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/widgets/cabinet_section.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/widgets/folder_section.dart';

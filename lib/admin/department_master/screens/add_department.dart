@@ -128,7 +128,7 @@ class AddDepartmentMaster extends ConsumerWidget {
                     const SizedBox(height: 16.0),
                     SizedBox(
                       width: 450.0,
-                      child: SearchableDropdown<DgMaster>(
+                      child: SelectField<DgMaster>(
                         options: dgOptions!,
                         initialValue: currentDepartment != null
                             ? dgOptions

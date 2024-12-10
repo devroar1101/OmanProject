@@ -64,19 +64,19 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
       body: Stack(
         children: [
           // Base layer: Row with DisplayDetails and Scanner
-          const Row(
+          Row(
             children: [
               Expanded(
                 flex: 1,
                 child: DisplayDetails(
                   detailKey: 'objectId',
-                  headers: [
+                  headers: const [
                     'Subject',
                     'Reference #',
                     'Received Date',
                     'Tender Number',
                   ],
-                  data: [
+                  data: const [
                     'subject',
                     'jobReferenceNumber',
                     'receivedDate',
@@ -85,7 +85,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
                   details: [],
                 ),
               ),
-              Expanded(
+              const Expanded(
                 flex: 1,
                 child: Scanner(),
               ),

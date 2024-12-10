@@ -36,13 +36,14 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     return Consumer(
       builder: (context, ref, child) {
         final dgOptions = ref.watch(dgOptionsProvider);
-        final departmentOptions = ref.watch(departmentOptionsProvider(_selectedDG ?? ''));
+        final departmentOptions =
+            ref.watch(departmentOptionsProvider(_selectedDG ?? ''));
 
         return dgOptions.when(
           data: (dgList) {
             return departmentOptions.when(
               data: (departments) {
-                return Dialog( 
+                return Dialog(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -59,18 +60,21 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                               widget.currentSection != null
                                   ? 'Edit Section Master'
                                   : 'Add Section Master',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 16.0),
                             // Name fields
                             _buildTextField(
                               label: 'Name (Arabic)',
-                              initialValue: widget.currentSection?.sectionNameArabic,
+                              initialValue:
+                                  widget.currentSection?.sectionNameArabic,
                               onSaved: (value) => _sectionNameArabic = value,
                             ),
                             _buildTextField(
                               label: 'Name (English)',
-                              initialValue: widget.currentSection?.sectionNameEnglish,
+                              initialValue:
+                                  widget.currentSection?.sectionNameEnglish,
                               onSaved: (value) => _sectionNameEnglish = value,
                             ),
                             const SizedBox(height: 16.0),
@@ -79,13 +83,19 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                               label: 'Select DG',
                               options: dgList,
                               initialValue: widget.currentSection != null
-                                  ? dgList.firstWhere((dg)=> widget.currentSection!.dgId.toString() == dg.key).displayName
+                                  ? dgList
+                                      .firstWhere((dg) =>
+                                          widget.currentSection!.dgId
+                                              .toString() ==
+                                          dg.key)
+                                      .displayName
                                   : null,
                               onChanged: (dg) {
                                 setState(() {
                                   _selectedDG = dg.id.toString();
                                   // Trigger department options reload when DG changes
-                                  ref.refresh(departmentOptionsProvider(_selectedDG!));
+                                  ref.refresh(
+                                      departmentOptionsProvider(_selectedDG!));
                                 });
                               },
                             ),
@@ -95,10 +105,15 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                               label: 'Select Department',
                               options: departments,
                               initialValue: widget.currentSection != null
-                                  ? departments.firstWhere((option) =>
-                                      option.key == widget.currentSection!.departmentId.toString()).displayName
+                                  ? departments
+                                      .firstWhere((option) =>
+                                          option.key ==
+                                          widget.currentSection!.departmentId
+                                              .toString())
+                                      .displayName
                                   : null,
-                              onChanged: (dept) => _selectedDepartment = dept.id.toString(),
+                              onChanged: (dept) =>
+                                  _selectedDepartment = dept.id.toString(),
                             ),
                             const SizedBox(height: 24.0),
                             _buildSaveCancelButtons(),
@@ -120,7 +135,10 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     );
   }
 
-  Widget _buildTextField({required String label, String? initialValue, FormFieldSetter<String>? onSaved}) {
+  Widget _buildTextField(
+      {required String label,
+      String? initialValue,
+      FormFieldSetter<String>? onSaved}) {
     return SizedBox(
       width: 450.0,
       child: TextFormField(
@@ -148,7 +166,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
   }) {
     return SizedBox(
       width: 450.0,
-      child: SearchableDropdown<T>(
+      child: SelectField<T>(
         options: options,
         initialValue: initialValue,
         onChanged: onChanged,
@@ -183,20 +201,24 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     try {
       if (widget.currentSection == null) {
-        await ref.read(sectionMasterRepositoryProvider.notifier).addSectionMaster(
-          nameArabic: _sectionNameArabic!,
-          nameEnglish: _sectionNameEnglish!,
-          dgId: int.parse(_selectedDG!),
-          departmentId: int.parse(_selectedDepartment!),
-        );
+        await ref
+            .read(sectionMasterRepositoryProvider.notifier)
+            .addSectionMaster(
+              nameArabic: _sectionNameArabic!,
+              nameEnglish: _sectionNameEnglish!,
+              dgId: int.parse(_selectedDG!),
+              departmentId: int.parse(_selectedDepartment!),
+            );
       } else {
-        await ref.read(sectionMasterRepositoryProvider.notifier).editSeactionMaster(
-          currentsectionId: widget.currentSection!.sectionId,
-          nameArabic: _sectionNameArabic!,
-          nameEnglish: _sectionNameEnglish!,
-          currentDgId: int.parse(_selectedDG!),
-          currentDepartmentId: int.parse(_selectedDepartment!),
-        );
+        await ref
+            .read(sectionMasterRepositoryProvider.notifier)
+            .editSeactionMaster(
+              currentsectionId: widget.currentSection!.sectionId,
+              nameArabic: _sectionNameArabic!,
+              nameEnglish: _sectionNameEnglish!,
+              currentDgId: int.parse(_selectedDG!),
+              currentDepartmentId: int.parse(_selectedDepartment!),
+            );
       }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -206,7 +228,8 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
       ));
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to save: $e')));
     }
   }
 }

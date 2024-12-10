@@ -17,10 +17,13 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
 
   // Example dropdown options
   final List<SelectOption<String>> dropdownOptions = [
-    SelectOption(displayName: 'Department 1', key: 'dept1', value: 'Department 1'),
-    SelectOption(displayName: 'Department 2', key: 'dept2', value: 'Department 2'),
+    SelectOption(
+        displayName: 'Department 1', key: 'dept1', value: 'Department 1'),
+    SelectOption(
+        displayName: 'Department 2', key: 'dept2', value: 'Department 2'),
     SelectOption(displayName: 'إدارة 3', key: 'dept3', value: 'إدارة 3'),
-    SelectOption(displayName: 'Department 4', key: 'dept4', value: 'Department 4'),
+    SelectOption(
+        displayName: 'Department 4', key: 'dept4', value: 'Department 4'),
   ];
 
   void _resetFields() {
@@ -100,7 +103,7 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
 
             // Custom Dropdown Field
             Expanded(
-              child: SearchableDropdown<String>(
+              child: SelectField<String>(
                 options: dropdownOptions,
                 onChanged: (value) {
                   setState(() {

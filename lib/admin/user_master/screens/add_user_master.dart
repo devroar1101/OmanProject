@@ -275,7 +275,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
       Row(
         children: [
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: designationOptions,
               onChanged: (value) =>
                   setState(() => _selectedDesignation = value),
@@ -284,7 +284,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: authModeOptions,
               onChanged: (value) => setState(() => _selectedAuthMode = value),
               hint: 'Select Auth Mode',
@@ -296,7 +296,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
       Row(
         children: [
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: roleOptions,
               onChanged: (value) => setState(() => _selectedRole = value),
               hint: 'Select Role',
@@ -304,7 +304,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: dgOptions,
               onChanged: (value) => setState(() => _selectedDG = value),
               hint: 'Select DG',
@@ -316,7 +316,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
       Row(
         children: [
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: departmentOptions,
               onChanged: (value) => setState(() => _selectedDepartment = value),
               hint: 'Select Department',
@@ -324,7 +324,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: SearchableDropdown<String>(
+            child: SelectField<String>(
               options: sectionOptions,
               onChanged: (value) => setState(() => _selectedSection = value),
               hint: 'Select Section',

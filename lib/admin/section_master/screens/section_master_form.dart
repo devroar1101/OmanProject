@@ -6,7 +6,8 @@ class SectionMasterSearchForm extends StatefulWidget {
   const SectionMasterSearchForm({super.key});
 
   @override
-  _SectionMasterSearchFormState createState() => _SectionMasterSearchFormState();
+  _SectionMasterSearchFormState createState() =>
+      _SectionMasterSearchFormState();
 }
 
 class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
@@ -26,10 +27,13 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
 
   // Example department options
   final List<SelectOption<String>> departmentOptions = [
-    SelectOption(displayName: 'Department A', key: 'deptA', value: 'Department A'),
-    SelectOption(displayName: 'Department B', key: 'deptB', value: 'Department B'),
+    SelectOption(
+        displayName: 'Department A', key: 'deptA', value: 'Department A'),
+    SelectOption(
+        displayName: 'Department B', key: 'deptB', value: 'Department B'),
     SelectOption(displayName: 'قسم C', key: 'deptC', value: 'قسم C'),
-    SelectOption(displayName: 'Department D', key: 'deptD', value: 'Department D'),
+    SelectOption(
+        displayName: 'Department D', key: 'deptD', value: 'Department D'),
   ];
 
   void _resetFields() {
@@ -112,7 +116,7 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
 
             // Custom Dropdown Field
             Expanded(
-              child: SearchableDropdown<String>(
+              child: SelectField<String>(
                 options: dgOptions,
                 onChanged: (value) {
                   setState(() {
@@ -126,7 +130,7 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
 
             // New Department Dropdown Field
             Expanded(
-              child: SearchableDropdown<String>(
+              child: SelectField<String>(
                 options: departmentOptions,
                 onChanged: (value) {
                   setState(() {

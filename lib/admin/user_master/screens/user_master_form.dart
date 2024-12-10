@@ -86,174 +86,173 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
     print('Section: $_selectedSectionValue');
   }
 
-@override
-Widget build(BuildContext context) {
-  return Card(
-    elevation: 4.0,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-    margin: const EdgeInsets.all(16.0),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // First Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _eofficeIdController,
-                  decoration: InputDecoration(
-                    labelText: 'Eoffice ID',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      margin: const EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // First Row with 3 fields
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _eofficeIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Eoffice ID',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: TextField(
-                  controller: _loginIdController,
-                  decoration: InputDecoration(
-                    labelText: 'Login ID',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    controller: _loginIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Login ID',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+              ],
+            ),
+            const SizedBox(height: 16.0),
 
-          // Second Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _ldapIdentifierController,
-                  decoration: InputDecoration(
-                    labelText: 'LDAP Identifier',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+            // Second Row with 3 fields
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _ldapIdentifierController,
+                    decoration: InputDecoration(
+                      labelText: 'LDAP Identifier',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: designationOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDesignationValue = value;
-                    });
-                  },
-                  hint: 'Select Designation',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: SelectField<String>(
+                    options: designationOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDesignationValue = value;
+                      });
+                    },
+                    hint: 'Select Designation',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: roleOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRoleValue = value;
-                    });
-                  },
-                  hint: 'Select Role',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: SelectField<String>(
+                    options: roleOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRoleValue = value;
+                      });
+                    },
+                    hint: 'Select Role',
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+              ],
+            ),
+            const SizedBox(height: 16.0),
 
-          // Third Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: dgOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDGValue = value;
-                    });
-                  },
-                  hint: 'Select DG',
+            // Third Row with 3 fields
+            Row(
+              children: [
+                Expanded(
+                  child: SelectField<String>(
+                    options: dgOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDGValue = value;
+                      });
+                    },
+                    hint: 'Select DG',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: departmentOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDepartmentValue = value;
-                    });
-                  },
-                  hint: 'Select Department',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: SelectField<String>(
+                    options: departmentOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedDepartmentValue = value;
+                      });
+                    },
+                    hint: 'Select Department',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: sectionOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSectionValue = value;
-                    });
-                  },
-                  hint: 'Select Section',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: SelectField<String>(
+                    options: sectionOptions,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedSectionValue = value;
+                      });
+                    },
+                    hint: 'Select Section',
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+              ],
+            ),
+            const SizedBox(height: 16.0),
 
-          // Buttons Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Search Icon Button
-              Card(
-                color: const Color.fromARGB(255, 238, 240, 241),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: _handleSearch,
-                  tooltip: 'Search',
+            // Buttons Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Search Icon Button
+                Card(
+                  color: const Color.fromARGB(255, 238, 240, 241),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: _handleSearch,
+                    tooltip: 'Search',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8.0),
-              // Reset Icon Button
-              Card(
-                color: const Color.fromARGB(255, 240, 234, 235),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: _resetFields,
-                  tooltip: 'Reset',
+                const SizedBox(width: 8.0),
+                // Reset Icon Button
+                Card(
+                  color: const Color.fromARGB(255, 240, 234, 235),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: _resetFields,
+                    tooltip: 'Reset',
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

@@ -9,10 +9,10 @@ class DisplayDetails extends StatefulWidget {
   final bool expandable;
   final Function(int)? onTap;
   final Function()? onLongPress;
-  final String isSelected;
+  String isSelected;
   final String detailKey;
 
-  const DisplayDetails({
+  DisplayDetails({
     super.key,
     required this.headers,
     required this.data,
@@ -91,6 +91,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                       setState(() {
                         activeRowIndex = null;
                         isSpeedDialExpanded = false;
+                        widget.isSelected = id.toString();
                       });
                     },
                     onLongPress: () {
@@ -127,10 +128,8 @@ class _DisplayDetailsState extends State<DisplayDetails>
                                       ? null
                                       : rowIndex;
                                   isSpeedDialExpanded = activeRowIndex != null;
+                                  widget.isSelected = id.toString();
                                 });
-                                if (widget.onTap != null) {
-                                  widget.onTap!(id);
-                                }
                               },
                               child: Icon(
                                 isSpeedDialExpanded &&
