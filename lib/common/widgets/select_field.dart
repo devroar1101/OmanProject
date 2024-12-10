@@ -118,13 +118,20 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                   return ListTile(
                     title: Text(option.displayName),
                     onTap: () {
-                      widget.onChanged(option.value);
-                      setState(() {
-                        _searchController.text = option.displayName;
-                        filteredOptions = widget.options;
-                      });
-                      _removeOverlay();
-                    },
+  
+  // Use Future.microtask to defer the state change
+  Future.microtask(() {
+    if (mounted) {
+      setState(() {
+        _searchController.text = option.displayName;
+        filteredOptions = widget.options;
+      });
+    }
+  });
+  _removeOverlay();
+  widget.onChanged(option.value);
+},
+
                   );
                 },
               ),

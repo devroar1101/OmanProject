@@ -152,3 +152,8 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
   }
 }
+
+
+final dgOptionsProvider = FutureProvider<List<SelectOption<DgMaster>>>((ref) async {
+  return ref.read(dgMasterRepositoryProvider.notifier).getDGOptions();
+});

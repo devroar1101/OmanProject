@@ -1,28 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 
-class ListMasterSearchForm extends StatefulWidget {
-  //final Function(String nameEnglish, String nameArabic) onSearch;
+class ListMasterSearchForm extends ConsumerStatefulWidget {
+ 
 
-  const ListMasterSearchForm({super.key});
+ const  ListMasterSearchForm({super.key,required this.onSearch});
+
+ final Function(String,String) onSearch;
 
   @override
   _ListMasterSearchFormState createState() => _ListMasterSearchFormState();
 }
 
-class _ListMasterSearchFormState extends State<ListMasterSearchForm> {
+class _ListMasterSearchFormState extends ConsumerState<ListMasterSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
 
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
+    widget.onSearch('', '');
+    
   }
 
   void _handleSearch() {
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
-
-    //widget.onSearch(nameEnglish, nameArabic);
+        
+        widget.onSearch(nameArabic, nameEnglish);
+   
   }
 
   @override

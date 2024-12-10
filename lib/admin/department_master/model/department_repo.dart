@@ -159,3 +159,8 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     return options;
   }
 }
+
+
+final departmentOptionsProvider = FutureProvider.family<List<SelectOption<Department>>, String>((ref, dgId) async {
+  return ref.read(departmentMasterRepositoryProvider.notifier).getDepartMentOptions(dgId);
+});
