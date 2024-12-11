@@ -36,7 +36,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
     if (widget.initialValue != null && widget.initialValue != '') {
       _searchController.text = widget.initialValue!;
     }
-    _searchController.addListener(_onSearchChanged);
+    //_searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -134,6 +134,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                                   setState(() {
                                     _searchController.text = option.displayName;
                                     widget.selectedOption = option.key;
+
                                     filteredOptions = widget.options;
                                   });
                                   widget.onChanged(option.value);
@@ -172,22 +173,8 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
             decoration: InputDecoration(
               hintText: widget.hint,
               border: const OutlineInputBorder(),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_searchController.text.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        _searchController.clear();
-                      },
-                      child: Icon(Icons.close),
-                    ),
-                  Icon(
-                    isDropdownOpen
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
-                  ),
-                ],
+              suffixIcon: Icon(
+                isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
               ),
             ),
             onTap: _createOrUpdateOverlay,
