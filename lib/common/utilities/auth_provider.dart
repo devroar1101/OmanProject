@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState(selectedLanguage: 'English')) {
+  AuthNotifier() : super(AuthState(selectedLanguage: 'en')) {
     _loadLanguage();
   }
 

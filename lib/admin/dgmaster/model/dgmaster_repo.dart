@@ -29,11 +29,11 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
       state = [
         DgMaster(
-            id: Response.data['dgId'],
+            id: Response.data['data']['dgId'],
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
-            code: Response.data['code'],
-            objectId: 'aa-aa-a'),
+            code: Response.data['data']['code'],
+            ),
         ...state
       ];
     } catch (e) {
@@ -99,7 +99,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
         nameArabic: editNameArabic,
         nameEnglish: editNameEnglish,
         code: '0', // Update this as needed
-        objectId: 'das-das-d', // Update this as needed
+        
       );
 
       // Update the state with the edited DgMaster

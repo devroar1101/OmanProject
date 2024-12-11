@@ -3,24 +3,24 @@ class DgMaster {
   String nameArabic;
   String nameEnglish;
   String code;
-  String objectId;
+  //String objectId;
 
   DgMaster({
     required this.id,
     required this.nameArabic,
     required this.nameEnglish,
     required this.code,
-    required this.objectId,
+    //required this.objectId,
   });
 
   /// Convert a Map to a DgMaster object
   factory DgMaster.fromMap(Map<String, dynamic> map) {
     return DgMaster(
-      id: map['dgId'] ?? '', // Default to empty string if null
+      id: map['dgId'] ?? 0, // Default to empty string if null
       nameArabic: map['dgNameArabic'] ?? '', // Default to empty string if null
       nameEnglish: map['dgNameEnglish'] ?? '',
       code: map['code'] ?? '',
-      objectId: map['objectId'] ?? '',
+      //objectId: map['objectId'] ?? '',
     );
   }
 
@@ -31,7 +31,7 @@ class DgMaster {
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       'code': code,
-      'objectId': objectId,
+      //'objectId': objectId,
     };
   }
 

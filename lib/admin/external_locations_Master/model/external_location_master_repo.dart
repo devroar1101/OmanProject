@@ -36,8 +36,8 @@ class ExternalLocationMasterRepository
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             typeId: typeId,
-            isNew: 'true',
-            isDeleted: 'true',
+            isNew: response.data['data']['isNew'],
+            isDeleted: response.data['data']['isDeleted'],
             objectId: 'as-da-sd-sa'),
         ...state
       ];
@@ -70,8 +70,8 @@ class ExternalLocationMasterRepository
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             typeId: typeId,
-            isNew: '',
-            isDeleted: '',
+            isNew: response.data['data']['isNew'],
+            isDeleted: response.data['data']['isDeleted'],
             objectId: '');
 
         state = [
@@ -104,7 +104,7 @@ class ExternalLocationMasterRepository
     };
     try {
       final response = await dio.post(
-        '/AdminstratorQueries/SearchAndListExternalLocations',
+        '/Master/SearchAndListExternalLocation',
         data: requestBody,
       );
       // Check if the response is successful
