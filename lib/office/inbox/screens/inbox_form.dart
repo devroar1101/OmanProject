@@ -32,10 +32,12 @@ class _InboxSearchFormState extends State<InboxSearchForm> {
           child: Expanded(
             child: Card(
               elevation: 4.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0)),
               margin: const EdgeInsets.all(2.0),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 child: Row(
                   children: [
                     // Filter TextField
@@ -128,7 +130,14 @@ class _InboxSearchFormState extends State<InboxSearchForm> {
         ),
 
         // Pagination
-        const Pagination(),
+        Pagination(
+          totalItems: 18412,
+          initialPageSize: 30,
+          onPageChange: (page, pageSize) {
+            print('Page: $page, Page Size: $pageSize');
+            // Fetch new data based on `page` and `pageSize`
+          },
+        ),
       ],
     );
   }

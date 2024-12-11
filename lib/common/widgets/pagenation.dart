@@ -1,157 +1,107 @@
 import 'package:flutter/material.dart';
 
 class Pagination extends StatefulWidget {
-  const Pagination({super.key});
+  final int totalItems; // Total number of items
+  final int initialPageSize; // Initial page size
+  final int initialPage; // Initial page number
+  final Function(int page, int pageSize) onPageChange; // Callback to parent
+
+  const Pagination({
+    super.key,
+    required this.totalItems,
+    this.initialPageSize = 30,
+    this.initialPage = 1,
+    required this.onPageChange,
+  });
 
   @override
-  _PaginationWidgetState createState() => _PaginationWidgetState();
+  _PaginationState createState() => _PaginationState();
 }
 
-class _PaginationWidgetState extends State<Pagination> {
-  int currentPage = 1;
-  int pageSize = 15; // Default page size
-  final List<int> pageSizes = [15, 30, 45, 60, 75, 100];
-  final int totalItems = 500; // Example total items in the dataset
+class _PaginationState extends State<Pagination> {
+  late int currentPage;
+  late int pageSize;
 
-  int get totalPages => (totalItems / pageSize).ceil();
+  @override
+  void initState() {
+    super.initState();
+    currentPage = widget.initialPage;
+    pageSize = widget.initialPageSize;
+  }
+
+  int get totalPages => (widget.totalItems / pageSize).ceil();
+  int get startItem => ((currentPage - 1) * pageSize) + 1;
+  int get endItem => (currentPage * pageSize > widget.totalItems)
+      ? widget.totalItems
+      : currentPage * pageSize;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // First Page Button
-          _buildIconButton(Icons.first_page, _goToFirstPage, currentPage > 1),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Previous Button
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          color: currentPage > 1 ? Colors.blue : Colors.grey,
+          onPressed: currentPage > 1 ? _goToPreviousPage : null,
+        ),
 
-          // Previous Page Button
-          _buildIconButton(
-              Icons.chevron_left, _goToPreviousPage, currentPage > 1),
+        // Current Page Display
+        Text(
+          '$startItem - $endItem of ${widget.totalItems}',
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
 
-          // Current Page Display
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '$currentPage / $totalPages',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
+        // Next Button
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          color: currentPage < totalPages ? Colors.blue : Colors.grey,
+          onPressed: currentPage < totalPages ? _goToNextPage : null,
+        ),
+
+        // Page Size Dropdown
+        const SizedBox(width: 16),
+        DropdownButton<int>(
+          value: pageSize,
+          icon: const Icon(Icons.arrow_drop_down),
+          style: const TextStyle(color: Colors.blue, fontSize: 14),
+          underline: Container(
+            height: 2,
+            color: Colors.blueAccent,
           ),
-
-          // Next Page Button
-          _buildIconButton(
-              Icons.chevron_right, _goToNextPage, currentPage < totalPages),
-
-          // Last Page Button
-          _buildIconButton(
-              Icons.last_page, _goToLastPage, currentPage < totalPages),
-
-          // Page Size Selection
-          const SizedBox(width: 16), // Spacing between buttons and page size
-          GestureDetector(
-            onTap: _showPageSizeMenu,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.blueAccent, width: 1.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$pageSize',
-                style: const TextStyle(
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+          onChanged: (int? newPageSize) {
+            if (newPageSize != null) {
+              setState(() {
+                pageSize = newPageSize;
+                currentPage = 1; // Reset to the first page
+              });
+              widget.onPageChange(currentPage, pageSize);
+            }
+          },
+          items:
+              [15, 30, 45, 60, 75, 100].map<DropdownMenuItem<int>>((int size) {
+            return DropdownMenuItem<int>(
+              value: size,
+              child: Text('$size'),
+            );
+          }).toList(),
+        ),
+      ],
     );
-  }
-
-  // Helper to build icon buttons with enable/disable logic
-  Widget _buildIconButton(
-      IconData icon, VoidCallback onPressed, bool isEnabled) {
-    return IconButton(
-      icon: Icon(
-        icon,
-        size: 24,
-        color: isEnabled ? Colors.blueAccent : Colors.grey,
-      ),
-      onPressed: isEnabled ? onPressed : null,
-    );
-  }
-
-  // Function to show page size popup menu
-  void _showPageSizeMenu() {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final Offset offset = button.localToGlobal(Offset.zero);
-
-    showMenu<int>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx, // Align horizontally
-        offset.dy + button.size.height + 8, // Position below the text
-        offset.dx + button.size.width,
-        offset.dy,
-      ),
-      items: pageSizes.map((size) {
-        return PopupMenuItem<int>(
-          value: size,
-          child: Center(
-            child: Text(
-              '$size',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-          ),
-        );
-      }).toList(),
-    ).then((selectedSize) {
-      if (selectedSize != null) {
-        setState(() {
-          pageSize = selectedSize;
-          currentPage = 1; // Reset to the first page on size change
-        });
-      }
-    });
-  }
-
-  // Navigation logic for buttons
-  void _goToFirstPage() {
-    setState(() {
-      currentPage = 1;
-    });
   }
 
   void _goToPreviousPage() {
-    if (currentPage > 1) {
-      setState(() {
-        currentPage--;
-      });
-    }
+    setState(() {
+      currentPage--;
+    });
+    widget.onPageChange(currentPage, pageSize);
   }
 
   void _goToNextPage() {
-    if (currentPage < totalPages) {
-      setState(() {
-        currentPage++;
-      });
-    }
-  }
-
-  void _goToLastPage() {
     setState(() {
-      currentPage = totalPages;
+      currentPage++;
     });
+    widget.onPageChange(currentPage, pageSize);
   }
 }
