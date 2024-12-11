@@ -5,7 +5,11 @@ import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
 import '../model/folder_permission.dart';
 
 class UserWisePermission extends StatefulWidget {
-  const UserWisePermission({super.key});
+  const UserWisePermission(
+      {super.key, required this.cabinets, required this.folders});
+
+  final List<Cabinet> cabinets;
+  final List<Folder> folders;
   @override
   _UserWisePermissionState createState() => _UserWisePermissionState();
 }
@@ -18,18 +22,9 @@ class _UserWisePermissionState extends State<UserWisePermission> {
     User(id: 4, name: 'User 4'),
   ];
 
-  final List<Cabinet> cabinets = [
-    Cabinet(id: 1, name: 'Cabinet 1'),
-    Cabinet(id: 2, name: 'Cabinet 2'),
-    Cabinet(id: 3, name: 'Cabinet 3'),
-  ];
+  List<Cabinet> cabinets = [];
 
-  final List<Folder> folders = [
-    Folder(id: 1, name: 'Folder A', cabinetId: 1),
-    Folder(id: 2, name: 'Folder B', cabinetId: 1),
-    Folder(id: 3, name: 'Folder C', cabinetId: 2),
-    Folder(id: 4, name: 'Folder D', cabinetId: 3),
-  ];
+  List<Folder> folders = [];
 
   final List<FolderPermission> permissions = [
     FolderPermission(id: 1, cabinetId: 1, folderId: 1, userId: 1),
@@ -39,6 +34,13 @@ class _UserWisePermissionState extends State<UserWisePermission> {
   int? selectedUserId;
   String userSearchQuery = '';
   String cabinetSearchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    cabinets = widget.cabinets;
+    folders = widget.folders;
+  }
 
   void togglePermission(int folderId, int cabinetId) {
     setState(() {
@@ -138,7 +140,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                   Expanded(
                     child: ListView(
                       children: cabinets
-                          .where((cabinet) => cabinet.name
+                          .where((cabinet) => cabinet.nameArabic
                               .toLowerCase()
                               .contains(cabinetSearchQuery.toLowerCase()))
                           .map((cabinet) {
@@ -160,7 +162,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                                     : Colors.grey,
                               ),
                               const SizedBox(width: 8),
-                              Text(cabinet.name),
+                              Text(cabinet.nameArabic),
                             ],
                           ),
                           children: cabinetFolders.map((folder) {
@@ -168,7 +170,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                                 hasFolderPermission(folder.id);
 
                             return CheckboxListTile(
-                              title: Text(folder.name),
+                              title: Text(folder.nameArabic),
                               value: isFolderSelected,
                               onChanged: (isChecked) {
                                 togglePermission(folder.id, cabinet.id);

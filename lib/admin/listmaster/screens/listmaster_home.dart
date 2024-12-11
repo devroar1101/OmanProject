@@ -21,63 +21,62 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
     ref.read(listMasterRepositoryProvider.notifier).fetchListMasters();
   }
 
-   String searchNameArabic ='';
+  String searchNameArabic = '';
   String searchNameEnglish = '';
 
   bool search = false;
 
-  void onSearch(String nameArabic, String nameEnglish)
-  {
+  void onSearch(String nameArabic, String nameEnglish) {
     setState(() {
       searchNameArabic = nameArabic;
       searchNameEnglish = nameEnglish;
-        search = true;
+      search = true;
     });
   }
 
-
- int isSelected = 1;
   @override
   Widget build(BuildContext context) {
     final listMasters = ref.watch(listMasterRepositoryProvider);
-List<ListMaster> filteredListMaster = [];
-    if(search == true){
-        
-        filteredListMaster= listMasters.where((singleListMaster){
-      final matchesArabic = searchNameArabic =='' ||
-          singleListMaster.nameArabic.toLowerCase().contains(searchNameArabic.toLowerCase());
-      final matchesEnglish = searchNameEnglish=='' ||
-          singleListMaster.nameEnglish.toLowerCase().contains(searchNameEnglish.toLowerCase());
-      return matchesArabic && matchesEnglish;
-    }).toList();
+    List<ListMaster> filteredListMaster = [];
+    if (search == true) {
+      filteredListMaster = listMasters.where((singleListMaster) {
+        final matchesArabic = searchNameArabic == '' ||
+            singleListMaster.nameArabic
+                .toLowerCase()
+                .contains(searchNameArabic.toLowerCase());
+        final matchesEnglish = searchNameEnglish == '' ||
+            singleListMaster.nameEnglish
+                .toLowerCase()
+                .contains(searchNameEnglish.toLowerCase());
+        return matchesArabic && matchesEnglish;
+      }).toList();
     }
-   
-     final iconButtons = [
-                    {
-                      "button": Icons.edit,
-                      "function": (int id) {
-                        final ListMaster currentListMaster = listMasters
-                            .firstWhere((listMaster) => listMaster.id == id);
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AddListmasterScreen(
-                              currentListMaster: currentListMaster,
-                            );
-                          },
-                        );
-                      },
-                    },
-                    {
-                      "button": Icons.delete,
-                      "function": (int id) => print("Delete $id")
-                    },
-                  ];
+
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          final ListMaster currentListMaster =
+              listMasters.firstWhere((listMaster) => listMaster.id == id);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddListmasterScreen(
+                currentListMaster: currentListMaster,
+              );
+            },
+          );
+        },
+      },
+      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+    ];
 
     return Scaffold(
       body: Column(
         children: [
-          ListMasterSearchForm(onSearch: onSearch,),
+          ListMasterSearchForm(
+            onSearch: onSearch,
+          ),
           if (listMasters.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -87,16 +86,17 @@ List<ListMaster> filteredListMaster = [];
                 child: DisplayDetails(
                   headers: const ['Code', 'Name Arabic', 'Name English'],
                   data: const ['id', 'nameArabic', 'nameEnglish'],
-                  selected: isSelected.toString(),
-                  details: ListMaster.listToMap(search ? filteredListMaster : listMasters),
+                  selected: '1',
+                  details: ListMaster.listToMap(
+                      search ? filteredListMaster : listMasters),
                   iconButtons: iconButtons,
                   expandable: true,
                   onTap: (int id) {
-                    setState(() {
-                      isSelected = id;
-                    });
-
-                    Navigator.push(context, MaterialPageRoute(builder: (ctx)=>ListMasterItemHome(currentListMasterId: id)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) =>
+                                ListMasterItemHome(currentListMasterId: id)));
                   },
                   detailKey: 'id',
                 ),

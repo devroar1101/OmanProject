@@ -8,26 +8,20 @@ import 'package:tenderboard/admin/cabinets_folders/screens/widgets/user_section.
 import '../model/folder_permission.dart';
 
 class FolderWisePermission extends StatefulWidget {
-  const FolderWisePermission({super.key});
+  const FolderWisePermission(
+      {super.key, required this.cabinets, required this.folders});
+
+  final List<Cabinet> cabinets;
+  final List<Folder> folders;
   @override
   _FolderWisePermissionState createState() => _FolderWisePermissionState();
 }
 
 class _FolderWisePermissionState extends State<FolderWisePermission> {
   // Sample data
-  final List<Cabinet> cabinets = [
-    Cabinet(id: 0, name: 'All Cabinets'),
-    Cabinet(id: 1, name: 'Cabinet 1'),
-    Cabinet(id: 2, name: 'Cabinet 2'),
-    Cabinet(id: 3, name: 'Cabinet 3'),
-  ];
+  List<Cabinet> cabinets = [];
 
-  final List<Folder> folders = [
-    Folder(id: 1, name: 'Folder A', cabinetId: 1),
-    Folder(id: 2, name: 'Folder B', cabinetId: 1),
-    Folder(id: 3, name: 'Folder C', cabinetId: 2),
-    Folder(id: 4, name: 'Folder D', cabinetId: 3),
-  ];
+  List<Folder> folders = [];
 
   final List<User> users = [
     User(id: 1, name: 'User 1'),
@@ -48,6 +42,13 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
   String userSearchQuery = '';
 
   @override
+  void initState() {
+    super.initState();
+    cabinets = widget.cabinets;
+    folders = widget.folders;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
@@ -56,8 +57,9 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
           Expanded(
             child: CabinetSection(
               cabinets: cabinets
-                  .where((cabinet) =>
-                      cabinet.name.toLowerCase().contains(cabinetSearchQuery))
+                  .where((cabinet) => cabinet.nameArabic
+                      .toLowerCase()
+                      .contains(cabinetSearchQuery))
                   .toList(),
               selectedCabinetId: selectedCabinetId,
               onSearch: (query) {
@@ -84,7 +86,9 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
                   .where((folder) =>
                       (selectedCabinetId == 0 ||
                           folder.cabinetId == selectedCabinetId) &&
-                      folder.name.toLowerCase().contains(folderSearchQuery))
+                      folder.nameArabic
+                          .toLowerCase()
+                          .contains(folderSearchQuery))
                   .toList(),
               selectedFolderId: selectedFolderId,
               onSearch: (query) {

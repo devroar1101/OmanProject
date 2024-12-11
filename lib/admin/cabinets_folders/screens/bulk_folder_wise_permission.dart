@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
+
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
 
 import '../model/folder_permission.dart';
 
-class BulkFolderWisePermission extends StatefulWidget {
-  const BulkFolderWisePermission({super.key});
+class BulkFolderWisePermission extends ConsumerStatefulWidget {
+  const BulkFolderWisePermission(
+      {super.key, required this.cabinets, required this.folders});
+
+  final List<Cabinet> cabinets;
+  final List<Folder> folders;
   @override
   _BulkFolderWisePermissionState createState() =>
       _BulkFolderWisePermissionState();
 }
 
-class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
-  final List<Cabinet> cabinets = [
-    Cabinet(id: 1, name: 'Cabinet 1'),
-    Cabinet(id: 2, name: 'Cabinet 2'),
-    Cabinet(id: 3, name: 'Cabinet 3'),
-  ];
+class _BulkFolderWisePermissionState
+    extends ConsumerState<BulkFolderWisePermission> {
+  List<Cabinet> cabinets = [];
 
-  final List<Folder> folders = [
-    Folder(id: 1, name: 'Folder A', cabinetId: 1),
-    Folder(id: 2, name: 'Folder B', cabinetId: 1),
-    Folder(id: 3, name: 'Folder C', cabinetId: 2),
-    Folder(id: 4, name: 'Folder D', cabinetId: 3),
-  ];
+  List<Folder> folders = [];
 
   final List<User> users = [
     User(id: 1, name: 'User 1'),
@@ -38,6 +36,13 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
   String folderSearchQuery = '';
   String userSearchQuery = '';
   String cabinetSearchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    cabinets = widget.cabinets;
+    folders = widget.folders;
+  }
 
   void addPermissions() {
     if (selectedFolderIds.isEmpty || selectedUserIds.isEmpty) {
@@ -91,7 +96,7 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
                   child: ListView(
                     children: cabinets
                         .where(
-                      (cabinet) => cabinet.name.toLowerCase().contains(
+                      (cabinet) => cabinet.nameArabic.toLowerCase().contains(
                             cabinetSearchQuery.toLowerCase(),
                           ),
                     )
@@ -99,19 +104,19 @@ class _BulkFolderWisePermissionState extends State<BulkFolderWisePermission> {
                       final cabinetFolders = folders
                           .where((folder) =>
                               folder.cabinetId == cabinet.id &&
-                              folder.name
+                              folder.nameArabic
                                   .toLowerCase()
                                   .contains(folderSearchQuery.toLowerCase()))
                           .toList();
 
                       return ExpansionTile(
-                        title: Text(cabinet.name),
+                        title: Text(cabinet.nameArabic),
                         children: cabinetFolders.map((folder) {
                           final isSelected =
                               selectedFolderIds.contains(folder.id);
 
                           return CheckboxListTile(
-                            title: Text(folder.name),
+                            title: Text(folder.nameArabic),
                             value: isSelected,
                             onChanged: (isChecked) {
                               setState(() {
