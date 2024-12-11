@@ -6,6 +6,7 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
 class ListMasterHome extends ConsumerStatefulWidget {
   const ListMasterHome({super.key});
@@ -23,7 +24,8 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
 
   String searchNameArabic = '';
   String searchNameEnglish = '';
-
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
   bool search = false;
 
   void onSearch(String nameArabic, String nameEnglish) {
@@ -34,23 +36,32 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
     });
   }
 
+  List<ListMaster> _applyFiltersAndPagination(List<ListMaster> listMasters) {
+    // Apply search filters
+    List<ListMaster> filteredList = listMasters.where((listMaster) {
+      final matchesArabic = searchNameArabic.isEmpty ||
+          listMaster.nameArabic
+              .toLowerCase()
+              .contains(searchNameArabic.toLowerCase());
+      final matchesEnglish = searchNameEnglish.isEmpty ||
+          listMaster.nameEnglish
+              .toLowerCase()
+              .contains(searchNameEnglish.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
     final listMasters = ref.watch(listMasterRepositoryProvider);
-    List<ListMaster> filteredListMaster = [];
-    if (search == true) {
-      filteredListMaster = listMasters.where((singleListMaster) {
-        final matchesArabic = searchNameArabic == '' ||
-            singleListMaster.nameArabic
-                .toLowerCase()
-                .contains(searchNameArabic.toLowerCase());
-        final matchesEnglish = searchNameEnglish == '' ||
-            singleListMaster.nameEnglish
-                .toLowerCase()
-                .contains(searchNameEnglish.toLowerCase());
-        return matchesArabic && matchesEnglish;
-      }).toList();
-    }
+    final filteredAndPaginatedList = _applyFiltersAndPagination(listMasters);
 
     final iconButtons = [
       {
@@ -77,6 +88,29 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
           ListMasterSearchForm(
             onSearch: onSearch,
           ),
+          if (listMasters.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? listMasters.where((listMaster) {
+                      final matchesArabic = searchNameArabic.isEmpty ||
+                          listMaster.nameArabic
+                              .toLowerCase()
+                              .contains(searchNameArabic.toLowerCase());
+                      final matchesEnglish = searchNameEnglish.isEmpty ||
+                          listMaster.nameEnglish
+                              .toLowerCase()
+                              .contains(searchNameEnglish.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : listMasters.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
           if (listMasters.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -87,16 +121,17 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
                   headers: const ['Code', 'Name Arabic', 'Name English'],
                   data: const ['id', 'nameArabic', 'nameEnglish'],
                   selected: '1',
-                  details: ListMaster.listToMap(
-                      search ? filteredListMaster : listMasters),
+                  details: ListMaster.listToMap(filteredAndPaginatedList),
                   iconButtons: iconButtons,
                   expandable: true,
                   onTap: (int id) {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) =>
-                                ListMasterItemHome(currentListMasterId: id)));
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) =>
+                            ListMasterItemHome(currentListMasterId: id),
+                      ),
+                    );
                   },
                   detailKey: 'id',
                 ),
