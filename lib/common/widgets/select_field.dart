@@ -6,17 +6,16 @@ class SelectField<T> extends StatefulWidget {
   final List<SelectOption<T>> options;
   final Function(T) onChanged;
   final String hint;
-  final TextEditingController? controller;
+  String? selectedOption;
   String? initialValue;
 
-  SelectField({
-    super.key,
-    required this.options,
-    required this.onChanged,
-    this.hint = 'Search...',
-    this.controller,
-    this.initialValue,
-  });
+  SelectField(
+      {super.key,
+      required this.options,
+      required this.onChanged,
+      this.hint = 'Search...',
+      this.initialValue,
+      this.selectedOption});
 
   @override
   _SelectFieldState<T> createState() => _SelectFieldState<T>();
@@ -109,7 +108,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                   borderRadius: BorderRadius.circular(5),
                   child: Container(
                     constraints: const BoxConstraints(
-                      maxHeight: 200,
+                      maxHeight: 100,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -117,9 +116,9 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: filteredOptions.isEmpty
-                        ? Center(
+                        ? const Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8.0),
                               child: Text('No options available',
                                   style: TextStyle(color: Colors.grey)),
                             ),
@@ -134,12 +133,14 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                                 onTap: () {
                                   setState(() {
                                     _searchController.text = option.displayName;
+                                    widget.selectedOption = option.key;
                                     filteredOptions = widget.options;
                                   });
                                   widget.onChanged(option.value);
                                   _removeOverlay();
                                 },
                                 child: ListTile(
+                                  selected: option.key == widget.selectedOption,
                                   title: Text(option.displayName),
                                 ),
                               );
@@ -158,26 +159,43 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
-      link: _layerLink,
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          if (isDropdownOpen) {
-            _removeOverlay();
-          }
-        },
-        child: TextField(
-          controller: widget.controller ?? _searchController,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            border: const OutlineInputBorder(),
-            suffixIcon: Icon(
-              isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+        link: _layerLink,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            if (isDropdownOpen) {
+              _removeOverlay();
+            }
+          },
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              border: const OutlineInputBorder(),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_searchController.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        _searchController.clear();
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  Icon(
+                    isDropdownOpen
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down,
+                  ),
+                ],
+              ),
             ),
+            onTap: _createOrUpdateOverlay,
+            onChanged: (value) {
+              // Trigger UI update when text changes
+              (context as Element).markNeedsBuild();
+            },
           ),
-          onTap: _createOrUpdateOverlay,
-        ),
-      ),
-    );
+        ));
   }
 }
