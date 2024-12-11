@@ -32,6 +32,7 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
             code: Response.data['data']['code'],
             departmentNameArabic: nameArabic,
             departmentNameEnglish: nameEnglish,
+            dgNameEnglish: 'test',
             objectId: 'aqaq-aqa',
             id: 1,
             dgId: currentDGId),
@@ -65,6 +66,7 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
             code: '0',
             departmentNameArabic: nameArabic,
             departmentNameEnglish: nameEnglish,
+            dgNameEnglish: 'test',
             objectId: 'ds-ds-d',
             id: currentDepartmentId,
             dgId: dgId);

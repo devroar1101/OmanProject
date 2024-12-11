@@ -30,7 +30,7 @@ class AddDepartmentMaster extends ConsumerWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
+print('333${snapshot.data}');
         if (snapshot.hasError) {
           return Dialog(
             shape: RoundedRectangleBorder(
@@ -137,8 +137,8 @@ class AddDepartmentMaster extends ConsumerWidget {
                                     currentDepartment!.dgId.toString())
                                 .displayName
                             : null,
-                        onChanged: (DG) {
-                          _selectedDG = DG.id.toString();
+                        onChanged: (dG) {
+                          _selectedDG = dG.id.toString();
                         },
                         hint: 'Select a DG',
                       ),

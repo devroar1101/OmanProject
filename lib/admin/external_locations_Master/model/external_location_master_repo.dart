@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
@@ -114,6 +113,7 @@ class ExternalLocationMasterRepository
             .map((item) =>
                 ExternalLocationMaster.fromMap(item as Map<String, dynamic>))
             .toList();
+            print( 'state :$state');
       } else {
         throw Exception('Failed to load External Location');
       }
