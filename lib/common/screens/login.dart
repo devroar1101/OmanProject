@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 
@@ -15,7 +16,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isPasswordVisible = false;
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedLanguage = 'ar'; // Initially set to 'English'
+  String _selectedLanguage = 'ar';
+
+  @override
+  void initState() {
+    super.initState();
+    getLastSessionUserName();
+  }
+
+  void getLastSessionUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _loginIdController.text = prefs.getString('username') ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {

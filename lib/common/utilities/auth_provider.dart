@@ -24,10 +24,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   // Save the authentication state in SharedPreferences
-  Future<void> _saveAuthState() async {
+  Future<void> _saveAuthState({String? userName}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (state.isAuthenticated) {
       await prefs.setString('accessToken', state.accessToken!);
+      await prefs.setString('username', userName!);
     } else {
       await prefs.remove('accessToken'); // Clear token on logout
     }
@@ -41,7 +42,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       isAuthenticated: true,
     );
     await changeLanguage(selectedLanguage); // Update language
-    await _saveAuthState(); // Persist authentication state
+    await _saveAuthState(userName: username); // Persist authentication state
   }
 
   // Handle logout and clear authentication state
