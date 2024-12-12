@@ -3,8 +3,8 @@ class ExternalLocationMaster {
   String nameArabic;
   String nameEnglish;
   int typeId;
-  String isNew;
-  String isDeleted;
+  bool isNew;
+  bool isDeleted;
   String objectId;
 
   ExternalLocationMaster({
@@ -24,8 +24,8 @@ class ExternalLocationMaster {
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
       typeId: map['typeId'] ?? 0,
-      isNew: map['isNew'] ?? bool,
-      isDeleted: map['isDeleted'] ?? bool,
+      isNew: map['isNew'] ?? false,
+      isDeleted: map['isDeleted'] ?? false,
       objectId: map['objectId'] ?? '',
     );
   }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 
@@ -33,6 +34,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
   void initState() {
     super.initState();
     filteredOptions = widget.options;
+    print('555$filteredOptions');
     if (widget.initialValue != null && widget.initialValue != '') {
       _searchController.text = widget.initialValue!;
     }
@@ -107,8 +109,9 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                   elevation: 4.0,
                   borderRadius: BorderRadius.circular(5),
                   child: Container(
-                    constraints: const BoxConstraints(
-                      maxHeight: 100,
+                    constraints:  BoxConstraints(
+                      maxHeight: filteredOptions.isEmpty
+                        ?100:250,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -129,6 +132,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                             itemCount: filteredOptions.length,
                             itemBuilder: (context, index) {
                               final option = filteredOptions[index];
+                              
                               return GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -159,6 +163,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
   @override
   Widget build(BuildContext context) {
+    print('4444${Options()}');
     return CompositedTransformTarget(
         link: _layerLink,
         child: GestureDetector(

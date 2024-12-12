@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {

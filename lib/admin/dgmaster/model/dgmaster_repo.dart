@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final dgMasterRepositoryProvider =
@@ -26,11 +27,11 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
       state = [
         DgMaster(
-            id: Response.data['dgId'],
+            id: Response.data['data']['dgId'],
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
-            code: Response.data['code'],
-            objectId: 'aa-aa-a'),
+            code: Response.data['data']['code'],
+            ),
         ...state
       ];
     } catch (e) {
@@ -88,15 +89,15 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       // Use await to ensure the request completes before proceeding
       final response = await dio.put('/DG/Update', data: requestBody);
 
-      if (response.statusCode == 200) {
-        // Create the updated DgMaster object
-        final updatedDgMaster = DgMaster(
-          id: currentDGId,
-          nameArabic: editNameArabic,
-          nameEnglish: editNameEnglish,
-          code: '0', // Update this as needed
-          objectId: 'das-das-d', // Update this as needed
-        );
+    if (response.statusCode == 200) {
+      // Create the updated DgMaster object
+      final updatedDgMaster = DgMaster(
+        id: currentDGId,
+        nameArabic: editNameArabic,
+        nameEnglish: editNameEnglish,
+        code: '0', // Update this as needed
+        
+      );
 
         // Update the state with the edited DgMaster
         state = [
@@ -128,7 +129,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     return filteredList;
   }
 
-  Future<List<SelectOption<DgMaster>>> getDGOptions() async {
+  Future<List<SelectOption<DgMaster>>> getDGOptions( String currentLanguage) async {
     List<DgMaster> DGList = state;
 
     if (DGList.isEmpty) {
@@ -138,7 +139,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
     final List<SelectOption<DgMaster>> options =
         DGList.map((dg) => SelectOption<DgMaster>(
-              displayName: dg.nameEnglish,
+              displayName: currentLanguage == 'en' ?dg.nameEnglish :dg.nameArabic,
               key: dg.id.toString(),
               value: dg,
             )).toList();
@@ -149,5 +150,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
 final dgOptionsProvider =
     FutureProvider<List<SelectOption<DgMaster>>>((ref) async {
-  return ref.read(dgMasterRepositoryProvider.notifier).getDGOptions();
+  final authState =    ref.watch(authProvider);
+  
+  return   ref.read(dgMasterRepositoryProvider.notifier).getDGOptions(authState.selectedLanguage);
 });

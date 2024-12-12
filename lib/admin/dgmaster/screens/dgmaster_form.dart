@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DgMasterSearchForm extends StatefulWidget {
-  const DgMasterSearchForm({super.key});
+  const DgMasterSearchForm({super.key,required this.onSearch});
 
+  final Function(String,String,String) onSearch;
   @override
   _DgMasterSearchFormState createState() => _DgMasterSearchFormState();
 }
@@ -15,12 +16,16 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
+    widget.onSearch('','','');
   }
 
   void _handleSearch() {
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
+
+    widget.onSearch(nameArabic,nameEnglish,code);
+
 
     // Perform search logic
   }

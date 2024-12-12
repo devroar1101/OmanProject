@@ -22,7 +22,11 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
       await dio.post('/ListMaster/Create', data: requestBody);
 
       // After adding a ListMaster, we update the state to trigger a rebuild
-      state = [ ListMaster(nameEnglish: nameEnglish, nameArabic: nameArabic,id: 0,listMasterCode: '0',objectId: '1111',items: []),...state];
+      state = [ ListMaster(
+        nameEnglish: nameEnglish, 
+        nameArabic: nameArabic,
+        id: 0,listMasterCode: '',
+        objectId: '1111',),...state];
     } catch (e) {
       throw Exception('Error occurred while adding ListMaster: $e');
     }
@@ -74,7 +78,7 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
       nameArabic: nameArabic,
       listMasterCode: 'UpdatedCode', // Optionally update this if you receive a new value from the backend
       objectId: 'UpdatedObjectId',  // Optionally update this if you receive a new value from the backend
-      items: [], // Update if there are any changes to the items list, otherwise leave as is
+      // Update if there are any changes to the items list, otherwise leave as is
     );
 
     // Update the state to reflect the edited ListMaster

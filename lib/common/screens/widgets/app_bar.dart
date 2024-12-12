@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/department_master/screens/add_department.dart';
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/add_external_location.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
 import 'package:tenderboard/admin/listmasteritem/screens/add_listmasteritem.dart';
@@ -158,6 +159,13 @@ class CustomAppBar {
         context: context,
         builder: (BuildContext context) {
           return  AddListMasterItemScreen(currentListMasterId: 1,);
+        },
+      );
+    } else if (screenName == 'ExternalLocation') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return  AddExternalLocation();
         },
       );
     } else {

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
@@ -36,8 +35,8 @@ class ExternalLocationMasterRepository
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             typeId: typeId,
-            isNew: 'true',
-            isDeleted: 'true',
+            isNew: response.data['data']['isNew'],
+            isDeleted: response.data['data']['isDeleted'],
             objectId: 'as-da-sd-sa'),
         ...state
       ];
@@ -70,8 +69,8 @@ class ExternalLocationMasterRepository
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             typeId: typeId,
-            isNew: '',
-            isDeleted: '',
+            isNew: response.data['data']['isNew'],
+            isDeleted: response.data['data']['isDeleted'],
             objectId: '');
 
         state = [
@@ -104,7 +103,7 @@ class ExternalLocationMasterRepository
     };
     try {
       final response = await dio.post(
-        '/AdminstratorQueries/SearchAndListExternalLocations',
+        '/Master/SearchAndListExternalLocation',
         data: requestBody,
       );
       // Check if the response is successful
@@ -114,6 +113,7 @@ class ExternalLocationMasterRepository
             .map((item) =>
                 ExternalLocationMaster.fromMap(item as Map<String, dynamic>))
             .toList();
+            print( 'state :$state');
       } else {
         throw Exception('Failed to load External Location');
       }

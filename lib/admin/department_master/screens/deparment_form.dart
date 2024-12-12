@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class DepartmentSearchForm extends StatefulWidget {
+class DepartmentSearchForm extends ConsumerStatefulWidget {
   const DepartmentSearchForm({super.key});
 
   @override
   _DepartmentSearchFormState createState() => _DepartmentSearchFormState();
 }
 
-class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
+class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
   String? _selectedDropdownValue;
 
-  // Example dropdown options
-  final List<SelectOption<String>> dropdownOptions = [
-    SelectOption(
-        displayName: 'Department 1', key: 'dept1', value: 'Department 1'),
-    SelectOption(
-        displayName: 'Department 2', key: 'dept2', value: 'Department 2'),
-    SelectOption(displayName: 'إدارة 3', key: 'dept3', value: 'إدارة 3'),
-    SelectOption(
-        displayName: 'Department 4', key: 'dept4', value: 'Department 4'),
-  ];
-
+  
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
@@ -51,6 +44,8 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
 
   @override
   Widget build(BuildContext context) {
+    final dgOptionAsyncvalue = ref.watch(dgOptionsProvider);
+    final dgOptions = dgOptionAsyncvalue.asData?.value;
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -103,14 +98,14 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
 
             // Custom Dropdown Field
             Expanded(
-              child: SelectField<String>(
-                options: dropdownOptions,
-                onChanged: (value) {
+              child: SelectField<DgMaster>(
+                options: dgOptions!,
+                onChanged: (dg) {
                   setState(() {
-                    _selectedDropdownValue = value;
+                    _selectedDropdownValue = dg.id.toString();
                   });
                 },
-                hint: 'Select Department',
+                hint: 'Select DG',
               ),
             ),
             const SizedBox(width: 8.0),

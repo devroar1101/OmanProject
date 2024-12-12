@@ -3,6 +3,7 @@ class Department {
   String code;
   String departmentNameArabic;
   String departmentNameEnglish;
+  String dgNameEnglish;
   String objectId;
   int id;
   int dgId;
@@ -11,6 +12,7 @@ class Department {
     required this.code,
     required this.departmentNameArabic,
     required this.departmentNameEnglish,
+    required this.dgNameEnglish,
     required this.objectId,
     required this.id,
     required this.dgId,
@@ -22,6 +24,7 @@ class Department {
       code: map['code'] ?? '',
       departmentNameArabic: map['departmentNameArabic'] ?? '',
       departmentNameEnglish: map['departmentNameEnglish'] ?? '',
+      dgNameEnglish: map['dgNameEnglish'] ?? '',
       objectId: map['departmentObjectId'] ?? '',
       id: map['departmentId'] ?? 0,
       dgId: map['dgId'] ?? 0, 
@@ -34,6 +37,7 @@ class Department {
       'code': code,
       'departmentNameArabic': departmentNameArabic,
       'departmentNameEnglish': departmentNameEnglish,
+      'dgNameEnglish': dgNameEnglish,
       'departmentObjectId': objectId,
       'dgId': dgId,
       'id': id,

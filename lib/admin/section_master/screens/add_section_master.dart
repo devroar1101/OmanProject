@@ -37,7 +37,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
       builder: (context, ref, child) {
         final dgOptions = ref.watch(dgOptionsProvider);
         final departmentOptions =
-            ref.watch(departmentOptionsProvider(_selectedDG ?? ''));
+            ref.watch(departmentOptionsProvider('1'));
 
         return dgOptions.when(
           data: (dgList) {
@@ -82,6 +82,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                             _buildSearchableDropdown<DgMaster>(
                               label: 'Select DG',
                               options: dgList,
+                              selectOption: _selectedDG,
                               initialValue: widget.currentSection != null
                                   ? dgList
                                       .firstWhere((dg) =>
@@ -93,7 +94,8 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                               onChanged: (dg) {
                                 setState(() {
                                   _selectedDG = dg.id.toString();
-                                  // Trigger department options reload when DG changes
+                                  _selectedDepartment=null;
+                                  
                                   ref.refresh(
                                       departmentOptionsProvider(_selectedDG!));
                                 });
@@ -104,14 +106,14 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                             _buildSearchableDropdown<Department>(
                               label: 'Select Department',
                               options: departments,
-                              initialValue: widget.currentSection != null
+                              initialValue: _selectedDepartment == null ? null: widget.currentSection != null
                                   ? departments
                                       .firstWhere((option) =>
                                           option.key ==
                                           widget.currentSection!.departmentId
                                               .toString())
                                       .displayName
-                                  : null,
+                                  :  null,
                               onChanged: (dept) =>
                                   _selectedDepartment = dept.id.toString(),
                             ),
@@ -162,6 +164,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     required String label,
     required List<SelectOption<T>> options,
     String? initialValue,
+    String? selectOption,
     required Function(T) onChanged,
   }) {
     return SizedBox(
@@ -169,6 +172,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
       child: SelectField<T>(
         options: options,
         initialValue: initialValue,
+        selectedOption: selectOption ,
         onChanged: onChanged,
         hint: label,
       ),

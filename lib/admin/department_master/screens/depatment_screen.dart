@@ -48,7 +48,7 @@ class _DepartmentMasterScreenState extends ConsumerState<DepartmentMasterScreen>
                     'code',
                     'departmentNameArabic',
                     'departmentNameEnglish',
-                    'dgId',
+                    'dgNameEnglish',
                   ], // Keys to extract data
                   details: Department.listToMap(departments), // Convert list to map
                   expandable: true, // Expandable table rows
