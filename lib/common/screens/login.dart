@@ -15,7 +15,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isPasswordVisible = false;
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedLanguage = 'en'; // Initially set to 'English'
+  String _selectedLanguage = 'ar'; // Initially set to 'English'
 
   @override
   Widget build(BuildContext context) {

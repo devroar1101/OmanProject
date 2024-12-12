@@ -4,33 +4,60 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState(selectedLanguage: 'English')) {
-    _loadLanguage();
+  AuthNotifier() : super(AuthState(selectedLanguage: 'en')) {
+    _loadAuthState(); // Load authentication state on startup
   }
 
-  // Load the language preference from SharedPreferences
-  Future<void> _loadLanguage() async {
+  // Load authentication state from SharedPreferences
+  Future<void> _loadAuthState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
-    state = state.copyWith(selectedLanguage: savedLanguage);
+    final savedToken = prefs.getString('accessToken');
+    final isAuthenticated =
+        savedToken != null; // If a token exists, user is authenticated
+
+    state = state.copyWith(
+      selectedLanguage: savedLanguage,
+      accessToken: savedToken,
+      isAuthenticated: isAuthenticated,
+    );
   }
 
-  // Change the selected language and save it in SharedPreferences
-  Future<void> changeLanguage(String language) async {
-    state = state.copyWith(selectedLanguage: language);
-    // Save the selected language in SharedPreferences
+  // Save the authentication state in SharedPreferences
+  Future<void> _saveAuthState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selectedLanguage', language);
+    if (state.isAuthenticated) {
+      await prefs.setString('accessToken', state.accessToken!);
+    } else {
+      await prefs.remove('accessToken'); // Clear token on logout
+    }
   }
 
   // Handle login and update authentication state
-  void login(String username, String password, String selectedLanguage) {
+  void login(String username, String password, String selectedLanguage) async {
     final generatedToken = _generateRandomToken();
     state = state.copyWith(
       accessToken: generatedToken,
       isAuthenticated: true,
     );
-    changeLanguage(selectedLanguage); // Update language after login
+    await changeLanguage(selectedLanguage); // Update language
+    await _saveAuthState(); // Persist authentication state
+  }
+
+  // Handle logout and clear authentication state
+  Future<void> logout() async {
+    state = state.copyWith(
+      accessToken: null,
+      isAuthenticated: false,
+    );
+    await _saveAuthState(); // Clear authentication state
+  }
+
+  // Change the selected language and save it in SharedPreferences
+  Future<void> changeLanguage(String language) async {
+    state = state.copyWith(selectedLanguage: language);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedLanguage', language);
   }
 
   // Generate a random token (for demo purposes)

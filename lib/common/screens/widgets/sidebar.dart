@@ -124,6 +124,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
+
     return Container(
       margin: const EdgeInsets.all(16), // Detached sidebar with margin
       decoration: BoxDecoration(
@@ -152,7 +154,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                         _currentCategory == 'Office' ? 'Admin' : 'Office';
                     return ListTile(
                       iconColor: Theme.of(context).iconTheme.color,
-                      leading: const Icon(Icons.swap_horiz),
+                      leading: isRTL ? null : const Icon(Icons.swap_horiz),
+                      trailing: isRTL ? const Icon(Icons.swap_horiz) : null,
                       title: _isMinimized ? null : Text(toggleCategory),
                       onTap: () {
                         _changeCategory(toggleCategory);
@@ -163,10 +166,22 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   final bool isActive = _activeItem == item['title'];
 
                   return ListTile(
-                    leading: Icon(
-                      item['icon'],
-                      color: isActive ? Colors.blueAccent : AppTheme.iconColor,
-                    ),
+                    leading: isRTL
+                        ? null
+                        : Icon(
+                            item['icon'],
+                            color: isActive
+                                ? Colors.blueAccent
+                                : AppTheme.iconColor,
+                          ),
+                    trailing: isRTL
+                        ? Icon(
+                            item['icon'],
+                            color: isActive
+                                ? Colors.blueAccent
+                                : AppTheme.iconColor,
+                          )
+                        : null,
                     title: _isMinimized
                         ? null
                         : Text(
@@ -199,7 +214,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 icon: Icon(
-                  _isMinimized ? Icons.arrow_forward : Icons.arrow_back,
+                  _isMinimized
+                      ? (isRTL ? Icons.arrow_back : Icons.arrow_forward)
+                      : (isRTL ? Icons.arrow_forward : Icons.arrow_back),
                 ),
                 onPressed: _toggleMinimize,
               ),
