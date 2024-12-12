@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final dgMasterRepositoryProvider =
@@ -128,7 +129,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     return filteredList;
   }
 
-  Future<List<SelectOption<DgMaster>>> getDGOptions() async {
+  Future<List<SelectOption<DgMaster>>> getDGOptions( String currentLanguage) async {
     List<DgMaster> DGList = state;
 
     if (DGList.isEmpty) {
@@ -138,7 +139,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
     final List<SelectOption<DgMaster>> options =
         DGList.map((dg) => SelectOption<DgMaster>(
-              displayName: dg.nameEnglish,
+              displayName: currentLanguage == 'en' ?dg.nameEnglish :dg.nameArabic,
               key: dg.id.toString(),
               value: dg,
             )).toList();
@@ -149,5 +150,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
 final dgOptionsProvider =
     FutureProvider<List<SelectOption<DgMaster>>>((ref) async {
-  return ref.read(dgMasterRepositoryProvider.notifier).getDGOptions();
+  final authState =    ref.watch(authProvider);
+  
+  return   ref.read(dgMasterRepositoryProvider.notifier).getDGOptions(authState.selectedLanguage);
 });

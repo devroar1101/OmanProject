@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 
 import 'package:tenderboard/common/widgets/select_field.dart';
 
@@ -21,48 +22,14 @@ class AddDepartmentMaster extends ConsumerWidget {
   String? _selectedDG;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder(
-      future: ref
-          .read(dgMasterRepositoryProvider.notifier)
-          .getDGOptions(), // Fetch DG options
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-print('333${snapshot.data}');
-        if (snapshot.hasError) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: SizedBox(
-              width: 500.0,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Error loading DG options',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text('${snapshot.error}'),
-                    const SizedBox(height: 24.0),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Close'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
+  Widget build(BuildContext context, WidgetRef ref)  {
+    
+  final dgOptionAsyncvalue =   ref.watch(dgOptionsProvider);
 
-        final dgOptions = snapshot.data;
+
+       
+
+        final dgOptions =   dgOptionAsyncvalue.asData?.value;
 
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -170,8 +137,7 @@ print('333${snapshot.data}');
             ),
           ),
         );
-      },
-    );
+    
   }
 
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
