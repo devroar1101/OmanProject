@@ -1,12 +1,23 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
+import 'dart:html' as html; // Import for window.location.reload() on web
+import 'package:flutter/foundation.dart'; // Import to check platform
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState(selectedLanguage: 'en')) {
-    _loadAuthState(); // Load authentication state on startup
+  final Ref ref; // Add reference to Ref for accessing other providers
+
+  AuthNotifier(this.ref) : super(AuthState(selectedLanguage: 'en')) {
+    _initialize(); // Initialize the authentication state
+  }
+
+  // Initialize authentication state
+  Future<void> _initialize() async {
+    await _loadAuthState();
+    preLoad(); // Trigger background fetching
   }
 
   // Load authentication state from SharedPreferences
@@ -14,8 +25,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
     final savedToken = prefs.getString('accessToken');
-    final isAuthenticated =
-        savedToken != null; // If a token exists, user is authenticated
+    final isAuthenticated = savedToken != null;
 
     state = state.copyWith(
       selectedLanguage: savedLanguage,
@@ -29,14 +39,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (state.isAuthenticated) {
       await prefs.setString('accessToken', state.accessToken!);
-      await prefs.setString('username', userName!);
+      if (userName != null) {
+        await prefs.setString('username', userName);
+      }
     } else {
-      await prefs.remove('accessToken'); // Clear token on logout
+      await prefs.setString('selectedLanguage', 'en');
+      await prefs.remove('accessToken');
     }
   }
 
   // Handle login and update authentication state
-  void login(String username, String password, String selectedLanguage) async {
+  Future<void> login(
+      String username, String password, String selectedLanguage) async {
     final generatedToken = _generateRandomToken();
     state = state.copyWith(
       accessToken: generatedToken,
@@ -46,13 +60,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _saveAuthState(userName: username); // Persist authentication state
   }
 
+  // Trigger background data preloading
+  void preLoad() {
+    ref.read(dgOptionsProvider); // Start fetching DG options
+    ref.read(departmentOptionsProvider(null)); // Trigger department options
+  }
+
   // Handle logout and clear authentication state
   Future<void> logout() async {
     state = state.copyWith(
-      accessToken: null,
-      isAuthenticated: false,
-    );
+        accessToken: null, isAuthenticated: false, selectedLanguage: 'en');
+
     await _saveAuthState(); // Clear authentication state
+
+    // Check if the platform is web and refresh the page
+    if (kIsWeb) {
+      html.window.location.reload(); // This will refresh the browser window
+    }
   }
 
   // Change the selected language and save it in SharedPreferences
@@ -74,5 +98,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 // Auth provider to use the AuthNotifier
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
+  return AuthNotifier(ref);
 });

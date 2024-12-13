@@ -141,7 +141,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
-        width: _isMinimized ? 60 : 220,
+        width: _isMinimized ? 70 : 220,
         child: Column(
           children: [
             // Sidebar items
@@ -154,8 +154,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                         _currentCategory == 'Office' ? 'Admin' : 'Office';
                     return ListTile(
                       iconColor: Theme.of(context).iconTheme.color,
-                      leading: isRTL ? null : const Icon(Icons.swap_horiz),
-                      trailing: isRTL ? const Icon(Icons.swap_horiz) : null,
+                      leading: const Icon(Icons.swap_horiz),
                       title: _isMinimized ? null : Text(toggleCategory),
                       onTap: () {
                         _changeCategory(toggleCategory);
@@ -166,22 +165,10 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   final bool isActive = _activeItem == item['title'];
 
                   return ListTile(
-                    leading: isRTL
-                        ? null
-                        : Icon(
-                            item['icon'],
-                            color: isActive
-                                ? Colors.blueAccent
-                                : AppTheme.iconColor,
-                          ),
-                    trailing: isRTL
-                        ? Icon(
-                            item['icon'],
-                            color: isActive
-                                ? Colors.blueAccent
-                                : AppTheme.iconColor,
-                          )
-                        : null,
+                    leading: Icon(
+                      item['icon'],
+                      color: isActive ? Colors.blueAccent : AppTheme.iconColor,
+                    ),
                     title: _isMinimized
                         ? null
                         : Text(
