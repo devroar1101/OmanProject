@@ -5,6 +5,7 @@ import 'package:tenderboard/admin/external_locations_Master/model/external_locat
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
 class ExternalLocationMasterScreen extends ConsumerStatefulWidget {
   const ExternalLocationMasterScreen({super.key});
@@ -25,17 +26,97 @@ class _ExternalLocationMasterScreenState
         .fetchExternalLocationMaster();
   }
 
+  String searchNameArabic = '';
+  String searchNameEnglish = '';
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
+  bool search = false;
+
+  void onSearch(String nameArabic, String nameEnglish) {
+    setState(() {
+      searchNameArabic = nameArabic;
+      searchNameEnglish = nameEnglish;
+      search = true;
+    });
+  }
+
+  List<ExternalLocationMaster> _applyFiltersAndPagination(List<ExternalLocationMaster> externalLocations) {
+    // Apply search filters
+    List<ExternalLocationMaster> filteredList = externalLocations.where((externalLocation) {
+      final matchesArabic = searchNameArabic.isEmpty ||
+          externalLocation.nameArabic
+              .toLowerCase()
+              .contains(searchNameArabic.toLowerCase());
+      final matchesEnglish = searchNameEnglish.isEmpty ||
+          externalLocation.nameEnglish
+              .toLowerCase()
+              .contains(searchNameEnglish.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
     final externalLocations = ref.watch(ExternalLocationMasterRepositoryProvider);
+    final filteredAndPaginatedList = _applyFiltersAndPagination(externalLocations);
+
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          final ExternalLocationMaster currentLocation =
+                        externalLocations.firstWhere(
+                            (location) => location.id == id);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AddUserMasterScreen(
+                          
+                        );
+                      },
+                    );
+        },
+      },
+      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+    ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('External Location Master'),
-      ),
+      
       body: Column(
         children: [
-          const ExternalLocationMasterSearchForm(),
+           ExternalLocationMasterSearchForm(
+            onSearch: onSearch,
+          ),
+          if (externalLocations.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? externalLocations.where((externalLocation) {
+                      final matchesArabic = searchNameArabic.isEmpty ||
+                          externalLocation.nameArabic
+                              .toLowerCase()
+                              .contains(searchNameArabic.toLowerCase());
+                      final matchesEnglish = searchNameEnglish.isEmpty ||
+                          externalLocation.nameEnglish
+                              .toLowerCase()
+                              .contains(searchNameEnglish.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : externalLocations.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
           if (externalLocations.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -57,20 +138,11 @@ class _ExternalLocationMasterScreenState
                     'active',
                     'isYes',
                   ],
-                  details: ExternalLocationMaster.listToMap(externalLocations),
+                  details: ExternalLocationMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
+                  iconButtons: iconButtons,
                   onTap: (int index) {
-                    final ExternalLocationMaster currentLocation =
-                        externalLocations.firstWhere(
-                            (location) => location.objectId == index);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const AddUserMasterScreen(
-                          
-                        );
-                      },
-                    );
+                    
                   },
                   detailKey: 'objectId',
                 ),

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
-import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class DepartmentSearchForm extends ConsumerStatefulWidget {
-  const DepartmentSearchForm({super.key});
+  const DepartmentSearchForm({super.key, required this.onSearch});
+
+  final Function(String, String, String,String?) onSearch;
 
   @override
   _DepartmentSearchFormState createState() => _DepartmentSearchFormState();
@@ -16,15 +17,16 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
-  String? _selectedDropdownValue;
+  String? _selectedDropdownValue = '';
 
   
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
+    widget.onSearch('', '', '','');
     setState(() {
-      _selectedDropdownValue = null;
+      _selectedDropdownValue = '';
     });
   }
 
@@ -32,14 +34,11 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
-    String? dropdownValue = _selectedDropdownValue;
+    String? dGdropdownValue = _selectedDropdownValue;
 
-    // Perform search logic
-    print('Search triggered with:');
-    print('Name English: $nameEnglish');
-    print('Name Arabic: $nameArabic');
-    print('Code: $code');
-    print('Selected Department: $dropdownValue');
+    
+
+    widget.onSearch(nameArabic,nameEnglish,code,dGdropdownValue!);
   }
 
   @override

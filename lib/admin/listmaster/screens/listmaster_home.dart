@@ -33,6 +33,8 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
       searchNameArabic = nameArabic;
       searchNameEnglish = nameEnglish;
       search = true;
+      pageNumber = 1; // Default to the first page
+      pageSize = 15;
     });
   }
 

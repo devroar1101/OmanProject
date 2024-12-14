@@ -11,7 +11,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
   SectionMasterRepository(this.ref) : super([]);
 
   final Ref ref;
-
+ 
   //Add
   Future<void> addSectionMaster(
       {required String nameEnglish,
@@ -90,6 +90,28 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
       }
     } catch (e) {
       throw Exception('Error occurred while editing SectionMaster: $e');
+    }
+  }
+
+  Future<void> deleteSection({required int sectionId}) async {
+    final dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.delete(
+        '/Section/Delete',
+        queryParameters: {'SectionId': sectionId},
+      );
+
+      if (response.statusCode == 200) {
+        state =
+            state.where((section) => section.sectionId != sectionId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete section. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting Section: $e');
     }
   }
 

@@ -2,6 +2,7 @@ class ExternalLocationMaster {
   int id;
   String nameArabic;
   String nameEnglish;
+  String typeNameEnglish;
   int typeId;
   bool isNew;
   bool isDeleted;
@@ -11,6 +12,7 @@ class ExternalLocationMaster {
     required this.id,
     required this.nameArabic,
     required this.nameEnglish,
+    required this.typeNameEnglish,
     required this.typeId,
     required this.isNew,
     required this.isDeleted,
@@ -23,6 +25,7 @@ class ExternalLocationMaster {
       id: map['externalLocationId'] ?? 0,
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
+      typeNameEnglish: map['listMasterItemNameEnglish'] ?? '',
       typeId: map['typeId'] ?? 0,
       isNew: map['isNew'] ?? false,
       isDeleted: map['isDeleted'] ?? false,
@@ -36,6 +39,7 @@ class ExternalLocationMaster {
       'id': id,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
+      'typeNameEnglish': typeNameEnglish,
       'objectId': objectId,
       'typeId': typeId,
       'isNew': isNew,

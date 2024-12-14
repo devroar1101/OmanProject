@@ -114,19 +114,28 @@ class LetterSubjectMasterRepository
     }
   }
 
-  // /// Search and filter method for Departments based on optional nameArabic and nameEnglish
-  // Future<List<UserMaster>> searchAndFilter(List<UserMaster> users,
-  //     {String? nameArabic, String? nameEnglish}) async {
-  //   // Filter the list based on the provided nameArabic and nameEnglish filters
-  //   var filteredList = users.where((UserMaster) {
-  //     bool matchesArabic =
-  //         nameArabic == null || department.departmentNameArabic.contains(nameArabic);
-  //     bool matchesEnglish =
-  //         nameEnglish == null || department.departmentNameEnglish.contains(nameEnglish);
+  // Delete
 
-  //     return matchesArabic && matchesEnglish;
-  //   }).toList();
+  Future<void> deleteSubject({required int subjectId}) async {
+    final dio = ref.watch(dioProvider);
 
-  //   return filteredList;
-  // }
+    try {
+      // Send the DELETE request to the API
+      final response = await dio.delete(
+        '/Subject/Delete',
+        queryParameters: {'dgId': subjectId}, // Add dgId as a query parameter
+      );
+
+      if (response.statusCode == 200) {
+        // Update the state by removing the deleted DgMaster
+        state = state.where((subject) => subject.subjectId != subjectId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete Subject. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting Subject: $e');
+    }
+  }
 }

@@ -88,6 +88,29 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     }
   }
 
+  // Delete
+  Future<void> deleteDpartment({required int DepartmentId}) async {
+    final dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.delete(
+        '/Department/Delete',
+        queryParameters: {'departmentId': DepartmentId},
+      );
+
+      if (response.statusCode == 200) {
+        state =
+            state.where((department) => department.id != DepartmentId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete Department. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting Department: $e');
+    }
+  }
+
   /// Fetch Departments from the API
   Future<List<Department>> fetchDepartments({
     int pageSize = 15,
@@ -147,10 +170,10 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
           .read(departmentMasterRepositoryProvider.notifier)
           .fetchDepartments();
     }
-    if(currentDGId == null){
+    if (currentDGId == null) {
       departmentList = departmentList
-        .where((deparment) => deparment.dgId.toString() == currentDGId)
-        .toList();
+          .where((deparment) => deparment.dgId.toString() == currentDGId)
+          .toList();
     }
     List<SelectOption<Department>> options = departmentList
         .map((depatment) => SelectOption<Department>(
@@ -163,8 +186,11 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     return options;
   }
 }
- 
 
-final departmentOptionsProvider = FutureProvider.family<List<SelectOption<Department>>, String>((ref, dgId) async {
-  return ref.read(departmentMasterRepositoryProvider.notifier).getDepartMentOptions(dgId);
+final departmentOptionsProvider =
+    FutureProvider.family<List<SelectOption<Department>>, String>(
+        (ref, dgId) async {
+  return ref
+      .read(departmentMasterRepositoryProvider.notifier)
+      .getDepartMentOptions(dgId);
 });

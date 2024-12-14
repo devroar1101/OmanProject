@@ -5,9 +5,9 @@ import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 
 class ListMasterItemSearchForm extends ConsumerStatefulWidget {
   // Optional: Callback to pass search results to parent
-  final Function(List<ListMasterItem>)? onSearch;
 
-  const ListMasterItemSearchForm({super.key, this.onSearch});
+  const ListMasterItemSearchForm({super.key, required this.onSearch});
+  final Function(String,String) onSearch;
 
   @override
   _ListMasterItemSearchFormState createState() =>
@@ -22,30 +22,16 @@ class _ListMasterItemSearchFormState
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
+    widget.onSearch('','');
+  }
+  void _handleSearch() {
+    String nameEnglish = _nameEnglishController.text;
+    String nameArabic = _nameArabicController.text;
+        
+        widget.onSearch(nameArabic, nameEnglish);
+   
   }
 
-  // Future<void> _handleSearch() async {
-  //   String nameEnglish = _nameEnglishController.text;
-  //   String nameArabic = _nameArabicController.text;
-  //   final repository = ref.watch(listMasterItemRepositoryProvider);
-  //   try {
-  //     // Fetch filtered list of ListMasterItems
-  //     List<ListMasterItem> results = await repository.fetchListMasterItems(
-  //       nameArabic: nameArabic,
-  //       nameEnglish: nameEnglish,
-  //     );
-
-  //     // Optional: Pass results back to parent widget if a callback is provided
-  //     if (widget.onSearch != null) {
-  //       widget.onSearch!(results);
-  //     }
-  //   } catch (e) {
-  //     // Handle errors if any
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error occurred during search: $e')),
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +79,7 @@ class _ListMasterItemSearchFormState
               shape: const CircleBorder(),
               child: IconButton(
                 icon: const Icon(Icons.search),
-                onPressed: (){},
+                onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
             ),

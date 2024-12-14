@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_form.dart';
+import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -34,6 +35,8 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
       searchNameEnglish = nameEnglish;
       searchCode = code;
       search = true;
+      pageNumber = 1;
+      pageSize = 15;
     });
   }
 
@@ -64,6 +67,14 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
     return filteredList.sublist(startIndex, endIndex);
   }
 
+  void onDelete(int dgId) {
+    ref.watch(dgMasterRepositoryProvider.notifier).deleteDgMaster(dgId: dgId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('DG master Deleted successfully!')),
+    );
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final dgMasters = ref.watch(dgMasterRepositoryProvider);
@@ -87,7 +98,24 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
           );
         },
       },
-      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+      {
+        "button": Icons.delete,
+        "function": (int id) => {
+              showDialog(
+                context: context,
+                builder: (context) => ConfirmationAlertBox(
+                  messageType: 3,
+                  message: 'Are you sure you want to delete this DG?',
+                  onConfirm: () {
+                    onDelete(id);
+                  },
+                  onCancel: () {
+                    Navigator.of(context).pop(context);
+                  },
+                ),
+              )
+            }
+      },
     ];
 
     return Scaffold(

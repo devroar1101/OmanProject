@@ -4,7 +4,10 @@ import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_form.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
+import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
 class LetterSubjectMasterScreen extends ConsumerStatefulWidget {
   const LetterSubjectMasterScreen({super.key});
@@ -25,17 +28,123 @@ class _LetterSubjectMasterScreenState
         .fetchLetterSubjects();
   }
 
+  String searchTenderNumber = '';
+  String searchSubject = '';
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
+  bool search = false;
+
+  void onSearch(String tenderNumber, String letterSubject) {
+    setState(() {
+      searchTenderNumber = tenderNumber;
+      searchSubject = letterSubject;
+      search = true;
+    });
+  }
+
+  List<LetterSubjecct> _applyFiltersAndPagination(
+      List<LetterSubjecct> letterSubjects) {
+    // Apply search filters
+    List<LetterSubjecct> filteredList = letterSubjects.where((SingleSubject) {
+      final matchesArabic = searchSubject.isEmpty ||
+          SingleSubject.subject
+              .toLowerCase()
+              .contains(searchSubject.toLowerCase());
+      final matchesEnglish = searchTenderNumber.isEmpty ||
+          SingleSubject.tenderNumber
+              .toLowerCase()
+              .contains(searchTenderNumber.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
+
+  void onDelete(int subjectId) {
+    ref
+        .watch(LetterSubjectMasterRepositoryProvider.notifier)
+        .deleteSubject(subjectId: subjectId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Subject Deleted successfully!')),
+    );
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final letterSubjects = ref.watch(LetterSubjectMasterRepositoryProvider);
+    final filteredAndPaginatedList = _applyFiltersAndPagination(letterSubjects);
+
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          final LetterSubjecct currentSubject =
+              letterSubjects.firstWhere((subject) => subject.subjectId == id);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddLetterSubject(
+                currentSubject: currentSubject,
+              );
+            },
+          );
+        },
+      },
+      {
+        "button": Icons.delete,
+        "function": (int id) {
+          showDialog(
+            context: context,
+            builder: (context) => ConfirmationAlertBox(
+              messageType: 3,
+              message: 'Are you sure you want to delete this subject?',
+              onConfirm: () {
+                onDelete(id);
+              },
+              onCancel: () {
+                Navigator.of(context).pop(context);
+              },
+            ),
+          );
+        }
+      },
+    ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Letter Subject Master'),
-      ),
       body: Column(
         children: [
-          const LetterSubjectSearchForm(),
+          LetterSubjectSearchForm(
+            onSearch: onSearch,
+          ),
+          if (letterSubjects.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? letterSubjects.where((singleSubject) {
+                      final matchesArabic = searchSubject.isEmpty ||
+                          singleSubject.subject
+                              .toLowerCase()
+                              .contains(searchSubject.toLowerCase());
+                      final matchesEnglish = searchTenderNumber.isEmpty ||
+                          singleSubject.tenderNumber
+                              .toLowerCase()
+                              .contains(searchTenderNumber.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : letterSubjects.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
           if (letterSubjects.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -45,21 +154,10 @@ class _LetterSubjectMasterScreenState
                 child: DisplayDetails(
                   headers: const ['Tender Number', 'Subject'],
                   data: const ['tenderNumber', 'subject'],
-                  details: LetterSubjecct.listToMap(letterSubjects),
+                  details: LetterSubjecct.listToMap(filteredAndPaginatedList),
                   expandable: true,
-                  onTap: (int index) {
-                    final LetterSubjecct currentSubject = letterSubjects
-                        .firstWhere((subject) => subject.subjectId == index);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AddLetterSubject(
-                          currentSubject: currentSubject,
-                        
-                          );
-                      },
-                    );
-                  },
+                  iconButtons: iconButtons,
+                  onTap: (int index) {},
                   detailKey: 'subjectId',
                 ),
               ),
