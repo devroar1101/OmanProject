@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/common/screens/home.dart';
 
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/main.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +18,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isPasswordVisible = false;
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedLanguage = 'en'; // Initially set to 'English'
+  String _selectedLanguage = 'ar';
+
+  @override
+  void initState() {
+    super.initState();
+    getLastSessionUserName();
+  }
+
+  void getLastSessionUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _loginIdController.text = prefs.getString('username') ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,17 +202,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: SizedBox(
         width: 100,
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
               final authNotifier = ref.read(authProvider.notifier);
-              authNotifier.login(_loginIdController.text,
+              await authNotifier.login(_loginIdController.text,
                   _passwordController.text, _selectedLanguage);
-              // Language is updated in SharedPreferences and globally
             }
           },
           child: const Text(
             'LOGIN',
-            // style: TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
       ),

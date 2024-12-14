@@ -124,6 +124,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
+
     return Container(
       margin: const EdgeInsets.all(16), // Detached sidebar with margin
       decoration: BoxDecoration(
@@ -139,7 +141,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
-        width: _isMinimized ? 60 : 220,
+        width: _isMinimized ? 70 : 220,
         child: Column(
           children: [
             // Sidebar items
@@ -199,7 +201,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 icon: Icon(
-                  _isMinimized ? Icons.arrow_forward : Icons.arrow_back,
+                  _isMinimized
+                      ? (isRTL ? Icons.arrow_back : Icons.arrow_forward)
+                      : (isRTL ? Icons.arrow_forward : Icons.arrow_back),
                 ),
                 onPressed: _toggleMinimize,
               ),

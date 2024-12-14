@@ -1,39 +1,89 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
+import 'dart:html' as html; // Import for window.location.reload() on web
+import 'package:flutter/foundation.dart'; // Import to check platform
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  
-  AuthNotifier() : super(AuthState(selectedLanguage: 'en')) {
-    _loadLanguage();
+  final Ref ref; // Add reference to Ref for accessing other providers
+
+  AuthNotifier(this.ref) : super(AuthState(selectedLanguage: 'en')) {
+    _initialize(); // Initialize the authentication state
   }
 
-  // Load the language preference from SharedPreferences
-  Future<void> _loadLanguage() async {
+  // Initialize authentication state
+  Future<void> _initialize() async {
+    await _loadAuthState();
+    preLoad(); // Trigger background fetching
+  }
+
+  // Load authentication state from SharedPreferences
+  Future<void> _loadAuthState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
-    state = state.copyWith(selectedLanguage: savedLanguage);
+    final savedToken = prefs.getString('accessToken');
+    final isAuthenticated = savedToken != null;
+
+    state = state.copyWith(
+      selectedLanguage: savedLanguage,
+      accessToken: savedToken,
+      isAuthenticated: isAuthenticated,
+    );
   }
 
-  // Change the selected language and save it in SharedPreferences
-  Future<void> changeLanguage(String language) async {
-    state = state.copyWith(selectedLanguage: language);
-    // Save the selected language in SharedPreferences
+  // Save the authentication state in SharedPreferences
+  Future<void> _saveAuthState({String? userName}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selectedLanguage', language);
+    if (state.isAuthenticated) {
+      await prefs.setString('accessToken', state.accessToken!);
+      if (userName != null) {
+        await prefs.setString('username', userName);
+      }
+    } else {
+      await prefs.setString('selectedLanguage', 'en');
+      await prefs.remove('accessToken');
+    }
   }
 
   // Handle login and update authentication state
-  void login(String username, String password, String selectedLanguage) {
+  Future<void> login(
+      String username, String password, String selectedLanguage) async {
     final generatedToken = _generateRandomToken();
     state = state.copyWith(
       accessToken: generatedToken,
       isAuthenticated: true,
     );
-    changeLanguage(selectedLanguage); 
-    // Update language after login
+    await changeLanguage(selectedLanguage); // Update language
+    await _saveAuthState(userName: username); // Persist authentication state
+  }
+
+  // Trigger background data preloading
+  void preLoad() {
+    ref.read(dgOptionsProvider); // Start fetching DG options
+    ref.read(departmentOptionsProvider(null)); // Trigger department options
+  }
+
+  // Handle logout and clear authentication state
+  Future<void> logout() async {
+    state = state.copyWith(
+        accessToken: null, isAuthenticated: false, selectedLanguage: 'en');
+
+    await _saveAuthState(); // Clear authentication state
+
+    // Check if the platform is web and refresh the page
+    if (kIsWeb) {
+      html.window.location.reload(); // This will refresh the browser window
+    }
+  }
+
+  // Change the selected language and save it in SharedPreferences
+  Future<void> changeLanguage(String language) async {
+    state = state.copyWith(selectedLanguage: language);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedLanguage', language);
   }
 
   // Generate a random token (for demo purposes)
@@ -48,6 +98,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 // Auth provider to use the AuthNotifier
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  
-  return AuthNotifier();
+  return AuthNotifier(ref);
 });

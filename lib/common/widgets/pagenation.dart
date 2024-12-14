@@ -21,12 +21,14 @@ class Pagination extends StatefulWidget {
 class _PaginationState extends State<Pagination> {
   late int currentPage;
   late int pageSize;
+  late int totalItem;
 
   @override
   void initState() {
     super.initState();
     currentPage = widget.initialPage;
     pageSize = widget.initialPageSize;
+    totalItem = widget.totalItems;
   }
 
   int get totalPages => (widget.totalItems / pageSize).ceil();
@@ -37,6 +39,7 @@ class _PaginationState extends State<Pagination> {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -49,7 +52,7 @@ class _PaginationState extends State<Pagination> {
 
         // Current Page Display
         Text(
-          '$startItem - $endItem of ${widget.totalItems}',
+          '$startItem - $endItem / $totalItem',
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
 
@@ -79,8 +82,7 @@ class _PaginationState extends State<Pagination> {
               widget.onPageChange(currentPage, pageSize);
             }
           },
-          items:
-              [15, 30, 45, 60, 75, 100].map<DropdownMenuItem<int>>((int size) {
+          items: [15, 30, 50, 100].map<DropdownMenuItem<int>>((int size) {
             return DropdownMenuItem<int>(
               value: size,
               child: Text('$size'),
