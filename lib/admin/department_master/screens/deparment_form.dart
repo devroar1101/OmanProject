@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
-import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class DepartmentSearchForm extends ConsumerStatefulWidget {
@@ -18,7 +17,6 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
   final TextEditingController _codeController = TextEditingController();
   String? _selectedDropdownValue;
 
-  
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
@@ -44,7 +42,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
 
   @override
   Widget build(BuildContext context) {
-    final dgOptionAsyncvalue = ref.watch(dgOptionsProvider);
+    final dgOptionAsyncvalue = ref.watch(dgOptionsProvider(false));
     final dgOptions = dgOptionAsyncvalue.asData?.value;
     return Card(
       elevation: 4.0,
@@ -100,7 +98,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
             Expanded(
               child: SelectField<DgMaster>(
                 options: dgOptions!,
-                onChanged: (dg) {
+                onChanged: (dg, selectedOption) {
                   setState(() {
                     _selectedDropdownValue = dg.id.toString();
                   });

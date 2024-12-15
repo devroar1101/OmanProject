@@ -5,7 +5,7 @@ import 'package:image/image.dart' as img;
 class EditImageScreen extends StatefulWidget {
   final Uint8List imageData;
 
-  EditImageScreen({Key? key, required this.imageData}) : super(key: key);
+  const EditImageScreen({super.key, required this.imageData});
 
   @override
   _EditImageScreenState createState() => _EditImageScreenState();
@@ -13,93 +13,43 @@ class EditImageScreen extends StatefulWidget {
 
 class _EditImageScreenState extends State<EditImageScreen> {
   late img.Image _image;
+  Offset _overlayPosition =
+      const Offset(100, 100); // Default position for the PNG overlay
+  Uint8List? _overlayImage;
 
   @override
   void initState() {
     super.initState();
     _image = img.decodeImage(Uint8List.fromList(widget.imageData))!;
+    _loadOverlayImage();
   }
 
-  // Function to rotate image
-  void _rotateImage() {
+  // Load PNG image from assets
+  Future<void> _loadOverlayImage() async {
+    final overlayData =
+        await DefaultAssetBundle.of(context).load("assets/signature.png");
     setState(() {
-      _image = img.copyRotate(_image, angle: 90); // Rotate by 90 degrees
+      _overlayImage = overlayData.buffer.asUint8List();
     });
   }
 
-  // Function to resize image
-  void _resizeImage() {
-    setState(() {
-      _image = img.copyResize(_image, width: 400); // Resize width to 400px
-    });
-  }
-
-  // Function to crop image
-  void _cropImage() {
-    setState(() {
-      _image = img.copyCrop(_image,
-          x: 0,
-          y: 0,
-          width: _image.width ~/ 2,
-          height: _image.height ~/ 2); // Crop half of the image
-    });
-  }
-
-  // Function to apply grayscale filter
-  void _applyGrayscale() {
-    setState(() {
-      _image = img.grayscale(_image); // Convert to grayscale
-    });
-  }
-
-  // Function to apply sepia filter
-  void _applySepia() {
-    setState(() {
-      _image = img.sepia(_image); // Apply sepia tone
-    });
-  }
-
-  void _applyWatermark() {
-    setState(() {
-      // Apply watermark with proper named parameters
-      _image = img.drawString(
+  // Apply PNG overlay to the main image during save
+  void _applyOverlayOnSave() {
+    if (_overlayImage != null) {
+      final overlay = img.decodeImage(_overlayImage!)!;
+      _image = img.compositeImage(
         _image,
-        'Watermark', // Text to be displayed
-        font: img.arial24, // Use a built-in font (e.g., arial_24)
-        x: 10, // x-coordinate for position
-        y: 10, // y-coordinate for position
-        // Color for watermark (hex format)
+        overlay,
+        dstX: _overlayPosition.dx.toInt(),
+        dstY: _overlayPosition.dy.toInt(),
+        // Enable blending for transparency
       );
-    });
-  }
-
-  // Function to draw shapes (e.g., rectangle)
-  void _drawShapes() {
-    setState(() {
-      // Draw a red rectangle with required parameters
-      _image = img.drawRect(_image,
-          x1: 50, y1: 50, x2: 200, y2: 100, color: img.ColorFloat16(1)
-          // Red color for the rectangle
-          );
-    });
-  }
-
-  // Function to draw text on image
-  void _drawText() {
-    setState(() {
-      // Draw text on image using the font
-      _image = img.drawString(
-        _image,
-        font: img.arial24, // Font (black)
-        x: 100, y: 100, // Position
-        'Hello Flutter!', // Text
-        // Red color for text
-      );
-    });
+    }
   }
 
   // Function to save the edited image
   void _saveImage() {
+    _applyOverlayOnSave(); // Apply overlay before saving
     final editedImage =
         Uint8List.fromList(img.encodeJpg(_image)); // Encode image to JPG
     Navigator.pop(context, editedImage); // Return the edited image
@@ -108,63 +58,46 @@ class _EditImageScreenState extends State<EditImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Edit Image")),
-      body: Column(
+      appBar: AppBar(title: const Text("Edit Image")),
+      body: Stack(
         children: [
-          Expanded(
-            child: Center(
-              child: Image.memory(Uint8List.fromList(img.encodeJpg(_image))),
-            ),
+          Center(
+            child: Image.memory(Uint8List.fromList(img.encodeJpg(_image))),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Rotate button
-              IconButton(
-                icon: Icon(Icons.rotate_right),
-                onPressed: _rotateImage,
+          if (_overlayImage != null)
+            Positioned(
+              left: _overlayPosition.dx,
+              top: _overlayPosition.dy,
+              child: Draggable(
+                feedback: Material(
+                  color: Colors.transparent,
+                  child: Image.memory(
+                    _overlayImage!,
+                    width: 100, // Adjust overlay size if needed
+                  ),
+                ),
+                childWhenDragging:
+                    Container(), // Hide the original widget while dragging
+                onDragEnd: (details) {
+                  setState(() {
+                    // Update position after dragging
+                    _overlayPosition = details.offset;
+                  });
+                },
+                child: Image.memory(
+                  _overlayImage!,
+                  width: 100, // Adjust overlay size if needed
+                ),
               ),
-              // Resize button
-              IconButton(
-                icon: Icon(Icons.crop),
-                onPressed: _resizeImage,
-              ),
-              // Crop button
-              IconButton(
-                icon: Icon(Icons.crop_square),
-                onPressed: _cropImage,
-              ),
-              // Grayscale filter button
-              IconButton(
-                icon: Icon(Icons.photo_filter),
-                onPressed: _applyGrayscale,
-              ),
-              // Sepia filter button
-              IconButton(
-                icon: Icon(Icons.style),
-                onPressed: _applySepia,
-              ),
-              // Watermark button
-              IconButton(
-                icon: Icon(Icons.water_drop),
-                onPressed: _applyWatermark,
-              ),
-              // Draw shapes button
-              IconButton(
-                icon: Icon(Icons.draw),
-                onPressed: _drawShapes,
-              ),
-              // Draw text button
-              IconButton(
-                icon: Icon(Icons.text_fields),
-                onPressed: _drawText,
-              ),
-              // Save button
-              ElevatedButton(
-                onPressed: _saveImage,
-                child: Text("Save"),
-              ),
-            ],
+            ),
+        ],
+      ),
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: _saveImage,
+            child: const Text("Save"),
           ),
         ],
       ),

@@ -38,19 +38,19 @@ class ImageService {
   }
 }
 
-class ImageViewerScreen extends StatefulWidget {
-  const ImageViewerScreen({super.key});
+class TestImageViewerScreen extends StatefulWidget {
+  const TestImageViewerScreen({super.key});
 
   @override
-  _ImageViewerScreenState createState() => _ImageViewerScreenState();
+  _TestImageViewerScreenState createState() => _TestImageViewerScreenState();
 }
 
-class _ImageViewerScreenState extends State<ImageViewerScreen> {
+class _TestImageViewerScreenState extends State<TestImageViewerScreen> {
   final ImageService _imageService = ImageService();
   final List<Uint8List> _images = [];
   bool _isLoading = true;
-  int _currentPage = 1;
-  int _totalPages = 5;
+  final int _currentPage = 1;
+  final int _totalPages = 5;
 
   @override
   void initState() {
@@ -93,7 +93,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : DocumentViewer(
               imagePaths: _images,
               initialPage: 0,

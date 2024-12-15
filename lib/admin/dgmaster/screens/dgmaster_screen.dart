@@ -45,13 +45,13 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
     // Apply search filters
     List<DgMaster> filteredList = dgMasters.where((dgMaster) {
       final matchesArabic = searchNameArabic.isEmpty ||
-          (dgMaster.nameArabic?.toLowerCase() ?? '')
+          (dgMaster.nameArabic.toLowerCase() ?? '')
               .contains(searchNameArabic.toLowerCase());
       final matchesEnglish = searchNameEnglish.isEmpty ||
-          (dgMaster.nameEnglish?.toLowerCase() ?? '')
+          (dgMaster.nameEnglish.toLowerCase() ?? '')
               .contains(searchNameEnglish.toLowerCase());
       final matchesCode = searchCode.isEmpty ||
-          (dgMaster.code?.toLowerCase() ?? '')
+          (dgMaster.code.toLowerCase() ?? '')
               .contains(searchCode.toLowerCase());
       return matchesArabic && matchesEnglish && matchesCode;
     }).toList();

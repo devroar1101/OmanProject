@@ -118,7 +118,7 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
             Expanded(
               child: SelectField<String>(
                 options: dgOptions,
-                onChanged: (value) {
+                onChanged: (value, selectedOption) {
                   setState(() {
                     _selectedDGValue = value;
                   });
@@ -132,7 +132,7 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
             Expanded(
               child: SelectField<String>(
                 options: departmentOptions,
-                onChanged: (value) {
+                onChanged: (value, selectedOption) {
                   setState(() {
                     _selectedDepartmentValue = value;
                   });

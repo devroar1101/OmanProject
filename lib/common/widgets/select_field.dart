@@ -5,7 +5,7 @@ import 'package:tenderboard/common/model/select_option.dart';
 // ignore: must_be_immutable
 class SelectField<T> extends StatefulWidget {
   final List<SelectOption<T>> options;
-  final Function(T) onChanged;
+  final Function(T, String?) onChanged;
   final String hint;
   String? selectedOption;
   String? initialValue;
@@ -109,9 +109,8 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                   elevation: 4.0,
                   borderRadius: BorderRadius.circular(5),
                   child: Container(
-                    constraints:  BoxConstraints(
-                      maxHeight: filteredOptions.isEmpty
-                        ?100:250,
+                    constraints: BoxConstraints(
+                      maxHeight: filteredOptions.isEmpty ? 100 : 250,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -132,7 +131,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                             itemCount: filteredOptions.length,
                             itemBuilder: (context, index) {
                               final option = filteredOptions[index];
-                              
+
                               return GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -141,7 +140,8 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
                                     filteredOptions = widget.options;
                                   });
-                                  widget.onChanged(option.value);
+                                  widget.onChanged(
+                                      option.value, option.displayName);
                                   _removeOverlay();
                                 },
                                 child: ListTile(
@@ -184,7 +184,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
             ),
             onTap: _createOrUpdateOverlay,
             onChanged: (value) {
-              // Trigger UI update when text changes
+              _onSearchChanged();
               (context as Element).markNeedsBuild();
             },
           ),

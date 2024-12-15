@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:tenderboard/common/test/editimagescreen.dart';
+import 'package:tenderboard/common/widgets/image_editor.dart';
 
 class DocumentViewer extends StatefulWidget {
   final List<Uint8List> imagePaths;
@@ -9,7 +11,7 @@ class DocumentViewer extends StatefulWidget {
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
 
-  DocumentViewer({
+  const DocumentViewer({
     super.key,
     required this.imagePaths,
     required this.initialPage,
@@ -64,23 +66,42 @@ class _DocumentViewerState extends State<DocumentViewer> {
     }
   }
 
-  Future<void> _saveImage(Uint8List imageData) async {
-    const String apiUrl = "http://192.168.1.3:8081/api/FileInformation/Create1";
+  Future<void> _saveImage(Uint8List imageData, BuildContext context) async {
+    const String apiUrl =
+        "http://192.168.1.12:8080/api/FileData/CreateFileData";
 
     try {
-      final response = await Dio().post(
+      final dio = Dio();
+
+      // Configure timeouts (especially useful for large files)
+      dio.options.connectTimeout =
+          const Duration(seconds: 30); // 30 seconds to connect
+      dio.options.receiveTimeout =
+          const Duration(seconds: 30); // 30 seconds to receive data
+
+      // Convert the image data to a base64 string
+      String base64Image = base64Encode(imageData);
+
+      // Create the payload as a proper JSON object
+      final payload = {
+        'content':
+            base64Image, // Replace 'fileData' with the expected key by the API
+      };
+
+      print('before post ');
+      // Send the POST request with base64 encoded image data
+      final response = await dio.post(
         apiUrl,
-        options: Options(
-          headers: {
-            "Content-Type": "application/octet-stream", // Correct Content-Type
-          },
-        ),
-        data: imageData, // Directly send the raw Uint8List image data
+        data: payload,
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
-      if (response.statusCode == 200 && response.data["IsSuccess"] == true) {
+      print(response);
+
+      if (response.data['statusCode'] == '200' ||
+          response.data["IsSuccess"] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Image saved successfully!")),
+          const SnackBar(content: Text("Image saved successfully!")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,10 +114,10 @@ class _DocumentViewerState extends State<DocumentViewer> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error saving image: $e")),
       );
+      print("Error saving image: $e");
     }
   }
 
-  // Navigate to the EditImageScreen
   void _editImage() async {
     final selectedImage = widget.imagePaths[currentPage];
     final editedImage = await Navigator.push(
@@ -105,8 +126,10 @@ class _DocumentViewerState extends State<DocumentViewer> {
         builder: (context) => EditImageScreen(imageData: selectedImage),
       ),
     );
-    if (editedImage != null) {
+
+    if (editedImage != null && editedImage is Uint8List) {
       setState(() {
+        // Update the current image with the edited image
         widget.imagePaths[currentPage] = editedImage;
       });
     }
@@ -134,12 +157,12 @@ class _DocumentViewerState extends State<DocumentViewer> {
                   children: [
                     if (widget.startScan != null)
                       IconButton(
-                        icon: Icon(Icons.scanner),
+                        icon: const Icon(Icons.scanner),
                         onPressed: widget.startScan,
                       ),
                     if (widget.showScannerDialog != null)
                       IconButton(
-                        icon: Icon(Icons.settings),
+                        icon: const Icon(Icons.settings),
                         onPressed: () => widget.showScannerDialog!(context),
                       ),
                     IconButton(
@@ -149,7 +172,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       onPressed: _toggleThumbnails,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
                         setState(() {
                           widget.imagePaths.removeAt(currentPage);
@@ -163,7 +186,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete_forever),
+                      icon: const Icon(Icons.delete_forever),
                       onPressed: () {
                         setState(() {
                           widget.imagePaths.clear();
@@ -193,13 +216,13 @@ class _DocumentViewerState extends State<DocumentViewer> {
                     const SizedBox(width: 2),
                     Text(
                       'of ${widget.imagePaths.length}',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        minimumSize: Size(36, 36),
+                        minimumSize: const Size(36, 36),
                         padding: EdgeInsets.zero,
                       ),
                       onPressed: _goToPage,
@@ -210,14 +233,14 @@ class _DocumentViewerState extends State<DocumentViewer> {
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.save),
+                      icon: const Icon(Icons.save),
                       onPressed: widget.imagePaths.isNotEmpty
-                          ? () =>
-                              _saveImage(widget.imagePaths[validCurrentPage])
+                          ? () => _saveImage(
+                              widget.imagePaths[validCurrentPage], context)
                           : null,
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit), // Change to edit icon
+                      icon: const Icon(Icons.edit), // Change to edit icon
                       onPressed: _editImage, // Open edit image screen
                     ),
                     IconButton(
@@ -227,13 +250,13 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       onPressed: _toggleFullScreen,
                     ),
                     IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: validCurrentPage > 0
                           ? () => _changePage(validCurrentPage - 1)
                           : null,
                     ),
                     IconButton(
-                      icon: Icon(Icons.arrow_forward),
+                      icon: const Icon(Icons.arrow_forward),
                       onPressed: validCurrentPage < widget.imagePaths.length - 1
                           ? () => _changePage(validCurrentPage + 1)
                           : null,
@@ -280,7 +303,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                           return GestureDetector(
                             onTap: () => _changePage(index),
                             child: Container(
-                              margin: EdgeInsets.all(5),
+                              margin: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: index == validCurrentPage

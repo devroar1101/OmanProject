@@ -157,7 +157,7 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
                 Expanded(
                   child: SelectField<String>(
                     options: designationOptions,
-                    onChanged: (value) {
+                    onChanged: (value, selectedOption) {
                       setState(() {
                         _selectedDesignationValue = value;
                       });
@@ -169,7 +169,7 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
                 Expanded(
                   child: SelectField<String>(
                     options: roleOptions,
-                    onChanged: (value) {
+                    onChanged: (value, selectedOption) {
                       setState(() {
                         _selectedRoleValue = value;
                       });
@@ -187,7 +187,7 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
                 Expanded(
                   child: SelectField<String>(
                     options: dgOptions,
-                    onChanged: (value) {
+                    onChanged: (value, selectedOption) {
                       setState(() {
                         _selectedDGValue = value;
                       });
@@ -199,7 +199,7 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
                 Expanded(
                   child: SelectField<String>(
                     options: departmentOptions,
-                    onChanged: (value) {
+                    onChanged: (value, selectedOption) {
                       setState(() {
                         _selectedDepartmentValue = value;
                       });
@@ -211,7 +211,7 @@ class _UsersSearchFormState extends State<UsersSearchForm> {
                 Expanded(
                   child: SelectField<String>(
                     options: sectionOptions,
-                    onChanged: (value) {
+                    onChanged: (value, selectedOption) {
                       setState(() {
                         _selectedSectionValue = value;
                       });

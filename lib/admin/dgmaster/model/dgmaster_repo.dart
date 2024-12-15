@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
@@ -129,31 +131,47 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
   }
 
   Future<List<SelectOption<DgMaster>>> getDGOptions(
-      String currentLanguage) async {
+      String currentLanguage, bool child) async {
     List<DgMaster> DGList = state;
 
+    // Fetch DGList if not already available
     if (DGList.isEmpty) {
       DGList =
           await ref.read(dgMasterRepositoryProvider.notifier).fetchDgMasters();
     }
 
-    final List<SelectOption<DgMaster>> options =
-        DGList.map((dg) => SelectOption<DgMaster>(
-              displayName:
-                  currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
-              key: dg.id.toString(),
-              value: dg,
-            )).toList();
+    // Build DG Options with or without child options
+    final List<SelectOption<DgMaster>> options = await Future.wait(
+      DGList.map((dg) async {
+        List<SelectOption<Department>>? childOptions;
+
+        if (child) {
+          // Use getDepartMentOptions to fetch department options for the current DG
+          childOptions = await ref
+              .read(departmentMasterRepositoryProvider.notifier)
+              .getDepartMentOptions(dg.id.toString());
+        }
+
+        return SelectOption<DgMaster>(
+          displayName: currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
+          key: dg.id.toString(),
+          value: dg,
+          childOptions: childOptions,
+        );
+      }).toList(),
+    );
 
     return options;
   }
 }
 
 final dgOptionsProvider =
-    FutureProvider<List<SelectOption<DgMaster>>>((ref) async {
+    FutureProvider.family<List<SelectOption<DgMaster>>, bool?>(
+        (ref, bool? child) async {
   final authState = ref.watch(authProvider);
+  final isChild = child ?? false;
 
   return ref
       .read(dgMasterRepositoryProvider.notifier)
-      .getDGOptions(authState.selectedLanguage);
+      .getDGOptions(authState.selectedLanguage, isChild);
 });

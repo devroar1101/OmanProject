@@ -159,7 +159,7 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
               value: depatment,
             ))
         .toList();
-
+    print(options.iterator);
     return options;
   }
 }

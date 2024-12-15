@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
@@ -104,4 +106,33 @@ class CabinetRepository extends StateNotifier<List<Cabinet>> {
       throw Exception('Error occurred while editing Cabinet: $e');
     }
   }
+
+  Future<List<SelectOption<Cabinet>>> getDGOptions(
+      String currentLanguage) async {
+    List<Cabinet> DGList = state;
+
+    if (DGList.isEmpty) {
+      DGList =
+          await ref.read(CabinetRepositoryProvider.notifier).fetchCabinets();
+    }
+
+    final List<SelectOption<Cabinet>> options =
+        DGList.map((dg) => SelectOption<Cabinet>(
+              displayName:
+                  currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
+              key: dg.id.toString(),
+              value: dg,
+            )).toList();
+
+    return options;
+  }
 }
+
+final cabinetOptionsProvider =
+    FutureProvider<List<SelectOption<Cabinet>>>((ref) async {
+  final authState = ref.watch(authProvider);
+
+  return ref
+      .read(CabinetRepositoryProvider.notifier)
+      .getDGOptions(authState.selectedLanguage);
+});

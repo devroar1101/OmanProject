@@ -43,12 +43,12 @@ class CustomSnackbar {
         end: isRtl ? 20.0 : 1000.0,
       ),
       content: Container(
-        constraints: BoxConstraints(maxWidth: 280), // Pocket-sized width
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        constraints: const BoxConstraints(maxWidth: 280), // Pocket-sized width
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: type["color"],
           borderRadius: BorderRadius.circular(8),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 6,
@@ -61,7 +61,7 @@ class CustomSnackbar {
             Container(
               width: 36,
               height: 36,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
@@ -71,7 +71,7 @@ class CustomSnackbar {
                 size: 20,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -79,16 +79,16 @@ class CustomSnackbar {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     message,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 12,
                     ),

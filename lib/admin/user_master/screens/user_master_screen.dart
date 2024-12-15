@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_form.dart';
-import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 
 class UserMasterScreen extends ConsumerStatefulWidget {
@@ -14,8 +12,8 @@ class UserMasterScreen extends ConsumerStatefulWidget {
   _UserMasterScreenState createState() => _UserMasterScreenState();
 }
 
-class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with SingleTickerProviderStateMixin {
-  
+class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
+    with SingleTickerProviderStateMixin {
   bool _isSearchFormVisible = false;
   late Future<List<UserMaster>> _userFuture;
   late AnimationController _animationController;
@@ -31,13 +29,14 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with Single
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),  // Duration for smooth transition
+      duration:
+          const Duration(milliseconds: 500), // Duration for smooth transition
     );
 
     // Opacity animation (fade in/out)
     _opacityAnimation = Tween<double>(
-      begin: 0.0,  // Start invisible
-      end: 1.0,    // End fully visible
+      begin: 0.0, // Start invisible
+      end: 1.0, // End fully visible
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut, // Smooth transition
@@ -45,8 +44,8 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with Single
 
     // Scale animation (zoom in/out)
     _scaleAnimation = Tween<double>(
-      begin: 0.8,  // Start at 80% scale
-      end: 1.0,    // End at 100% scale (normal size)
+      begin: 0.8, // Start at 80% scale
+      end: 1.0, // End at 100% scale (normal size)
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut, // Smooth transition
@@ -63,9 +62,11 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with Single
     setState(() {
       _isSearchFormVisible = !_isSearchFormVisible;
       if (_isSearchFormVisible) {
-        _animationController.forward();  // Trigger animation forward (fade in & scale up)
+        _animationController
+            .forward(); // Trigger animation forward (fade in & scale up)
       } else {
-        _animationController.reverse();  // Trigger animation reverse (fade out & scale down)
+        _animationController
+            .reverse(); // Trigger animation reverse (fade out & scale down)
       }
     });
   }
@@ -89,7 +90,8 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen> with Single
             opacity: _opacityAnimation,
             child: ScaleTransition(
               scale: _scaleAnimation,
-              child: _isSearchFormVisible ? const UsersSearchForm() : Container(),
+              child:
+                  _isSearchFormVisible ? const UsersSearchForm() : Container(),
             ),
           ),
           Expanded(

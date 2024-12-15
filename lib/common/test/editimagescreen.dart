@@ -2,16 +2,16 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
-class EditImageScreen extends StatefulWidget {
+class EditImageScreenTest extends StatefulWidget {
   final Uint8List imageData;
 
-  EditImageScreen({Key? key, required this.imageData}) : super(key: key);
+  const EditImageScreenTest({super.key, required this.imageData});
 
   @override
   _EditImageScreenState createState() => _EditImageScreenState();
 }
 
-class _EditImageScreenState extends State<EditImageScreen> {
+class _EditImageScreenState extends State<EditImageScreenTest> {
   late img.Image _image;
 
   @override
@@ -108,7 +108,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Edit Image")),
+      appBar: AppBar(title: const Text("Edit Image")),
       body: Column(
         children: [
           Expanded(
@@ -121,48 +121,48 @@ class _EditImageScreenState extends State<EditImageScreen> {
             children: [
               // Rotate button
               IconButton(
-                icon: Icon(Icons.rotate_right),
+                icon: const Icon(Icons.rotate_right),
                 onPressed: _rotateImage,
               ),
               // Resize button
               IconButton(
-                icon: Icon(Icons.crop),
+                icon: const Icon(Icons.crop),
                 onPressed: _resizeImage,
               ),
               // Crop button
               IconButton(
-                icon: Icon(Icons.crop_square),
+                icon: const Icon(Icons.crop_square),
                 onPressed: _cropImage,
               ),
               // Grayscale filter button
               IconButton(
-                icon: Icon(Icons.photo_filter),
+                icon: const Icon(Icons.photo_filter),
                 onPressed: _applyGrayscale,
               ),
               // Sepia filter button
               IconButton(
-                icon: Icon(Icons.style),
+                icon: const Icon(Icons.style),
                 onPressed: _applySepia,
               ),
               // Watermark button
               IconButton(
-                icon: Icon(Icons.water_drop),
+                icon: const Icon(Icons.water_drop),
                 onPressed: _applyWatermark,
               ),
               // Draw shapes button
               IconButton(
-                icon: Icon(Icons.draw),
+                icon: const Icon(Icons.draw),
                 onPressed: _drawShapes,
               ),
               // Draw text button
               IconButton(
-                icon: Icon(Icons.text_fields),
+                icon: const Icon(Icons.text_fields),
                 onPressed: _drawText,
               ),
               // Save button
               ElevatedButton(
                 onPressed: _saveImage,
-                child: Text("Save"),
+                child: const Text("Save"),
               ),
             ],
           ),

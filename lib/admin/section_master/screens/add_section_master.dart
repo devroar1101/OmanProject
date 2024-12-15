@@ -10,7 +10,7 @@ import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class AddSectionMaster extends ConsumerStatefulWidget {
-  AddSectionMaster({
+  const AddSectionMaster({
     super.key,
     this.currentSection,
   });
@@ -35,9 +35,8 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final dgOptions = ref.watch(dgOptionsProvider);
-        final departmentOptions =
-            ref.watch(departmentOptionsProvider('1'));
+        final dgOptions = ref.watch(dgOptionsProvider(true));
+        final departmentOptions = ref.watch(departmentOptionsProvider('1'));
 
         return dgOptions.when(
           data: (dgList) {
@@ -91,11 +90,11 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                                           dg.key)
                                       .displayName
                                   : null,
-                              onChanged: (dg) {
+                              onChanged: (dg, selectedOption) {
                                 setState(() {
                                   _selectedDG = dg.id.toString();
-                                  _selectedDepartment=null;
-                                  
+                                  _selectedDepartment = null;
+
                                   ref.refresh(
                                       departmentOptionsProvider(_selectedDG!));
                                 });
@@ -106,15 +105,18 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                             _buildSearchableDropdown<Department>(
                               label: 'Select Department',
                               options: departments,
-                              initialValue: _selectedDepartment == null ? null: widget.currentSection != null
-                                  ? departments
-                                      .firstWhere((option) =>
-                                          option.key ==
-                                          widget.currentSection!.departmentId
-                                              .toString())
-                                      .displayName
-                                  :  null,
-                              onChanged: (dept) =>
+                              initialValue: _selectedDepartment == null
+                                  ? null
+                                  : widget.currentSection != null
+                                      ? departments
+                                          .firstWhere((option) =>
+                                              option.key ==
+                                              widget
+                                                  .currentSection!.departmentId
+                                                  .toString())
+                                          .displayName
+                                      : null,
+                              onChanged: (dept, selectedOption) =>
                                   _selectedDepartment = dept.id.toString(),
                             ),
                             const SizedBox(height: 24.0),
@@ -147,7 +149,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
         initialValue: initialValue,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         onSaved: onSaved,
         validator: (value) {
@@ -165,14 +167,14 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     required List<SelectOption<T>> options,
     String? initialValue,
     String? selectOption,
-    required Function(T) onChanged,
+    required Function(T, String?) onChanged,
   }) {
     return SizedBox(
       width: 450.0,
       child: SelectField<T>(
         options: options,
         initialValue: initialValue,
-        selectedOption: selectOption ,
+        selectedOption: selectOption,
         onChanged: onChanged,
         hint: label,
       ),

@@ -7,14 +7,14 @@ import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
-import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
+import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
+import 'package:tenderboard/office/letter/screens/letter_index.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget, String, String?)
@@ -40,7 +40,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.outbox,
         'navigate': const OutboxScreen()
       },
-      {'title': 'CC', 'icon': Icons.mail, 'navigate': const Dashboard()},
+      {
+        'title': 'CC',
+        'icon': Icons.mail,
+        'navigate': const ScanDocumentSummaryScreen('121212')
+      },
       {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
         'title': 'Document Search',
@@ -50,7 +54,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Circular',
         'icon': Icons.circle,
-        'navigate': const ScanAndIndexScreen(),
+        'navigate': const LetterIndex(),
       },
       {
         'title': 'Decision',

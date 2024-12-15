@@ -8,7 +8,10 @@ class AddListMasterItemScreen extends ConsumerWidget {
   final ListMasterItem? currentListMasterItem;
   final int currentListMasterId;
 
-  AddListMasterItemScreen({Key? key, this.currentListMasterItem,required this.currentListMasterId}) : super(key: key);
+  AddListMasterItemScreen(
+      {super.key,
+      this.currentListMasterItem,
+      required this.currentListMasterId});
 
   final _formKey = GlobalKey<FormState>();
   String? _nameArabic;
@@ -20,22 +23,28 @@ class AddListMasterItemScreen extends ConsumerWidget {
 
       try {
         if (currentListMasterItem == null) {
-          await ref.read(listMasterItemRepositoryProvider.notifier).addListMasterItem(
+          await ref
+              .read(listMasterItemRepositoryProvider.notifier)
+              .addListMasterItem(
                 listMasterId: currentListMasterId,
                 nameArabic: _nameArabic!,
                 nameEnglish: _nameEnglish!,
               );
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ListMaster Item added successfully!')),
+            const SnackBar(
+                content: Text('ListMaster Item added successfully!')),
           );
         } else {
-          await ref.read(listMasterItemRepositoryProvider.notifier).editListMasterItem(
+          await ref
+              .read(listMasterItemRepositoryProvider.notifier)
+              .editListMasterItem(
                 listMasterId: currentListMasterId,
                 nameArabic: _nameArabic!,
                 nameEnglish: _nameEnglish!,
               );
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ListMaster Item edited successfully!')),
+            const SnackBar(
+                content: Text('ListMaster Item edited successfully!')),
           );
         }
         Navigator.pop(context); // Close the modal after saving
@@ -64,8 +73,11 @@ class AddListMasterItemScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  currentListMasterItem == null ? 'Add ListMasterItem' : 'Edit ListMasterItem',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  currentListMasterItem == null
+                      ? 'Add ListMasterItem'
+                      : 'Edit ListMasterItem',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(

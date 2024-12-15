@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/inbox/model/inbox.dart';
 import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
@@ -25,11 +24,9 @@ class _InboxHomeState extends State<InboxHome> {
             CrossAxisAlignment.start, // Align children to the left (default)
         children: [
           const Padding(
-            padding:  EdgeInsets.symmetric(vertical: 8.0),
-            child:  InboxSearchForm(),
-          ),  
-          
-         
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: InboxSearchForm(),
+          ),
           Expanded(
             child: FutureBuilder<List<ListInbox>>(
               future: _repository.fetchListInboxItems(

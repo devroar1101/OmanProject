@@ -277,7 +277,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: designationOptions,
-              onChanged: (value) =>
+              onChanged: (value, selectedOption) =>
                   setState(() => _selectedDesignation = value),
               hint: 'Select Designation',
             ),
@@ -286,7 +286,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: authModeOptions,
-              onChanged: (value) => setState(() => _selectedAuthMode = value),
+              onChanged: (value, selectedOption) =>
+                  setState(() => _selectedAuthMode = value),
               hint: 'Select Auth Mode',
             ),
           ),
@@ -298,7 +299,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: roleOptions,
-              onChanged: (value) => setState(() => _selectedRole = value),
+              onChanged: (value, selectedOption) =>
+                  setState(() => _selectedRole = value),
               hint: 'Select Role',
             ),
           ),
@@ -306,7 +308,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: dgOptions,
-              onChanged: (value) => setState(() => _selectedDG = value),
+              onChanged: (value, selectedOption) =>
+                  setState(() => _selectedDG = value),
               hint: 'Select DG',
             ),
           ),
@@ -318,7 +321,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: departmentOptions,
-              onChanged: (value) => setState(() => _selectedDepartment = value),
+              onChanged: (value, selectedOption) =>
+                  setState(() => _selectedDepartment = value),
               hint: 'Select Department',
             ),
           ),
@@ -326,7 +330,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           Expanded(
             child: SelectField<String>(
               options: sectionOptions,
-              onChanged: (value) => setState(() => _selectedSection = value),
+              onChanged: (value, selectedOption) =>
+                  setState(() => _selectedSection = value),
               hint: 'Select Section',
             ),
           ),
@@ -419,7 +424,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(
                   titles[index],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ),
               // Build the list of pairs
@@ -441,8 +447,8 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
                             child: CheckboxListTile(
                               title: Text(
                                 permission['name'],
-                                style:
-                                    TextStyle(fontSize: 14), // Reduce text size
+                                style: const TextStyle(
+                                    fontSize: 14), // Reduce text size
                               ),
                               value: permission['value'],
                               visualDensity: VisualDensity.compact,
@@ -462,7 +468,7 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
                     }).toList(),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );

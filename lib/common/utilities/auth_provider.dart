@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
@@ -17,7 +18,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Initialize authentication state
   Future<void> _initialize() async {
     await _loadAuthState();
-    preLoad(); // Trigger background fetching
+    // Trigger background fetching
   }
 
   // Load authentication state from SharedPreferences
@@ -32,6 +33,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       accessToken: savedToken,
       isAuthenticated: isAuthenticated,
     );
+    preLoad();
   }
 
   // Save the authentication state in SharedPreferences
@@ -46,6 +48,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await prefs.setString('selectedLanguage', 'en');
       await prefs.remove('accessToken');
     }
+    preLoad();
   }
 
   // Handle login and update authentication state
@@ -62,8 +65,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Trigger background data preloading
   void preLoad() {
-    ref.read(dgOptionsProvider); // Start fetching DG options
-    ref.read(departmentOptionsProvider(null)); // Trigger department options
+    if (state.isAuthenticated) {
+      // Trigger the providers in the background
+      Future.microtask(() => ref.read(dgOptionsProvider(true)));
+      Future.microtask(() => ref.read(cabinetOptionsProvider));
+    } // Trigger department options
   }
 
   // Handle logout and clear authentication state

@@ -117,7 +117,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                                 textAlign: TextAlign.center,
                               ),
                             );
-                          }).toList(),
+                          }),
 
                           // Show the vertical speed dial icon
                           if (showSpeedDial)
@@ -169,7 +169,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                                 tooltip: iconButton["tooltip"],
                               ),
                             );
-                          }).toList(),
+                          }),
                           const SizedBox(
                             width: 18,
                           )

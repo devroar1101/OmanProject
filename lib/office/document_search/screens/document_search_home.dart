@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/test/loadimagetest.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/load_image.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_form.dart';
 
@@ -82,12 +83,12 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
                     'receivedDate',
                     'tenderNumber',
                   ],
-                  details: [],
+                  details: const [],
                 ),
               ),
               const Expanded(
                 flex: 1,
-                child: Scanner(),
+                child: ImageViewerScreen(),
               ),
             ],
           ),
