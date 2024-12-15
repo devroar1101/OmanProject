@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final CabinetRepositoryProvider =
+final cabinetRepositoryProvider =
     StateNotifierProvider<CabinetRepository, List<Cabinet>>((ref) {
   return CabinetRepository(ref);
 });
@@ -107,32 +109,40 @@ class CabinetRepository extends StateNotifier<List<Cabinet>> {
     }
   }
 
-  Future<List<SelectOption<Cabinet>>> getDGOptions(
-      String currentLanguage) async {
-    List<Cabinet> DGList = state;
+  Future<List<SelectOption<Cabinet>>> getCabinetOptions(
+      String currentLanguage, bool child) async {
+    List<Cabinet> cabinets = state;
 
-    if (DGList.isEmpty) {
-      DGList =
-          await ref.read(CabinetRepositoryProvider.notifier).fetchCabinets();
+    if (cabinets.isEmpty) {
+      cabinets =
+          await ref.read(cabinetRepositoryProvider.notifier).fetchCabinets();
     }
 
-    final List<SelectOption<Cabinet>> options =
-        DGList.map((dg) => SelectOption<Cabinet>(
-              displayName:
-                  currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
-              key: dg.id.toString(),
-              value: dg,
-            )).toList();
+    final List<SelectOption<Cabinet>> options = await Future.wait(
+      cabinets.map((cabinet) async {
+        List<SelectOption<Folder>>? childOptions;
+
+        return SelectOption<Cabinet>(
+          displayName: currentLanguage == 'en'
+              ? cabinet.nameEnglish
+              : cabinet.nameArabic,
+          key: cabinet.id.toString(),
+          value: cabinet,
+          childOptions: childOptions,
+        );
+      }).toList(),
+    );
 
     return options;
   }
 }
 
 final cabinetOptionsProvider =
-    FutureProvider<List<SelectOption<Cabinet>>>((ref) async {
+    FutureProvider.family<List<SelectOption<Cabinet>>, bool?>(
+        (ref, child) async {
   final authState = ref.watch(authProvider);
-
+  bool isChild = child ?? false;
   return ref
-      .read(CabinetRepositoryProvider.notifier)
-      .getDGOptions(authState.selectedLanguage);
+      .read(cabinetRepositoryProvider.notifier)
+      .getCabinetOptions(authState.selectedLanguage, isChild);
 });

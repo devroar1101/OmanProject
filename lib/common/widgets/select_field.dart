@@ -5,7 +5,7 @@ import 'package:tenderboard/common/model/select_option.dart';
 // ignore: must_be_immutable
 class SelectField<T> extends StatefulWidget {
   final List<SelectOption<T>> options;
-  final Function(T, String?) onChanged;
+  final Function(T, int?) onChanged;
   final String hint;
   String? selectedOption;
   String? initialValue;
@@ -34,7 +34,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
   void initState() {
     super.initState();
     filteredOptions = widget.options;
-    print('555$filteredOptions');
+
     if (widget.initialValue != null && widget.initialValue != '') {
       _searchController.text = widget.initialValue!;
     }
@@ -140,8 +140,8 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
                                     filteredOptions = widget.options;
                                   });
-                                  widget.onChanged(
-                                      option.value, option.displayName);
+                                  widget.onChanged(option.value,
+                                      filteredOptions.indexOf(option));
                                   _removeOverlay();
                                 },
                                 child: ListTile(
@@ -163,7 +163,6 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
   @override
   Widget build(BuildContext context) {
-    print('4444${Options()}');
     return CompositedTransformTarget(
         link: _layerLink,
         child: GestureDetector(

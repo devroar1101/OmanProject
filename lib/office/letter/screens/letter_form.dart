@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
@@ -82,8 +83,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   // Save form data logic
 
   Widget _letterForm1({required WidgetRef ref}) {
-    final cabinetAsyncValue = ref.watch(cabinetOptionsProvider);
-    final cabinetOption = cabinetAsyncValue.asData?.value ?? [];
+    final cabinetAsyncValue = ref.watch(cabinetOptionsProvider(true));
+    final cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
+    List<SelectOption<Folder>> folderOptions = [];
+
     return Column(
       children: [
         Row(
@@ -185,21 +188,30 @@ class _LetterFormState extends ConsumerState<LetterForm> {
             const SizedBox(width: 5),
             Expanded(
               child: SelectField<Cabinet>(
-                options: cabinetOption,
+                options: cabinetOptions,
                 initialValue: _selectedCabinetName,
                 onChanged: (cabinet, selectedOption) {
-                  _selectedCabinet = cabinet.id.toString();
-                  _selectedCabinet = selectedOption ?? '';
+                  setState(() {
+                    _selectedCabinet = cabinet.id.toString();
+                    folderOptions =
+                        (cabinetOptions[selectedOption!].childOptions ?? [])
+                            .cast<SelectOption<Folder>>();
+                  });
                 },
-                hint: 'Select a Cabinet',
+                hint: 'Cabinet',
               ),
             ),
             const SizedBox(width: 5),
             Expanded(
-                child: _buildDropdownField("Folder", ["Folder A", "Folder B"],
-                    value: _selectedFolder,
-                    onChanged: (value) =>
-                        setState(() => _selectedFolder = value!))),
+              child: SelectField<Folder>(
+                options: folderOptions as List<SelectOption<Folder>>,
+                initialValue: _selectedFolder,
+                onChanged: (folder, selectedOption) {
+                  _selectedFolder = folder.id.toString();
+                },
+                hint: 'Cabinet',
+              ),
+            )
           ],
         ),
         const SizedBox(height: 5),

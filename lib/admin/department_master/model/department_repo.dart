@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final departmentMasterRepositoryProvider =
@@ -30,8 +31,8 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
       state = [
         Department(
             code: Response.data['data']['code'],
-            departmentNameArabic: nameArabic,
-            departmentNameEnglish: nameEnglish,
+            nameArabic: nameArabic,
+            nameEnglish: nameEnglish,
             dgNameEnglish: 'test',
             objectId: 'aqaq-aqa',
             id: 1,
@@ -64,8 +65,8 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
       if (response.statusCode == 200) {
         final updatedDepartment = Department(
             code: '0',
-            departmentNameArabic: nameArabic,
-            departmentNameEnglish: nameEnglish,
+            nameArabic: nameArabic,
+            nameEnglish: nameEnglish,
             dgNameEnglish: 'test',
             objectId: 'ds-ds-d',
             id: currentDepartmentId,
@@ -126,10 +127,10 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
       {String? nameArabic, String? nameEnglish}) async {
     // Filter the list based on the provided nameArabic and nameEnglish filters
     var filteredList = departments.where((department) {
-      bool matchesArabic = nameArabic == null ||
-          department.departmentNameArabic.contains(nameArabic);
-      bool matchesEnglish = nameEnglish == null ||
-          department.departmentNameEnglish.contains(nameEnglish);
+      bool matchesArabic =
+          nameArabic == null || department.nameArabic.contains(nameArabic);
+      bool matchesEnglish =
+          nameEnglish == null || department.nameEnglish.contains(nameEnglish);
 
       return matchesArabic && matchesEnglish;
     }).toList();
@@ -138,15 +139,13 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
   }
 
   Future<List<SelectOption<Department>>> getDepartMentOptions(
-    String? currentDGId,
-  ) async {
+      String? currentDGId, String currentLanguage) async {
     List<Department> departmentList = state;
 
     if (departmentList.isEmpty) {
-      departmentList = await ref
-          .read(departmentMasterRepositoryProvider.notifier)
-          .fetchDepartments();
+      departmentList = await fetchDepartments();
     }
+
     if (currentDGId != null) {
       departmentList = departmentList
           .where((deparment) => deparment.dgId.toString() == currentDGId)
@@ -154,12 +153,14 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     }
     List<SelectOption<Department>> options = departmentList
         .map((depatment) => SelectOption<Department>(
-              displayName: depatment.departmentNameEnglish,
+              displayName: currentLanguage == 'en'
+                  ? depatment.nameEnglish
+                  : depatment.nameArabic,
               key: depatment.id.toString(),
               value: depatment,
             ))
         .toList();
-    print(options.iterator);
+
     return options;
   }
 }
@@ -167,7 +168,8 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
 final departmentOptionsProvider =
     FutureProvider.family<List<SelectOption<Department>>, String?>(
         (ref, dgId) async {
+  final authState = ref.watch(authProvider);
   return ref
       .read(departmentMasterRepositoryProvider.notifier)
-      .getDepartMentOptions(dgId);
+      .getDepartMentOptions(dgId, authState.selectedLanguage);
 });

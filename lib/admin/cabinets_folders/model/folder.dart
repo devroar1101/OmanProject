@@ -2,7 +2,7 @@ class Folder {
   int id;
   int cabinetId;
   String objectId;
-  String code;
+  int code;
   String nameArabic;
   String nameEnglish;
 

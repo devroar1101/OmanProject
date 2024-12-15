@@ -136,8 +136,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
 
     // Fetch DGList if not already available
     if (DGList.isEmpty) {
-      DGList =
-          await ref.read(dgMasterRepositoryProvider.notifier).fetchDgMasters();
+      DGList = await fetchDgMasters();
     }
 
     // Build DG Options with or without child options
@@ -149,7 +148,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
           // Use getDepartMentOptions to fetch department options for the current DG
           childOptions = await ref
               .read(departmentMasterRepositoryProvider.notifier)
-              .getDepartMentOptions(dg.id.toString());
+              .getDepartMentOptions(dg.id.toString(), currentLanguage);
         }
 
         return SelectOption<DgMaster>(

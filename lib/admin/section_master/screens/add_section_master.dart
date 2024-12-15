@@ -167,7 +167,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     required List<SelectOption<T>> options,
     String? initialValue,
     String? selectOption,
-    required Function(T, String?) onChanged,
+    required Function(T, int?) onChanged,
   }) {
     return SizedBox(
       width: 450.0,

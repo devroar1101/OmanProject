@@ -27,7 +27,9 @@ class FolderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final headers = ['Folder'];
-    final dataKeys = ['nameArabic'];
+    final dataKeys = ['cabinetFolderNameArabic'];
+
+    print('displayfolder${folders[0].nameArabic}${folders[0].id}');
 
     // Convert ListMasterItem list to map list with sno
     final details = Folder.listToMap(folders);
@@ -55,7 +57,7 @@ class FolderSection extends StatelessWidget {
                 data: dataKeys,
                 details: details,
                 selected: selectedFolderId.toString(),
-                detailKey: 'id',
+                detailKey: 'cabinetFolderId',
                 onTap: (index) {
                   onSelectFolder(index);
                 },

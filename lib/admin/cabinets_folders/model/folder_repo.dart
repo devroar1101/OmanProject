@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final FolderRepositoryProvider =
+final folderRepositoryProvider =
     StateNotifierProvider<FolderRepository, List<Folder>>((ref) {
   return FolderRepository(ref);
 });
@@ -34,7 +36,7 @@ class FolderRepository extends StateNotifier<List<Folder>> {
             nameArabic: nameArabic,
             cabinetId: cabinetId,
             id: 0,
-            code: '0',
+            code: 0,
             objectId: '1111'),
         ...state
       ];
@@ -48,8 +50,8 @@ class FolderRepository extends StateNotifier<List<Folder>> {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'paginationDetail': {
-        'pageSize': 15,
-        'pageNumber': 1,
+        'pageSize': '15',
+        'pageNumber': '1',
       }
     };
 
@@ -97,17 +99,48 @@ class FolderRepository extends StateNotifier<List<Folder>> {
         cabinetId: cabinetId,
         nameEnglish: nameEnglish,
         nameArabic: nameArabic,
-        code: 'UpdatedCode',
+        code: id,
         objectId: 'UpdatedObjectId',
       );
 
       // Update the state to reflect the edited Folder
       state = [
-        for (var Folder in state)
-          if (Folder.id == id) updatedFolder else Folder
+        for (var folder in state)
+          if (folder.id == id) updatedFolder else folder
       ];
     } catch (e) {
       throw Exception('Error occurred while editing Folder: $e');
     }
   }
+
+  Future<List<SelectOption<Folder>>> getFolderOptions(
+      String? cabinetId, String currentLanguage) async {
+    List<Folder> folderList = state;
+
+    if (cabinetId != null) {
+      folderList = folderList
+          .where((folder) => folder.cabinetId.toString() == cabinetId)
+          .toList();
+    }
+    List<SelectOption<Folder>> options = folderList
+        .map((folder) => SelectOption<Folder>(
+              displayName: currentLanguage == 'en'
+                  ? folder.nameEnglish
+                  : folder.nameEnglish,
+              key: folder.id.toString(),
+              value: folder,
+            ))
+        .toList();
+
+    return options;
+  }
 }
+
+final FolderOptionsProvider =
+    FutureProvider.family<List<SelectOption<Folder>>, String?>(
+        (ref, dgId) async {
+  final authState = ref.watch(authProvider);
+  return ref
+      .read(folderRepositoryProvider.notifier)
+      .getFolderOptions(dgId, authState.selectedLanguage);
+});

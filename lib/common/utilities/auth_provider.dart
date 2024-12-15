@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder_repo.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
@@ -66,10 +67,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Trigger background data preloading
   void preLoad() {
     if (state.isAuthenticated) {
-      // Trigger the providers in the background
-      Future.microtask(() => ref.read(dgOptionsProvider(true)));
-      Future.microtask(() => ref.read(cabinetOptionsProvider));
-    } // Trigger department options
+      //Future.microtask(() => ref.read(dgOptionsProvider(true)));
+      Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
+    }
   }
 
   // Handle logout and clear authentication state

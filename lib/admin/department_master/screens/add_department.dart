@@ -52,7 +52,7 @@ class AddDepartmentMaster extends ConsumerWidget {
                 SizedBox(
                   width: 450.0,
                   child: TextFormField(
-                    initialValue: currentDepartment?.departmentNameArabic,
+                    initialValue: currentDepartment?.nameArabic,
                     decoration: const InputDecoration(
                       labelText: 'Name (Arabic)',
                       border: OutlineInputBorder(),
@@ -72,7 +72,7 @@ class AddDepartmentMaster extends ConsumerWidget {
                 SizedBox(
                   width: 450.0,
                   child: TextFormField(
-                    initialValue: currentDepartment?.departmentNameEnglish,
+                    initialValue: currentDepartment?.nameEnglish,
                     decoration: const InputDecoration(
                       labelText: 'Name (English)',
                       border: OutlineInputBorder(),
@@ -102,7 +102,6 @@ class AddDepartmentMaster extends ConsumerWidget {
                         : null,
                     onChanged: (dG, selectedOption) {
                       _selectedDG = dG.id.toString();
-                      _selectDGName = selectedOption;
                     },
                     hint: 'Select a DG',
                   ),

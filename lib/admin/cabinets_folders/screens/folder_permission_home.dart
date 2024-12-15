@@ -25,8 +25,8 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    ref.read(CabinetRepositoryProvider.notifier).fetchCabinets();
-    ref.read(FolderRepositoryProvider.notifier).fetchFolders();
+    ref.read(cabinetRepositoryProvider.notifier).fetchCabinets();
+    ref.read(folderRepositoryProvider.notifier).fetchFolders();
   }
 
   @override
@@ -37,8 +37,8 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
 
   @override
   Widget build(BuildContext context) {
-    cabinets = ref.watch(CabinetRepositoryProvider);
-    folders = ref.watch(FolderRepositoryProvider);
+    cabinets = ref.watch(cabinetRepositoryProvider);
+    folders = ref.watch(folderRepositoryProvider);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

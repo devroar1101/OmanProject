@@ -23,14 +23,14 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
   @override
   void initState() {
     super.initState();
-    ref.read(CabinetRepositoryProvider.notifier).fetchCabinets();
-    ref.read(FolderRepositoryProvider.notifier).fetchFolders();
+    ref.read(cabinetRepositoryProvider.notifier).fetchCabinets();
+    ref.read(folderRepositoryProvider.notifier).fetchFolders();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cabinets = ref.watch(CabinetRepositoryProvider);
-    final folders = ref.watch(FolderRepositoryProvider);
+    final cabinets = ref.watch(cabinetRepositoryProvider);
+    final folders = ref.watch(folderRepositoryProvider);
 
     return Scaffold(
       body: Row(
@@ -56,12 +56,12 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
               },
               onAddCabinet: (name) {
                 ref
-                    .read(CabinetRepositoryProvider.notifier)
+                    .read(cabinetRepositoryProvider.notifier)
                     .addCabinet(nameEnglish: name, nameArabic: name);
               },
               onEditCabinet: (id, name) {
                 ref
-                    .read(CabinetRepositoryProvider.notifier)
+                    .read(cabinetRepositoryProvider.notifier)
                     .editCabinet(id: id, nameEnglish: name, nameArabic: name);
               },
             ),
@@ -89,14 +89,14 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
               },
               onAddFolder: (name) {
                 if (selectedCabinetId != null && selectedCabinetId != 0) {
-                  ref.read(FolderRepositoryProvider.notifier).addFolder(
+                  ref.read(folderRepositoryProvider.notifier).addFolder(
                       nameEnglish: name,
                       nameArabic: name,
                       cabinetId: selectedCabinetId!);
                 }
               },
               onEditFolder: (id, name) {
-                ref.read(FolderRepositoryProvider.notifier).editFolder(
+                ref.read(folderRepositoryProvider.notifier).editFolder(
                     id: id,
                     nameEnglish: name,
                     nameArabic: name,
