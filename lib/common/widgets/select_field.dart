@@ -5,7 +5,7 @@ import 'package:tenderboard/common/model/select_option.dart';
 // ignore: must_be_immutable
 class SelectField<T> extends StatefulWidget {
   final List<SelectOption<T>> options;
-  final Function(T, int?) onChanged;
+  final Function(T, SelectOption) onChanged;
   final String hint;
   String? selectedOption;
   String? initialValue;
@@ -140,8 +140,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
 
                                     filteredOptions = widget.options;
                                   });
-                                  widget.onChanged(option.value,
-                                      filteredOptions.indexOf(option));
+                                  widget.onChanged(option.value, option);
                                   _removeOverlay();
                                 },
                                 child: ListTile(

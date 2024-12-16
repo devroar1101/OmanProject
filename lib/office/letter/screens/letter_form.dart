@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
@@ -32,12 +35,21 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   final String _selectedYear = "2024";
   String _selectedCabinet = '';
   final String _selectedCabinetName = '';
-  String _selectedFolder = "Folder A";
+
+  String _selectedFolder = "";
+
+  String _selectedDG = "";
+  String _selectedDepartment = "";
   String _selectedPriority = "High";
   String _selectedClassification = "Confidential";
   String _selectedDirection = "Incoming";
   String _selectedDirectionType = "Internal";
   String _selectedLocationType = "Government";
+
+  List<SelectOption<Cabinet>> cabinetOptions = [];
+  List<SelectOption<Folder>> folderOptions = [];
+  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Department>> departmentOptions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +61,11 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _letterForm1(ref: ref),
+              _letterForm1(ref),
               if (_selectedDirection == "Outgoing" &&
                   _selectedDirectionType == "External")
                 _letterForm2(),
-              _letterForm3(),
+              _letterForm3(ref),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -82,10 +94,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   // Save form data logic
 
-  Widget _letterForm1({required WidgetRef ref}) {
+  Widget _letterForm1(WidgetRef ref) {
     final cabinetAsyncValue = ref.watch(cabinetOptionsProvider(true));
-    final cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
-    List<SelectOption<Folder>> folderOptions = [];
+    cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
 
     return Column(
       children: [
@@ -186,32 +197,44 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               ),
             ),
             const SizedBox(width: 5),
+            // Cabinet Selection
             Expanded(
               child: SelectField<Cabinet>(
                 options: cabinetOptions,
                 initialValue: _selectedCabinetName,
                 onChanged: (cabinet, selectedOption) {
                   setState(() {
+                    folderOptions = selectedOption.childOptions
+                            ?.cast<SelectOption<Folder>>() ??
+                        [];
+                    _selectedFolder =
+                        ''; // Clear the selected folder when cabinet changes
                     _selectedCabinet = cabinet.id.toString();
-                    folderOptions =
-                        (cabinetOptions[selectedOption!].childOptions ?? [])
-                            .cast<SelectOption<Folder>>();
                   });
+                  print('Updated folder options: ${folderOptions.length}');
                 },
-                hint: 'Cabinet',
+                hint: 'Select Cabinet',
               ),
             ),
             const SizedBox(width: 5),
-            Expanded(
-              child: SelectField<Folder>(
-                options: folderOptions as List<SelectOption<Folder>>,
-                initialValue: _selectedFolder,
-                onChanged: (folder, selectedOption) {
-                  _selectedFolder = folder.id.toString();
-                },
-                hint: 'Cabinet',
+
+            if (folderOptions.isNotEmpty)
+              Expanded(
+                child: SelectField<Folder>(
+                  options: folderOptions,
+                  key: ValueKey(folderOptions),
+                  initialValue:
+                      _selectedFolder.isEmpty ? null : _selectedFolder,
+                  onChanged: (folder, selectedOption) {
+                    setState(() {
+                      _selectedFolder = folder.id.toString();
+                    });
+                  },
+                  hint: folderOptions.isNotEmpty
+                      ? 'Select Folder'
+                      : 'No Folders Available',
+                ),
               ),
-            )
           ],
         ),
         const SizedBox(height: 5),
@@ -251,7 +274,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     );
   }
 
-  Widget _letterForm3() {
+  Widget _letterForm3(WidgetRef ref) {
+    final dgAsyncValue = ref.watch(dgOptionsProvider(true));
+    dgOptions = dgAsyncValue.asData?.value ?? [];
+
     return Column(
       children: [
         _buildRow([
@@ -270,10 +296,40 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           _buildTextField("Tender Number:"),
         ]),
         const SizedBox(height: 5),
-
-        _buildTextField("DG:"),
-        const SizedBox(height: 5),
-        _buildTextField("Department:"),
+        _buildRow([
+          Expanded(
+            child: SelectField<DgMaster>(
+              options: dgOptions,
+              initialValue: _selectedDG,
+              onChanged: (dg, selectedOption) {
+                setState(() {
+                  departmentOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<Department>>() ??
+                      [];
+                  _selectedDepartment = '';
+                  _selectedDG = dg.id.toString();
+                });
+              },
+              hint: 'Select DG',
+            ),
+          ),
+          Expanded(
+            child: SelectField<Department>(
+              options: departmentOptions,
+              key: ValueKey(departmentOptions),
+              initialValue:
+                  _selectedDepartment.isEmpty ? null : _selectedDepartment,
+              onChanged: (department, selectedOption) {
+                setState(() {
+                  _selectedDepartment = department.id.toString();
+                });
+              },
+              hint: departmentOptions.isNotEmpty
+                  ? 'Select Department'
+                  : 'No Department Available',
+            ),
+          ),
+        ]),
         const SizedBox(height: 5),
         _buildTextField("User:"),
         const SizedBox(height: 5),

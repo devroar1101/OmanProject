@@ -67,7 +67,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Trigger background data preloading
   void preLoad() {
     if (state.isAuthenticated) {
-      //Future.microtask(() => ref.read(dgOptionsProvider(true)));
+      Future.microtask(() => ref.read(dgOptionsProvider(true)));
       Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
     }
   }

@@ -110,18 +110,46 @@ class CabinetRepository extends StateNotifier<List<Cabinet>> {
   }
 
   Future<List<SelectOption<Cabinet>>> getCabinetOptions(
-      String currentLanguage, bool child) async {
+      String currentLanguage, bool includeChildOptions) async {
+    // Retrieve the current state of cabinets
     List<Cabinet> cabinets = state;
+    List<Folder> folders = [];
 
+    // If cabinets are empty, fetch them from the repository
     if (cabinets.isEmpty) {
-      cabinets =
-          await ref.read(cabinetRepositoryProvider.notifier).fetchCabinets();
+      cabinets = await fetchCabinets();
     }
 
+    // If child options are required, fetch the folders
+    if (includeChildOptions) {
+      folders = await ref
+          .read(folderRepositoryProvider.notifier)
+          .fetchFolders(); // Assuming a folder repository exists
+    }
+
+    // Create the options list
     final List<SelectOption<Cabinet>> options = await Future.wait(
       cabinets.map((cabinet) async {
+        // Prepare child options if needed
         List<SelectOption<Folder>>? childOptions;
+        if (includeChildOptions) {
+          // Filter folders associated with the current cabinet
+          final List<Folder> filteredFolders = folders
+              .where((folder) => folder.cabinetId == cabinet.id)
+              .toList();
 
+          childOptions = filteredFolders.map((folder) {
+            return SelectOption<Folder>(
+              displayName: currentLanguage == 'en'
+                  ? folder.nameEnglish
+                  : folder.nameArabic,
+              key: folder.id.toString(),
+              value: folder,
+            );
+          }).toList();
+        }
+
+        // Return the SelectOption for the cabinet
         return SelectOption<Cabinet>(
           displayName: currentLanguage == 'en'
               ? cabinet.nameEnglish
