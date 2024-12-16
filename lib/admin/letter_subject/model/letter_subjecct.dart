@@ -1,29 +1,33 @@
 class LetterSubjecct {
-  String subjectNameEnglish;
+  String subject;
   String tenderNumber;
-  String subjectObjectId;
+  String objectId;
+  int subjectId;
 
   LetterSubjecct({
-    required this.subjectNameEnglish,
+    required this.subject,
     required this.tenderNumber,
-    required this.subjectObjectId,
+    required this.objectId,
+    required this.subjectId,
   });
 
   // fromMap: Converts a Map to a LetterSubjecct instance
   factory LetterSubjecct.fromMap(Map<String, dynamic> map) {
     return LetterSubjecct(
-      subjectNameEnglish: map['subjectNameEnglish'] ?? '',
+      subject: map['name'] ?? '',
       tenderNumber: map['tenderNumber'] ?? '',
-      subjectObjectId: map['subjectObjectId'] ?? '',
+      objectId: map['objectId'] ?? '',
+      subjectId: map['subjectId'] ?? 0,
     );
   }
 
   // toMap: Converts a LetterSubjecct instance to a Map
   Map<String, dynamic> toMap() {
     return {
-      'subjectNameEnglish': subjectNameEnglish,
+      'subject': subject,
       'tenderNumber': tenderNumber,
-      'subjectObjectId': subjectObjectId,
+      'objectId': objectId,
+      'subjectId': subjectId,
     };
   }
 

@@ -1,53 +1,49 @@
 class ExternalLocationMaster {
-  int locationCode;
-  String locationNameArabic;
-  String locationNameEnglish;
-  String externalLocationObjectId;
+  int id;
+  String nameArabic;
+  String nameEnglish;
   String typeNameEnglish;
-  String typeNameArabic;
-  String typeObjectId;
-  String active;
-  String isYes;
+  int typeId;
+  bool isNew;
+  bool isDeleted;
+  String objectId;
 
   ExternalLocationMaster({
-    required this.locationCode,
-    required this.locationNameArabic,
-    required this.locationNameEnglish,
-    required this.externalLocationObjectId,
+    required this.id,
+    required this.nameArabic,
+    required this.nameEnglish,
     required this.typeNameEnglish,
-    required this.typeNameArabic,
-    required this.typeObjectId,
-    required this.active,
-    required this.isYes,
+    required this.typeId,
+    required this.isNew,
+    required this.isDeleted,
+    required this.objectId,
   });
 
   // Factory constructor to create an instance from a Map
   factory ExternalLocationMaster.fromMap(Map<String, dynamic> map) {
     return ExternalLocationMaster(
-      locationNameArabic: map['locationNameArabic'] ?? 0,
-      locationCode: map['locationCode'] ?? '',
-      locationNameEnglish: map['locationNameEnglish'] ?? '',
-      externalLocationObjectId: map['externalLocationObjectId'] ?? '',
-      typeNameEnglish: map['typeNameEnglish'] ?? '',
-      typeNameArabic: map['typeNameArabic'] ?? '',
-      typeObjectId: map['typeObjectId'] ?? '',
-      active: map['active'] ?? '',
-      isYes: map['isYes'] ?? '',
+      id: map['externalLocationId'] ?? 0,
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
+      typeNameEnglish: map['listMasterItemNameEnglish'] ?? '',
+      typeId: map['typeId'] ?? 0,
+      isNew: map['isNew'] ?? false,
+      isDeleted: map['isDeleted'] ?? false,
+      objectId: map['objectId'] ?? '',
     );
   }
 
   // Method to convert an instance to a Map
   Map<String, dynamic> toMap() {
     return {
-      'locationCode': locationCode,
-      'locationNameArabic': locationNameArabic,
-      'locationNameEnglish': locationNameEnglish,
-      'externalLocationObjectId': externalLocationObjectId,
+      'id': id,
+      'nameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
       'typeNameEnglish': typeNameEnglish,
-      'typeNameArabic': typeNameArabic,
-      'typeObjectId': typeObjectId,
-      'active': active,
-      'isYes': isYes,
+      'objectId': objectId,
+      'typeId': typeId,
+      'isNew': isNew,
+      'isDeleted': isDeleted,
     };
   }
 

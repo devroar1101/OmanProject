@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/common/widgets/scanner.dart';
+import 'package:tenderboard/common/widgets/load_image.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_form.dart';
 
 class DocumentSearchHome extends StatefulWidget {
@@ -10,7 +10,7 @@ class DocumentSearchHome extends StatefulWidget {
 }
 
 class _StackWithSliderState extends State<DocumentSearchHome> {
-  bool _isSliderVisible = false; // Controls the slider visibility
+  bool _isSliderVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +22,15 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
             color: Colors.white.withOpacity(0.8),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5), // Shadow color
-                spreadRadius: 1, // Spread radius
-                blurRadius: 5, // Blur radius
-                offset: const Offset(0, 3), // Offset in x and y direction
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: AppBar(
-            automaticallyImplyLeading: false, // Removes the pop-back icon
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             title: Padding(
@@ -63,29 +63,30 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
       body: Stack(
         children: [
           // Base layer: Row with DisplayDetails and Scanner
-          const Row(
+          Row(
             children: [
               Expanded(
                 flex: 1,
                 child: DisplayDetails(
-                  headers: [
+                  detailKey: 'objectId',
+                  headers: const [
                     'Subject',
                     'Reference #',
                     'Received Date',
                     'Tender Number',
                   ],
-                  data: [
-                    'subject'
-                        'jobReferenceNumber',
+                  data: const [
+                    'subject',
+                    'jobReferenceNumber',
                     'receivedDate',
                     'tenderNumber',
                   ],
-                  details: [],
+                  details: const [],
                 ),
               ),
-              Expanded(
+              const Expanded(
                 flex: 1,
-                child: Scanner(),
+                child: ImageViewerScreen(),
               ),
             ],
           ),
@@ -96,7 +97,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
                 _isSliderVisible ? 0 : -MediaQuery.of(context).size.width * 0.5,
             top: 0,
             bottom: 0,
-            width: MediaQuery.of(context).size.width * 0.5, // Slider width
+            width: MediaQuery.of(context).size.width * 0.5,
             child: const Material(
               elevation: 0,
               color: Colors.white,
@@ -108,13 +109,3 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
     );
   }
 }
-
-// Example Widgets: DisplayDetails, Scanner, DocumentSearchForm
-
-
-  
-
-
-
-
-

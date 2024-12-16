@@ -1,81 +1,155 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class ExternalLocationMasterScreen extends StatefulWidget {
+class ExternalLocationMasterScreen extends ConsumerStatefulWidget {
   const ExternalLocationMasterScreen({super.key});
 
   @override
-  _ExternalLocationMasterScreenState createState() => _ExternalLocationMasterScreenState();
+  _ExternalLocationMasterScreenState createState() =>
+      _ExternalLocationMasterScreenState();
 }
 
-class _ExternalLocationMasterScreenState extends State<ExternalLocationMasterScreen> {
-  final ExternalLocationMasterRepository _repository = ExternalLocationMasterRepository();
-  final List<ExternalLocationMaster> items = [];
+class _ExternalLocationMasterScreenState
+    extends ConsumerState<ExternalLocationMasterScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch External Location Master items during initialization
+    ref
+        .read(ExternalLocationMasterRepositoryProvider.notifier)
+        .fetchExternalLocationMaster();
+  }
+
+  String searchNameArabic = '';
+  String searchNameEnglish = '';
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
+  bool search = false;
+
+  void onSearch(String nameArabic, String nameEnglish) {
+    setState(() {
+      searchNameArabic = nameArabic;
+      searchNameEnglish = nameEnglish;
+      search = true;
+    });
+  }
+
+  List<ExternalLocationMaster> _applyFiltersAndPagination(
+      List<ExternalLocationMaster> externalLocations) {
+    // Apply search filters
+    List<ExternalLocationMaster> filteredList =
+        externalLocations.where((externalLocation) {
+      final matchesArabic = searchNameArabic.isEmpty ||
+          externalLocation.nameArabic
+              .toLowerCase()
+              .contains(searchNameArabic.toLowerCase());
+      final matchesEnglish = searchNameEnglish.isEmpty ||
+          externalLocation.nameEnglish
+              .toLowerCase()
+              .contains(searchNameEnglish.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<ExternalLocationMaster>>(
-        future: _repository.fetchExternalLocationMaster(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No items found'));
-          } else {
-            final items = snapshot.data!;
+    final externalLocations =
+        ref.watch(ExternalLocationMasterRepositoryProvider);
+    final filteredAndPaginatedList =
+        _applyFiltersAndPagination(externalLocations);
 
-            // Define headers and data keys
-            final headers = [
-              'code',
-              'Name Arabic',
-              'Name English',
-              'Type',
-              'Active',
-              'Location(New)',
-            ];
-            final dataKeys = [
-              'locationCode',
-              'locationNameArabic',
-              'locationNameEnglish',
-              'typeNameEnglish',
-              'active',
-              'isYes',
-            ];
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          // final ExternalLocationMaster currentLocation =
+          //               externalLocations.firstWhere(
+          //                   (location) => location.id == id);
+          //           showDialog(
+          //             context: context,
+          //             builder: (BuildContext context) {
+          //               return const AddUserMasterScreen(
 
-            // Convert ListMasterItem list to map list with sno
-            final details = ExternalLocationMaster.listToMap(items);
-
-            // Pass the converted list to DisplayDetails
-            return Column(
-              children: [
-                const ExternalLocationMasterSearchForm(),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DisplayDetails(
-                            headers: headers,
-                            data: dataKeys,
-                            details: details, // Pass the list of maps
-                            expandable: true, // Set false to expand by default
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+          //               );
+          //             },
+          //           );
         },
+      },
+      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+    ];
+
+    return Scaffold(
+      body: Column(
+        children: [
+          ExternalLocationMasterSearchForm(
+            onSearch: onSearch,
+          ),
+          if (externalLocations.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? externalLocations.where((externalLocation) {
+                      final matchesArabic = searchNameArabic.isEmpty ||
+                          externalLocation.nameArabic
+                              .toLowerCase()
+                              .contains(searchNameArabic.toLowerCase());
+                      final matchesEnglish = searchNameEnglish.isEmpty ||
+                          externalLocation.nameEnglish
+                              .toLowerCase()
+                              .contains(searchNameEnglish.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : externalLocations.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
+          if (externalLocations.isEmpty)
+            const Center(child: Text('No items found'))
+          else
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayDetails(
+                  headers: const [
+                    'Name Arabic',
+                    'Name English',
+                    'Type',
+                    'Active',
+                    'Location (New)',
+                  ],
+                  data: const [
+                    'nameArabic',
+                    'nameEnglish',
+                    'typeNameEnglish',
+                    'active',
+                    'isYes',
+                  ],
+                  details: ExternalLocationMaster.listToMap(
+                      filteredAndPaginatedList),
+                  expandable: true,
+                  iconButtons: iconButtons,
+                  onTap: (int index) {},
+                  detailKey: 'objectId',
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

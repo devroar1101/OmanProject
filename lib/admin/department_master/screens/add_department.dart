@@ -1,72 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/model/select_option.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class AddDepartmentMaster extends StatefulWidget {
-  const AddDepartmentMaster({super.key});
+class AddDepartmentMaster extends ConsumerWidget {
+  AddDepartmentMaster({
+    super.key,
+    this.currentDepartment,
+  });
 
-  @override
-  _AddDepartmentMasterState createState() => _AddDepartmentMasterState();
-}
-
-class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
+  final Department? currentDepartment;
   final _formKey = GlobalKey<FormState>();
 
-  String? _DepartmentNameArabic;
-  String? _DepartmentNameEnglish;
+  String? _departmentNameArabic;
+  String? _departmentNameEnglish;
   String? _selectedDG;
-
-  final List<SelectOption<String>> _DGOptions = [
-    SelectOption(displayName: 'Finance', key: 'finance', value: 'Finance'),
-    SelectOption(displayName: 'HR', key: 'hr', value: 'HR'),
-    SelectOption(displayName: 'IT', key: 'it', value: 'IT'),
-    SelectOption(displayName: 'Operations', key: 'operations', value: 'Operations'),
-  ];
-
-  void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // Perform save actions
-      print('Arabic Name: $_DepartmentNameArabic');
-      print('English Name: $_DepartmentNameEnglish');
-      print('Selected Department: $_selectedDG');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Department master added successfully!')),
-      );
-      Navigator.pop(context); // Close the modal after saving
-    }
-  }
+  String? _selectDGName;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dgOptionAsyncvalue = ref.watch(dgOptionsProvider(false));
+
+    final dgOptions = dgOptionAsyncvalue.asData?.value;
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: SizedBox(
-        width: 500.0, // Set a specific width for the dialog modal
+        width: 500.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Makes the dialog height dynamic
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Add Department Master',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  currentDepartment != null
+                      ? 'Edit Department Master'
+                      : 'Add Department Master',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: 450.0,
                   child: TextFormField(
+                    initialValue: currentDepartment?.nameArabic,
                     decoration: const InputDecoration(
                       labelText: 'Name (Arabic)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _DepartmentNameArabic = value;
+                      _departmentNameArabic = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -80,12 +72,13 @@ class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
                 SizedBox(
                   width: 450.0,
                   child: TextFormField(
+                    initialValue: currentDepartment?.nameEnglish,
                     decoration: const InputDecoration(
                       labelText: 'Name (English)',
                       border: OutlineInputBorder(),
                     ),
                     onSaved: (value) {
-                      _DepartmentNameEnglish = value;
+                      _departmentNameEnglish = value;
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -98,14 +91,19 @@ class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: 450.0,
-                  child: SearchableDropdown<String>(
-                    options: _DGOptions,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDG = value;
-                      });
+                  child: SelectField<DgMaster>(
+                    options: dgOptions!,
+                    initialValue: currentDepartment != null
+                        ? dgOptions
+                            .firstWhere((option) =>
+                                option.key ==
+                                currentDepartment!.dgId.toString())
+                            .displayName
+                        : null,
+                    onChanged: (dG, selectedOption) {
+                      _selectedDG = dG.id.toString();
                     },
-                    hint: 'Select a Department',
+                    hint: 'Select a DG',
                   ),
                 ),
                 const SizedBox(height: 24.0),
@@ -113,12 +111,17 @@ class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: _saveForm,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          _saveForm(context, ref);
+                        }
+                      },
                       child: const Text('Save'),
                     ),
                     OutlinedButton(
                       onPressed: () {
-                        Navigator.pop(context); // Close the modal on cancel
+                        Navigator.pop(context);
                       },
                       child: const Text('Cancel'),
                     ),
@@ -130,5 +133,37 @@ class _AddDepartmentMasterState extends State<AddDepartmentMaster> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
+    try {
+      if (currentDepartment == null) {
+        await ref
+            .read(departmentMasterRepositoryProvider.notifier)
+            .addDepartmentMaster(
+              nameArabic: _departmentNameArabic!,
+              nameEnglish: _departmentNameEnglish!,
+              dgId: _selectedDG!,
+            );
+      } else {
+        await ref
+            .read(departmentMasterRepositoryProvider.notifier)
+            .editDepartmentMaster(
+              currentDepartmentId: currentDepartment!.id,
+              nameArabic: _departmentNameArabic!,
+              nameEnglish: _departmentNameEnglish!,
+              dgId: int.parse(_selectedDG!),
+            );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Department master saved successfully!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save department master: $e')),
+      );
+    }
   }
 }

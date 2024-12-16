@@ -44,6 +44,8 @@ dependencies:
   html: ^0.15.5
   flutter_twain_scanner: ^1.0.1
   shimmer: ^3.0.0
+  image: ^4.4.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -71,8 +73,10 @@ flutter:
   assets:
     - assets/tb_login.jpg
     - assets/gstb_logo.png
+    - assets/signature.png
     - assets/lang/ar.json
     - assets/lang/en.json
+    - assets/env/tb.env
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

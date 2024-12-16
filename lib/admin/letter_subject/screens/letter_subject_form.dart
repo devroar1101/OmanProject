@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class LetterSubjectSearchForm extends StatefulWidget {
-  const LetterSubjectSearchForm({super.key});
+  const LetterSubjectSearchForm({super.key, required this.onSearch});
+
+  final Function(String, String) onSearch;
 
   @override
   _LetterSubjectSearchFormState createState() =>
@@ -15,11 +17,13 @@ class _LetterSubjectSearchFormState extends State<LetterSubjectSearchForm> {
   void _resetFields() {
     _tenderNumberController.clear();
     _subjectController.clear();
+    widget.onSearch('','');
   }
 
   void _handleSearch() {
     String tenderNumber = _tenderNumberController.text;
     String subject = _subjectController.text;
+    widget.onSearch(tenderNumber,subject);
 
     // Perform search logic here
     debugPrint("Tender Number: $tenderNumber, Subject: $subject");

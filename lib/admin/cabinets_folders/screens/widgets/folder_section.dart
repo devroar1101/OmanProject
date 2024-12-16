@@ -6,7 +6,7 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 
 class FolderSection extends StatelessWidget {
   final List<Folder> folders;
-  final Cabinet selectedCabinet;
+  final Cabinet? selectedCabinet;
   final int? selectedFolderId;
   final Function(String) onSearch;
   final Function(String)? onAddFolder;
@@ -16,7 +16,7 @@ class FolderSection extends StatelessWidget {
   const FolderSection({
     super.key,
     required this.folders,
-    required this.selectedCabinet,
+    this.selectedCabinet,
     required this.selectedFolderId,
     required this.onSearch,
     this.onAddFolder,
@@ -27,10 +27,12 @@ class FolderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final headers = ['Folder'];
-    final dataKeys = ['name'];
+    final dataKeys = ['cabinetFolderNameArabic'];
+
+    print('displayfolder${folders[0].nameArabic}${folders[0].id}');
 
     // Convert ListMasterItem list to map list with sno
-    final details = Folder.foldersToListOfMaps(folders);
+    final details = Folder.listToMap(folders);
     return Stack(
       children: [
         Column(
@@ -42,18 +44,20 @@ class FolderSection extends StatelessWidget {
               ),
               onChanged: onSearch,
             ),
-            ListTile(
-              title: Text(
-                'Folders in "${selectedCabinet.name}"',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+            if (selectedCabinet != null)
+              ListTile(
+                title: Text(
+                  'Folders in "${selectedCabinet!.nameArabic}"',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
             Expanded(
               child: DisplayDetails(
                 headers: headers,
                 data: dataKeys,
                 details: details,
-                selectedNo: selectedFolderId,
+                selected: selectedFolderId.toString(),
+                detailKey: 'cabinetFolderId',
                 onTap: (index) {
                   onSelectFolder(index);
                 },
@@ -66,16 +70,18 @@ class FolderSection extends StatelessWidget {
             ? Positioned(
                 top: 8,
                 right: 8,
-                child: ElevatedButton(
-                  onPressed: selectedCabinet.id == 0
-                      ? null
-                      : () => showAddDialog(
-                            context,
-                            title: 'Add Folder',
-                            onSave: onAddFolder!,
-                          ),
-                  child: const Icon(Icons.add),
-                ),
+                child: selectedCabinet != null
+                    ? ElevatedButton(
+                        onPressed: selectedCabinet!.id == 0
+                            ? null
+                            : () => showAddDialog(
+                                  context,
+                                  title: 'Add Folder',
+                                  onSave: onAddFolder!,
+                                ),
+                        child: const Icon(Icons.add),
+                      )
+                    : const SizedBox.shrink(),
               )
             : const SizedBox.shrink(),
       ],

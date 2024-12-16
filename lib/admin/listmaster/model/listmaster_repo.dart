@@ -1,40 +1,101 @@
-import 'package:dio/dio.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart'; // Assuming the new class is `ListMaster`
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-class ListMasterRepository {
-  final Dio _dio = Dio();
-  final String _baseUrl = 'http://eofficetbdevdal.cloutics.net/api/ListMaster';
+final listMasterRepositoryProvider = StateNotifierProvider<ListMasterRepository, List<ListMaster>>((ref) {
+  return ListMasterRepository(ref);
+});
 
-  Future<List<ListMaster>> fetchListMasters() async {
+class ListMasterRepository extends StateNotifier<List<ListMaster>> {
+  ListMasterRepository(this.ref) : super([]);
+  final Ref ref;
+
+  //Add
+  Future<void> addListMaster({required String nameEnglish, required String nameArabic}) async {
+    final dio = ref.watch(dioProvider);
+    Map<String, dynamic> requestBody = {
+      'listMasterNameEnglish': nameEnglish,
+      'listMasterNameArabic': nameArabic,
+    };
+
     try {
-      final response = await _dio.get('$_baseUrl/LookUpListMaster');
+      await dio.post('/ListMaster/Create', data: requestBody);
 
-      // Check if the response is successful
-      if (response.statusCode == 200) {
-        List data = response.data as List;
-        return data.map((item) => ListMaster.fromMap(item)).toList();
-      } else {
-        throw Exception('Failed to load ListMasters');
-      }
+      // After adding a ListMaster, we update the state to trigger a rebuild
+      state = [ ListMaster(
+        nameEnglish: nameEnglish, 
+        nameArabic: nameArabic,
+        id: 0,listMasterCode: '',
+        objectId: '1111',),...state];
     } catch (e) {
-      // Handle any errors during the request
-      throw Exception('Error occurred while fetching ListMasters: $e');
+      throw Exception('Error occurred while adding ListMaster: $e');
     }
   }
+  //Onload
+  Future<List<ListMaster>> fetchListMasters() async {
+    final dio = ref.watch(dioProvider);
+    Map<String, dynamic> requestBody = {
+      'paginationDetail': {
+        'pageSize': 15,
+        'pageNumber': 1,
+      }
+    };
 
-  // Search and filter method that accepts nameArabic and nameEnglish as optional filters
-  Future<List<ListMaster>> searchAndFilter(List<ListMaster> listMasters,
-      {String? nameArabic, String? nameEnglish}) async {
-    // Filter the list based on the provided nameArabic and nameEnglish filters
-    var filteredList = listMasters.where((listMaster) {
-      bool matchesArabic =
-          nameArabic == null || listMaster.nameArabic.contains(nameArabic);
-      bool matchesEnglish =
-          nameEnglish == null || listMaster.nameEnglish.contains(nameEnglish);
+    try {
+      final response = await dio.post('/Master/SearchAndListMaster', data: requestBody);
 
-      return matchesArabic && matchesEnglish;
-    }).toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data as List;
+        state = data.map((item) => ListMaster.fromMap(item as Map<String, dynamic>)).toList();
+      } else {
+        throw Exception('Failed to load ListMasters: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching ListMasters: $e');
+    }
+    return state;
+  }
 
-    return filteredList;
+  //Edit
+  Future<void> editListMaster({required int id, required String nameEnglish, required String nameArabic}) async {
+  final dio = ref.watch(dioProvider);
+  Map<String, dynamic> requestBody = {
+    'listMasterNameEnglish': nameEnglish,
+    'listMasterNameArabic': nameArabic,
+  };
+
+  try {
+    // Make a PUT or PATCH request to edit the existing ListMaster
+    await dio.put(
+      '/ListMaster/Update',  // Assuming you're using a RESTful API where you pass the ID in the URL
+      data: requestBody,
+    );
+
+    // After successfully editing, update the state by replacing the old ListMaster with the updated one
+    final updatedListMaster = ListMaster(
+      id: id, // Ensure the id remains the same as the existing ListMaster
+      nameEnglish: nameEnglish,
+      nameArabic: nameArabic,
+      listMasterCode: 'UpdatedCode', // Optionally update this if you receive a new value from the backend
+      objectId: 'UpdatedObjectId',  // Optionally update this if you receive a new value from the backend
+      // Update if there are any changes to the items list, otherwise leave as is
+    );
+
+    // Update the state to reflect the edited ListMaster
+    state = [
+      for (var listMaster in state)
+        if (listMaster.id == id) updatedListMaster else listMaster
+    ];
+  } catch (e) {
+    throw Exception('Error occurred while editing ListMaster: $e');
   }
 }
+
+}
+
+
+
+
+
+
+

@@ -1,42 +1,45 @@
-
 class Department {
-  String departmentCode;
-  String departmentNameArabic;
-  String departmentNameEnglish;
-  String departmentObjectId;
+  String code;
+  String nameArabic;
+  String nameEnglish;
   String dgNameEnglish;
-  String dgNameArabic;
+  String objectId;
+  int id;
+  int dgId;
 
   Department({
-    required this.departmentCode,
-    required this.departmentNameArabic,
-    required this.departmentNameEnglish,
-    required this.departmentObjectId,
+    required this.code,
+    required this.nameArabic,
+    required this.nameEnglish,
     required this.dgNameEnglish,
-    required this.dgNameArabic,
+    required this.objectId,
+    required this.id,
+    required this.dgId,
   });
 
   /// Convert a Map to a Department object
   factory Department.fromMap(Map<String, dynamic> map) {
     return Department(
-      departmentCode: map['departmentCode'] ?? '',
-      departmentNameArabic: map['departmentNameArabic'] ?? '',
-      departmentNameEnglish: map['departmentNameEnglish'] ?? '',
-      departmentObjectId: map['departmentObjectId'] ?? '',
+      code: map['code'] ?? '',
+      nameArabic: map['departmentNameArabic'] ?? '',
+      nameEnglish: map['departmentNameEnglish'] ?? '',
       dgNameEnglish: map['dgNameEnglish'] ?? '',
-      dgNameArabic: map['dgNameArabic'] ?? '',
+      objectId: map['departmentObjectId'] ?? '',
+      id: map['departmentId'] ?? 0,
+      dgId: map['dgId'] ?? 0,
     );
   }
 
   /// Convert a Department object to a Map
   Map<String, dynamic> toMap() {
     return {
-      'departmentCode': departmentCode,
-      'departmentNameArabic': departmentNameArabic,
-      'departmentNameEnglish': departmentNameEnglish,
-      'departmentObjectId': departmentObjectId,
+      'code': code,
+      'nameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
       'dgNameEnglish': dgNameEnglish,
-      'dgNameArabic': dgNameArabic,
+      'departmentObjectId': objectId,
+      'dgId': dgId,
+      'id': id,
     };
   }
 

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
-import 'package:tenderboard/office/scan_index/screens/scan_index_form.dart';
+import 'package:tenderboard/office/letter/screens/letter_form.dart';
 
-class ScanAndIndexScreen extends StatefulWidget {
-  const ScanAndIndexScreen({super.key});
+class LetterIndex extends StatefulWidget {
+  const LetterIndex({super.key});
 
   @override
-  _ScanAndIndexScreenState createState() => _ScanAndIndexScreenState();
+  _LetterIndexState createState() => _LetterIndexState();
 }
 
-class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
+class _LetterIndexState extends State<LetterIndex> {
   final bool _isLoading = false;
 
   @override
@@ -20,7 +20,7 @@ class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
               child: CircularProgressIndicator()) // Show loading indicator
           : Row(
               children: [
-                // Left Side - ScanIndexFormScreen widget (50% width)
+                // Left Side - ScanIndexFormIndex widget (50% width)
                 Expanded(
                   flex: 1,
                   child: SingleChildScrollView(
@@ -31,7 +31,7 @@ class _ScanAndIndexScreenState extends State<ScanAndIndexScreen> {
                           minHeight: MediaQuery.of(context).size.height,
                         ),
                         child: const IntrinsicHeight(
-                          child: ScanIndexHomeForm(),
+                          child: LetterForm(),
                         ),
                       ),
                     ),

@@ -1,34 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/model/select_option.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class DepartmentSearchForm extends StatefulWidget {
-  const DepartmentSearchForm({super.key});
+class DepartmentSearchForm extends ConsumerStatefulWidget {
+  const DepartmentSearchForm({super.key, required this.onSearch});
+
+  final Function(String, String, String,String?) onSearch;
 
   @override
   _DepartmentSearchFormState createState() => _DepartmentSearchFormState();
 }
 
-class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
+class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
-  String? _selectedDropdownValue;
-
-  // Example dropdown options
-  final List<SelectOption<String>> dropdownOptions = [
-    SelectOption(displayName: 'Department 1', key: 'dept1', value: 'Department 1'),
-    SelectOption(displayName: 'Department 2', key: 'dept2', value: 'Department 2'),
-    SelectOption(displayName: 'إدارة 3', key: 'dept3', value: 'إدارة 3'),
-    SelectOption(displayName: 'Department 4', key: 'dept4', value: 'Department 4'),
-  ];
+  String? _selectedDropdownValue = '';
 
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
+    widget.onSearch('', '', '','');
     setState(() {
-      _selectedDropdownValue = null;
+      _selectedDropdownValue = '';
     });
   }
 
@@ -36,18 +33,17 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
-    String? dropdownValue = _selectedDropdownValue;
+    String? dGdropdownValue = _selectedDropdownValue;
 
-    // Perform search logic
-    print('Search triggered with:');
-    print('Name English: $nameEnglish');
-    print('Name Arabic: $nameArabic');
-    print('Code: $code');
-    print('Selected Department: $dropdownValue');
+    
+
+    widget.onSearch(nameArabic,nameEnglish,code,dGdropdownValue!);
   }
 
   @override
   Widget build(BuildContext context) {
+    final dgOptionAsyncvalue = ref.watch(dgOptionsProvider(false));
+    final dgOptions = dgOptionAsyncvalue.asData?.value;
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -100,14 +96,14 @@ class _DepartmentSearchFormState extends State<DepartmentSearchForm> {
 
             // Custom Dropdown Field
             Expanded(
-              child: SearchableDropdown<String>(
-                options: dropdownOptions,
-                onChanged: (value) {
+              child: SelectField<DgMaster>(
+                options: dgOptions!,
+                onChanged: (dg, selectedOption) {
                   setState(() {
-                    _selectedDropdownValue = value;
+                    _selectedDropdownValue = dg.id.toString();
                   });
                 },
-                hint: 'Select Department',
+                hint: 'Select DG',
               ),
             ),
             const SizedBox(width: 8.0),

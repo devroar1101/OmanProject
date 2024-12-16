@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/inbox/model/inbox.dart';
 import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
@@ -27,14 +26,6 @@ class _InboxHomeState extends State<InboxHome> {
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
             child: InboxSearchForm(),
-          ),
-          // Wrap Pagination widget in a Row to control its positioning
-          const Row(
-            mainAxisAlignment: MainAxisAlignment
-                .end, // Align the pagination to the end of the row
-            children: [
-              Pagination(),
-            ],
           ),
           Expanded(
             child: FutureBuilder<List<ListInbox>>(
@@ -74,6 +65,7 @@ class _InboxHomeState extends State<InboxHome> {
                   // Pass the converted list to DisplayDetails
                   return DisplayDetails(
                     headers: headers,
+                    detailKey: 'jobReferenceNumber',
                     data: dataKeys,
                     details: details, // Pass the list of maps
                     expandable: true,

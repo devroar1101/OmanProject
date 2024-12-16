@@ -1,45 +1,49 @@
 class SectionMaster {
-  String sectionCode;
+  int sectionId;
+  int departmentId;
+  int dgId;
+  String code;
   String sectionNameArabic;
   String sectionNameEnglish;
-  String departmentNameEnglish;
-  String departmentNameArabic;
-  String sectionObjectId;
-  int sectionId;
+  String objectId;
+ // String timeStamp;
 
   SectionMaster({
-    required this.sectionCode,
+    required this.sectionId,
+    required this.departmentId,
+    required this.dgId,
+    required this.code,
     required this.sectionNameArabic,
     required this.sectionNameEnglish,
-    required this.departmentNameEnglish,
-    required this.departmentNameArabic,
-    required this.sectionObjectId,
-    required this.sectionId,
+    required this.objectId,
+    //required this.timeStamp,
   });
 
   // Create a SectionMaster instance from a map (e.g., from JSON)
   factory SectionMaster.fromMap(Map<String, dynamic> map) {
     return SectionMaster(
-      sectionCode: map['sectionCode'] ?? '',
+      sectionId: map['sectionId'] ?? 0,
+      departmentId: map['departmentId'] ?? 0,
+      dgId: map['dgId'] ?? 0,
+      code: map['code'] ?? '',
       sectionNameArabic: map['sectionNameArabic'] ?? '',
       sectionNameEnglish: map['sectionNameEnglish'] ?? '',
-      departmentNameEnglish: map['departmentNameEnglish'] ?? '',
-      departmentNameArabic: map['departmentNameArabic'] ?? '',
-      sectionObjectId: map['sectionObjectId'] ?? '',
-      sectionId: map['sectionId'] ?? '',
+      objectId: map['objectId'] ?? '',
+     // timeStamp: map['timeStamp'] ?? '',
     );
   }
 
   // Convert a SectionMaster instance to a map (e.g., for JSON)
   Map<String, dynamic> toMap() {
     return {
-      'sectionCode': sectionCode,
+      'sectionId': sectionId,
+      'departmentId': departmentId,
+      'dgId': dgId,
+      'code': code,
       'sectionNameArabic': sectionNameArabic,
       'sectionNameEnglish': sectionNameEnglish,
-      'departmentNameEnglish': departmentNameEnglish,
-      'departmentNameArabic': departmentNameArabic,
-      'sectionObjectId': sectionObjectId,
-      'sectionId': sectionId,
+      'objectId': objectId,
+      //'timeStamp': timeStamp,
     };
   }
 

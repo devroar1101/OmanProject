@@ -64,6 +64,7 @@ class _OutboxScreenState extends State<OutboxScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: DisplayDetails(
                             headers: headers,
+                            detailKey: 'jobReferenceNumber',
                             data: dataKeys,
                             details: details, // Pass the list of maps
                             expandable: true, // Set false to expand by default

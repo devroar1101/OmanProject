@@ -7,12 +7,14 @@ import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
-import 'package:tenderboard/common/screens/widgets/dashboard.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
+import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
+import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-import 'package:tenderboard/office/scan_index/screens/scan_index_screen.dart';
+import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
+import 'package:tenderboard/office/letter/screens/letter_index.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget, String, String?)
@@ -38,8 +40,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.outbox,
         'navigate': const OutboxScreen()
       },
-      {'title': 'CC', 'icon': Icons.mail, 'navigate': const Dashboard()},
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': const Dashboard()},
+      {
+        'title': 'CC',
+        'icon': Icons.mail,
+        'navigate': const ScanDocumentSummaryScreen('121212')
+      },
+      {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
         'title': 'Document Search',
         'icon': Icons.search,
@@ -48,12 +54,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Circular',
         'icon': Icons.circle,
-        'navigate': const ScanAndIndexScreen(),
+        'navigate': const LetterIndex(),
       },
       {
         'title': 'Decision',
         'icon': Icons.check_circle,
-        'navigate': const DocumentSearchHome(),
+        'navigate': const EjobSummaryScreen(),
       },
     ],
     'Admin': [
@@ -122,6 +128,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
+
     return Container(
       margin: const EdgeInsets.all(16), // Detached sidebar with margin
       decoration: BoxDecoration(
@@ -137,7 +145,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
-        width: _isMinimized ? 60 : 220,
+        width: _isMinimized ? 70 : 220,
         child: Column(
           children: [
             // Sidebar items
@@ -197,7 +205,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 icon: Icon(
-                  _isMinimized ? Icons.arrow_forward : Icons.arrow_back,
+                  _isMinimized
+                      ? (isRTL ? Icons.arrow_back : Icons.arrow_forward)
+                      : (isRTL ? Icons.arrow_forward : Icons.arrow_back),
                 ),
                 onPressed: _toggleMinimize,
               ),

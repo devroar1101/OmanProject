@@ -1,80 +1,145 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
+import 'package:tenderboard/admin/listmasteritem/screens/listmasteritem_home.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_form.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class ListMasterHome extends StatefulWidget {
+class ListMasterHome extends ConsumerStatefulWidget {
   const ListMasterHome({super.key});
 
   @override
   _ListMasterHomeState createState() => _ListMasterHomeState();
 }
 
-class _ListMasterHomeState extends State<ListMasterHome> {
-  final ListMasterRepository _repository = ListMasterRepository();
-  final List<ListMaster> items = [];
+class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(listMasterRepositoryProvider.notifier).fetchListMasters();
+  }
+
+  String searchNameArabic = '';
+  String searchNameEnglish = '';
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
+  bool search = false;
+
+  void onSearch(String nameArabic, String nameEnglish) {
+    setState(() {
+      searchNameArabic = nameArabic;
+      searchNameEnglish = nameEnglish;
+      search = true;
+      pageNumber = 1; // Default to the first page
+      pageSize = 15;
+    });
+  }
+
+  List<ListMaster> _applyFiltersAndPagination(List<ListMaster> listMasters) {
+    // Apply search filters
+    List<ListMaster> filteredList = listMasters.where((listMaster) {
+      final matchesArabic = searchNameArabic.isEmpty ||
+          listMaster.nameArabic
+              .toLowerCase()
+              .contains(searchNameArabic.toLowerCase());
+      final matchesEnglish = searchNameEnglish.isEmpty ||
+          listMaster.nameEnglish
+              .toLowerCase()
+              .contains(searchNameEnglish.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('ListMaster'),
-      // ),
-      body: FutureBuilder<List<ListMaster>>(
-        future: _repository.fetchListMasters(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No items found'));
-          } else {
-            final items = snapshot.data!;
+    final listMasters = ref.watch(listMasterRepositoryProvider);
+    final filteredAndPaginatedList = _applyFiltersAndPagination(listMasters);
 
-            // Define headers and data keys
-            final headers = [
-              'code',
-              'Name Arabic',
-              'Name English',
-            ];
-            final dataKeys = [
-              'code',
-              'nameArabic',
-              'nameEnglish',
-            ];
-
-            // Convert ListMasterItem list to map list with sno
-            final details = ListMaster.listToMap(items);
-
-            // Pass the converted list to DisplayDetails
-            return Column(
-              children: [
-                const ListMasterSearchForm(),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DisplayDetails(
-                            headers: headers,
-                            data: dataKeys,
-                            details: details, // Pass the list of maps
-                            expandable: true,
-                            selectedNo: -1,
-                            // Set false to expand by default
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          final ListMaster currentListMaster =
+              listMasters.firstWhere((listMaster) => listMaster.id == id);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddListmasterScreen(
+                currentListMaster: currentListMaster,
+              );
+            },
+          );
         },
+      },
+      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+    ];
+
+    return Scaffold(
+      body: Column(
+        children: [
+          ListMasterSearchForm(
+            onSearch: onSearch,
+          ),
+          if (listMasters.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? listMasters.where((listMaster) {
+                      final matchesArabic = searchNameArabic.isEmpty ||
+                          listMaster.nameArabic
+                              .toLowerCase()
+                              .contains(searchNameArabic.toLowerCase());
+                      final matchesEnglish = searchNameEnglish.isEmpty ||
+                          listMaster.nameEnglish
+                              .toLowerCase()
+                              .contains(searchNameEnglish.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : listMasters.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
+          if (listMasters.isEmpty)
+            const Center(child: Text('No items found'))
+          else
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayDetails(
+                  headers: const ['Code', 'Name Arabic', 'Name English'],
+                  data: const ['id', 'nameArabic', 'nameEnglish'],
+                  selected: '1',
+                  details: ListMaster.listToMap(filteredAndPaginatedList),
+                  iconButtons: iconButtons,
+                  expandable: true,
+                  onTap: (int id) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) =>
+                            ListMasterItemHome(currentListMasterId: id),
+                      ),
+                    );
+                  },
+                  detailKey: 'id',
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart'; // Add department repo
+import 'package:tenderboard/admin/section_master/model/section_master.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class AddSectionMaster extends StatefulWidget {
-  const AddSectionMaster({super.key});
+class AddSectionMaster extends ConsumerStatefulWidget {
+  const AddSectionMaster({
+    super.key,
+    this.currentSection,
+  });
+
+  final SectionMaster? currentSection;
 
   @override
-  _AddSectionMasterState createState() => _AddSectionMasterState();
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _AddSectionState();
+  }
 }
 
-class _AddSectionMasterState extends State<AddSectionMaster> {
+class _AddSectionState extends ConsumerState<AddSectionMaster> {
   final _formKey = GlobalKey<FormState>();
 
   String? _sectionNameArabic;
@@ -17,140 +31,211 @@ class _AddSectionMasterState extends State<AddSectionMaster> {
   String? _selectedDG;
   String? _selectedDepartment;
 
-  final List<SelectOption<String>> _DGOptions = [
-    SelectOption(displayName: 'Finance', key: 'finance', value: 'Finance'),
-    SelectOption(displayName: 'HR', key: 'hr', value: 'HR'),
-    SelectOption(displayName: 'IT', key: 'it', value: 'IT'),
-    SelectOption(displayName: 'Operations', key: 'operations', value: 'Operations'),
-  ];
-
-  final List<SelectOption<String>> _departmentOptions = [
-    SelectOption(displayName: 'Department A', key: 'deptA', value: 'Department A'),
-    SelectOption(displayName: 'Department B', key: 'deptB', value: 'Department B'),
-    SelectOption(displayName: 'Department C', key: 'deptC', value: 'Department C'),
-    SelectOption(displayName: 'Department D', key: 'deptD', value: 'Department D'),
-  ];
-
-  void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // Perform save actions
-      print('Arabic Name: $_sectionNameArabic');
-      print('English Name: $_sectionNameEnglish');
-      print('Selected DG: $_selectedDG');
-      print('Selected Department: $_selectedDepartment');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Section master added successfully!')),
-      );
-      Navigator.pop(context); // Close the modal after saving
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: SizedBox(
-        width: 500.0, // Set a specific width for the dialog modal
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // Makes the dialog height dynamic
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Add Section Master',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16.0),
-                SizedBox(
-                  width: 450.0,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Name (Arabic)',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSaved: (value) {
-                      _sectionNameArabic = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter the Arabic name';
-                      }
-                      return null;
-                    },
+    return Consumer(
+      builder: (context, ref, child) {
+        final dgOptions = ref.watch(dgOptionsProvider(true));
+        final departmentOptions = ref.watch(departmentOptionsProvider('1'));
+
+        return dgOptions.when(
+          data: (dgList) {
+            return departmentOptions.when(
+              data: (departments) {
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                SizedBox(
-                  width: 450.0,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Name (English)',
-                      border: OutlineInputBorder(),
+                  child: SizedBox(
+                    width: 500.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.currentSection != null
+                                  ? 'Edit Section Master'
+                                  : 'Add Section Master',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16.0),
+                            // Name fields
+                            _buildTextField(
+                              label: 'Name (Arabic)',
+                              initialValue:
+                                  widget.currentSection?.sectionNameArabic,
+                              onSaved: (value) => _sectionNameArabic = value,
+                            ),
+                            _buildTextField(
+                              label: 'Name (English)',
+                              initialValue:
+                                  widget.currentSection?.sectionNameEnglish,
+                              onSaved: (value) => _sectionNameEnglish = value,
+                            ),
+                            const SizedBox(height: 16.0),
+                            // DG Selection
+                            _buildSearchableDropdown<DgMaster>(
+                              label: 'Select DG',
+                              options: dgList,
+                              selectOption: _selectedDG,
+                              initialValue: widget.currentSection != null
+                                  ? dgList
+                                      .firstWhere((dg) =>
+                                          widget.currentSection!.dgId
+                                              .toString() ==
+                                          dg.key)
+                                      .displayName
+                                  : null,
+                              onChanged: (dg, selectedOption) {
+                                setState(() {
+                                  _selectedDG = dg.id.toString();
+                                  _selectedDepartment = null;
+
+                                  ref.refresh(
+                                      departmentOptionsProvider(_selectedDG!));
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16.0),
+                            // Department Selection
+                            _buildSearchableDropdown<Department>(
+                              label: 'Select Department',
+                              options: departments,
+                              initialValue: _selectedDepartment == null
+                                  ? null
+                                  : widget.currentSection != null
+                                      ? departments
+                                          .firstWhere((option) =>
+                                              option.key ==
+                                              widget
+                                                  .currentSection!.departmentId
+                                                  .toString())
+                                          .displayName
+                                      : null,
+                              onChanged: (dept, selectedOption) =>
+                                  _selectedDepartment = dept.id.toString(),
+                            ),
+                            const SizedBox(height: 24.0),
+                            _buildSaveCancelButtons(),
+                          ],
+                        ),
+                      ),
                     ),
-                    onSaved: (value) {
-                      _sectionNameEnglish = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter the English name';
-                      }
-                      return null;
-                    },
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                SizedBox(
-                  width: 450.0,
-                  child: SearchableDropdown<String>(
-                    options: _DGOptions,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDG = value;
-                      });
-                    },
-                    hint: 'Select a DG',
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                SizedBox(
-                  width: 450.0,
-                  child: SearchableDropdown<String>(
-                    options: _departmentOptions,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDepartment = value;
-                      });
-                    },
-                    hint: 'Select a Department',
-                  ),
-                ),
-                const SizedBox(height: 24.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _saveForm,
-                      child: const Text('Save'),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Close the modal on cancel
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(child: Text('Error: $err')),
+        );
+      },
+    );
+  }
+
+  Widget _buildTextField(
+      {required String label,
+      String? initialValue,
+      FormFieldSetter<String>? onSaved}) {
+    return SizedBox(
+      width: 450.0,
+      child: TextFormField(
+        initialValue: initialValue,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
         ),
+        onSaved: onSaved,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter the $label';
+          }
+          return null;
+        },
       ),
     );
+  }
+
+  Widget _buildSearchableDropdown<T>({
+    required String label,
+    required List<SelectOption<T>> options,
+    String? initialValue,
+    String? selectOption,
+    required Function(T, SelectOption) onChanged,
+  }) {
+    return SizedBox(
+      width: 450.0,
+      child: SelectField<T>(
+        options: options,
+        initialValue: initialValue,
+        selectedOption: selectOption,
+        onChanged: onChanged,
+        hint: label,
+      ),
+    );
+  }
+
+  Widget _buildSaveCancelButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              _saveForm(context, ref);
+            }
+          },
+          child: const Text('Save'),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
+    try {
+      if (widget.currentSection == null) {
+        await ref
+            .read(sectionMasterRepositoryProvider.notifier)
+            .addSectionMaster(
+              nameArabic: _sectionNameArabic!,
+              nameEnglish: _sectionNameEnglish!,
+              dgId: int.parse(_selectedDG!),
+              departmentId: int.parse(_selectedDepartment!),
+            );
+      } else {
+        await ref
+            .read(sectionMasterRepositoryProvider.notifier)
+            .editSeactionMaster(
+              currentsectionId: widget.currentSection!.sectionId,
+              nameArabic: _sectionNameArabic!,
+              nameEnglish: _sectionNameEnglish!,
+              currentDgId: int.parse(_selectedDG!),
+              currentDepartmentId: int.parse(_selectedDepartment!),
+            );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(widget.currentSection != null
+            ? 'Section edited successfully!'
+            : 'Section added successfully!'),
+      ));
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+    }
   }
 }

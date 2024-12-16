@@ -1,23 +1,32 @@
 class ListMasterItem {
   String objectId;
+  int listMasterId;
+  int id;
+  String code;
   String nameArabic;
   String nameEnglish;
-  String systemField;
+  //String systemField;
 
   ListMasterItem({
     required this.objectId,
+    required this.listMasterId,
+    required this.id,
+    required this.code,
     required this.nameArabic,
     required this.nameEnglish,
-    required this.systemField,
+    //required this.systemField,
   });
 
   // Convert a Map to a ListMasterItem instance
   factory ListMasterItem.fromMap(Map<String, dynamic> map) {
     return ListMasterItem(
       objectId: map['objectId'] ?? '',
-      nameArabic: map['nameArabic'] ?? '',
-      nameEnglish: map['nameEnglish'] ?? '',
-      systemField: map['systemField'] ?? 'false',
+      listMasterId: map['listMasterId'] ?? 0,
+      id: map['listMasterItemId'] ?? 0,
+      code: map['code'] ?? '',
+      nameArabic: map['listMasterItemNameArabic'] ?? '',
+      nameEnglish: map['listMasterItemNameEnglish'] ?? '',
+      //systemField: map['systemField'] ?? 'false',
     );
   }
 
@@ -25,9 +34,11 @@ class ListMasterItem {
   Map<String, dynamic> toMap() {
     return {
       'objectId': objectId,
+      'id': id,
+      'code': code,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
-      'systemField': systemField,
+      //'systemField': systemField,
     };
   }
 

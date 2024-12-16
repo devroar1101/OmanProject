@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/screens/add_department.dart';
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/add_external_location.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/listmaster/screens/add_listmaster.dart';
-import 'package:tenderboard/admin/section_master/screens/add_section_master.dart'; // Import the screen
+import 'package:tenderboard/admin/listmasteritem/screens/add_listmasteritem.dart';
+import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
+import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
+import 'package:tenderboard/common/screens/login.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart'; // Import the screen
 
 class CustomAppBar {
   /// A method to create and return a custom AppBar widget.
@@ -98,6 +104,26 @@ class CustomAppBar {
                       debugPrint('Profile clicked');
                     },
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () async {
+                      // Access AuthNotifier using context
+                      final authNotifier = ProviderScope.containerOf(context)
+                          .read(authProvider.notifier);
+
+                      // Call logout method
+                      await authNotifier.logout();
+
+                      // Navigate back to the login screen
+                      Navigator.pushReplacement(
+                        // ignore: use_build_context_synchronously
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
       ),
@@ -113,21 +139,21 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddListmasterScreen();
+          return AddListmasterScreen();
         },
       );
     } else if (screenName == 'DG') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddDGmasterScreen();
+          return AddDGmasterScreen();
         },
       );
     } else if (screenName == 'Department') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddDepartmentMaster();
+          return AddDepartmentMaster();
         },
       );
     } else if (screenName == 'Section') {
@@ -141,7 +167,30 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddLetterSubject();
+          return AddLetterSubject();
+        },
+      );
+    } else if (screenName == 'User') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AddUserMasterScreen();
+        },
+      );
+    } else if (screenName == 'ListMasterItem') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddListMasterItemScreen(
+            currentListMasterId: 1,
+          );
+        },
+      );
+    } else if (screenName == 'ExternalLocation') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddExternalLocation();
         },
       );
     } else {

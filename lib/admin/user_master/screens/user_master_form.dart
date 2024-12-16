@@ -1,259 +1,191 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/section_master/model/section_master.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 
-class UsersSearchForm extends StatefulWidget {
+class UsersSearchForm extends ConsumerStatefulWidget {
   const UsersSearchForm({super.key});
 
   @override
   _UsersSearchFormState createState() => _UsersSearchFormState();
 }
 
-class _UsersSearchFormState extends State<UsersSearchForm> {
-  final TextEditingController _eofficeIdController = TextEditingController();
+class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ldapIdentifierController =
-      TextEditingController();
 
-  String? _selectedDesignationValue;
-  String? _selectedRoleValue;
-  String? _selectedDGValue;
-  String? _selectedDepartmentValue;
-  String? _selectedSectionValue;
-
-  // Example options for dropdown fields
-  final List<SelectOption<String>> designationOptions = [
-    SelectOption(displayName: 'Manager', key: 'manager', value: 'Manager'),
-    SelectOption(
-        displayName: 'Supervisor', key: 'supervisor', value: 'Supervisor'),
-    SelectOption(displayName: 'Staff', key: 'staff', value: 'Staff'),
-  ];
-
-  final List<SelectOption<String>> roleOptions = [
-    SelectOption(displayName: 'Admin', key: 'admin', value: 'Admin'),
-    SelectOption(displayName: 'User', key: 'user', value: 'User'),
-    SelectOption(displayName: 'Viewer', key: 'viewer', value: 'Viewer'),
-  ];
-
-  final List<SelectOption<String>> dgOptions = [
-    SelectOption(displayName: 'DG 1', key: 'dg1', value: 'DG 1'),
-    SelectOption(displayName: 'DG 2', key: 'dg2', value: 'DG 2'),
-    SelectOption(displayName: 'DG 3', key: 'dg3', value: 'DG 3'),
-  ];
-
-  final List<SelectOption<String>> departmentOptions = [
-    SelectOption(
-        displayName: 'Department A', key: 'deptA', value: 'Department A'),
-    SelectOption(
-        displayName: 'Department B', key: 'deptB', value: 'Department B'),
-  ];
-
-  final List<SelectOption<String>> sectionOptions = [
-    SelectOption(displayName: 'Section X', key: 'sectX', value: 'Section X'),
-    SelectOption(displayName: 'Section Y', key: 'sectY', value: 'Section Y'),
-  ];
+  String? _selectedDGValue = '';
+  String? _selectedDepartmentValue = '';
+  String? _selectedSectionValue = '';
 
   void _resetFields() {
-    _eofficeIdController.clear();
     _loginIdController.clear();
     _nameController.clear();
-    _ldapIdentifierController.clear();
     setState(() {
-      _selectedDesignationValue = null;
-      _selectedRoleValue = null;
-      _selectedDGValue = null;
-      _selectedDepartmentValue = null;
-      _selectedSectionValue = null;
+      _selectedDGValue = '';
+      _selectedDepartmentValue = '';
+      _selectedSectionValue = '';
     });
   }
 
   void _handleSearch() {
-    String eofficeId = _eofficeIdController.text;
     String loginId = _loginIdController.text;
     String name = _nameController.text;
-    String ldapIdentifier = _ldapIdentifierController.text;
 
     print('Search triggered with:');
-    print('Eoffice ID: $eofficeId');
     print('Login ID: $loginId');
     print('Name: $name');
-    print('LDAP Identifier: $ldapIdentifier');
-    print('Designation: $_selectedDesignationValue');
-    print('Role: $_selectedRoleValue');
     print('DG: $_selectedDGValue');
     print('Department: $_selectedDepartmentValue');
     print('Section: $_selectedSectionValue');
   }
 
-@override
-Widget build(BuildContext context) {
-  return Card(
-    elevation: 4.0,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-    margin: const EdgeInsets.all(16.0),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // First Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _eofficeIdController,
-                  decoration: InputDecoration(
-                    labelText: 'Eoffice ID',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: TextField(
-                  controller: _loginIdController,
-                  decoration: InputDecoration(
-                    labelText: 'Login ID',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+  @override
+  Widget build(BuildContext context) {
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
+    final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
-          // Second Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _ldapIdentifierController,
-                  decoration: InputDecoration(
-                    labelText: 'LDAP Identifier',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+    final departmentOptionsAsyncValue = _selectedDGValue!.isNotEmpty
+        ? ref.watch(departmentOptionsProvider(_selectedDGValue))
+        : const AsyncValue<List<SelectOption<Department>>>.data([]);
+
+    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
+    final sectionOptionsAsyncValue = _selectedDepartmentValue != null
+        ? ref.watch(sectionOptionsProvider(_selectedDepartmentValue!))
+        : const AsyncValue<List<SelectOption<SectionMaster>>>.data([]);
+
+    final sectionOptions = sectionOptionsAsyncValue.asData?.value ?? [];
+
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      margin: const EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // First Row: Login ID and Name
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _loginIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Login ID',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: designationOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDesignationValue = value;
-                    });
-                  },
-                  hint: 'Select Designation',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: roleOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRoleValue = value;
-                    });
-                  },
-                  hint: 'Select Role',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+              ],
+            ),
+            const SizedBox(height: 16.0),
 
-          // Third Row with 3 fields
-          Row(
-            children: [
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: dgOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDGValue = value;
-                    });
-                  },
-                  hint: 'Select DG',
+            // Second Row: DG, Department, Section
+            Row(
+              children: [
+                // DG Select Field
+                Expanded(
+                  child: SelectField<DgMaster>(
+                    options: dgOptions,
+                    onChanged: (dg, selectedOption) {
+                      setState(() {
+                        _selectedDGValue = dg.id.toString();
+                        print('11dg: $_selectedDGValue');
+                        _selectedDepartmentValue = '';
+                        _selectedSectionValue = '';
+                      });
+                    },
+                    hint: 'Select DG',
+                    initialValue: _selectedDGValue,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: departmentOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDepartmentValue = value;
-                    });
-                  },
-                  hint: 'Select Department',
-                ),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: SearchableDropdown<String>(
-                  options: sectionOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSectionValue = value;
-                    });
-                  },
-                  hint: 'Select Section',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
+                const SizedBox(width: 16.0),
 
-          // Buttons Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Search Icon Button
-              Card(
-                color: const Color.fromARGB(255, 238, 240, 241),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: _handleSearch,
-                  tooltip: 'Search',
+                // Department Select Field
+                Expanded(
+                  child: SelectField<Department>(
+                    options: departmentOptions,
+                    onChanged: (department, selectedOption) {
+                      setState(() {
+                        _selectedDepartmentValue = department.id.toString();
+                        _selectedSectionValue = '';
+                      });
+                    },
+                    hint: 'Select Department',
+                    initialValue: _selectedDepartmentValue,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8.0),
-              // Reset Icon Button
-              Card(
-                color: const Color.fromARGB(255, 240, 234, 235),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: _resetFields,
-                  tooltip: 'Reset',
+                const SizedBox(width: 16.0),
+
+                // Section Select Field
+                Expanded(
+                  child: SelectField<SectionMaster>(
+                    options: sectionOptions,
+                    onChanged: (section, selectedOption) {
+                      setState(() {
+                        _selectedSectionValue = section.sectionId.toString();
+                      });
+                    },
+                    hint: 'Select Section',
+                    initialValue: _selectedSectionValue,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 16.0),
+
+            // Search and Reset Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Search Button
+                Card(
+                  color: const Color.fromARGB(255, 238, 240, 241),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: _handleSearch,
+                    tooltip: 'Search',
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+
+                // Reset Button
+                Card(
+                  color: const Color.fromARGB(255, 240, 234, 235),
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: _resetFields,
+                    tooltip: 'Reset',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

@@ -1,27 +1,45 @@
 class Cabinet {
-  final int id;
-  String name;
+  int id;
+  String objectId;
+  String code;
+  String nameArabic;
+  String nameEnglish;
 
-  Cabinet({required this.id, required this.name});
+  Cabinet({
+    required this.id,
+    required this.objectId,
+    required this.code,
+    required this.nameArabic,
+    required this.nameEnglish,
+  });
 
-  // Convert from Map to Cabinet
+  // Convert a Map to a Cabinet object
   factory Cabinet.fromMap(Map<String, dynamic> map) {
     return Cabinet(
-      id: map['id'],
-      name: map['name'],
+      id: map['cabinetId'],
+      objectId: map['objectId'] ?? '', // Defaulting to empty string if null
+      code: map['code'] ?? '', // Defaulting to empty string if null
+      nameArabic: map['nameEnglish'] ?? '',
+      nameEnglish: map['nameArabic'] ?? '',
     );
   }
 
-  // Convert from Cabinet to Map
+  // Convert a Cabinet object to a Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
+      'objectId': objectId,
+      'CabinetCode': code,
+      'nameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
     };
   }
 
-  static List<Map<String, dynamic>> cabinetsToListOfMaps(
-      List<Cabinet> cabinets) {
-    return cabinets.map((cabinet) => cabinet.toMap()).toList();
+  static List<Map<String, dynamic>> listToMap(List<Cabinet> items) {
+    return List<Map<String, dynamic>>.generate(items.length, (index) {
+      Map<String, dynamic> itemMap = items[index].toMap();
+      itemMap['sno'] = (index + 1).toString(); // Add sno field
+      return itemMap;
+    });
   }
 }

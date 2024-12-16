@@ -1,73 +1,167 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
+import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_form.dart';
+import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
+import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class LetterSubjectMasterScreen extends StatefulWidget {
+class LetterSubjectMasterScreen extends ConsumerStatefulWidget {
   const LetterSubjectMasterScreen({super.key});
 
   @override
-  _LetterSubjectMasterScreenState createState() => _LetterSubjectMasterScreenState();
+  _LetterSubjectMasterScreenState createState() =>
+      _LetterSubjectMasterScreenState();
 }
 
-class _LetterSubjectMasterScreenState extends State<LetterSubjectMasterScreen> {
-  final LetterSubjectMasterRepository _repository = LetterSubjectMasterRepository();
-  final List<LetterSubjecct> items = [];
+class _LetterSubjectMasterScreenState
+    extends ConsumerState<LetterSubjectMasterScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch Letter Subjects during initialization
+    ref
+        .read(LetterSubjectMasterRepositoryProvider.notifier)
+        .fetchLetterSubjects();
+  }
+
+  String searchTenderNumber = '';
+  String searchSubject = '';
+  int pageNumber = 1; // Default to the first page
+  int pageSize = 15; // Default page size
+  bool search = false;
+
+  void onSearch(String tenderNumber, String letterSubject) {
+    setState(() {
+      searchTenderNumber = tenderNumber;
+      searchSubject = letterSubject;
+      search = true;
+    });
+  }
+
+  List<LetterSubjecct> _applyFiltersAndPagination(
+      List<LetterSubjecct> letterSubjects) {
+    // Apply search filters
+    List<LetterSubjecct> filteredList = letterSubjects.where((singleSubject) {
+      final matchesArabic = searchSubject.isEmpty ||
+          singleSubject.subject
+              .toLowerCase()
+              .contains(searchSubject.toLowerCase());
+      final matchesEnglish = searchTenderNumber.isEmpty ||
+          singleSubject.tenderNumber
+              .toLowerCase()
+              .contains(searchTenderNumber.toLowerCase());
+      return matchesArabic && matchesEnglish;
+    }).toList();
+
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
+
+    return filteredList.sublist(startIndex, endIndex);
+  }
+
+  void onDelete(int subjectId) {
+    ref
+        .watch(LetterSubjectMasterRepositoryProvider.notifier)
+        .deleteSubject(subjectId: subjectId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Subject Deleted successfully!')),
+    );
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<LetterSubjecct>>(
-        future: _repository.fetchLetterSubjects(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No items found'));
-          } else {
-            final items = snapshot.data!;
+    final letterSubjects = ref.watch(LetterSubjectMasterRepositoryProvider);
+    final filteredAndPaginatedList = _applyFiltersAndPagination(letterSubjects);
 
-            // Define headers and data keys
-            final headers = [
-              'Tender Number',
-              'Subject',
-            ];
-            final dataKeys = [
-              'tenderNumber',
-              'subjectNameEnglish',
-            ];
-
-            // Convert ListMasterItem list to map list with sno
-            final details = LetterSubjecct.listToMap(items);
-
-            // Pass the converted list to DisplayDetails
-            return Column(
-              children: [
-                const LetterSubjectSearchForm(),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DisplayDetails(
-                            headers: headers,
-                            data: dataKeys,
-                            details: details, // Pass the list of maps
-                            expandable: true, // Set false to expand by default
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+    final iconButtons = [
+      {
+        "button": Icons.edit,
+        "function": (int id) {
+          final LetterSubjecct currentSubject =
+              letterSubjects.firstWhere((subject) => subject.subjectId == id);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddLetterSubject(
+                currentSubject: currentSubject,
+              );
+            },
+          );
         },
+      },
+      {
+        "button": Icons.delete,
+        "function": (int id) {
+          showDialog(
+            context: context,
+            builder: (context) => ConfirmationAlertBox(
+              messageType: 3,
+              message: 'Are you sure you want to delete this subject?',
+              onConfirm: () {
+                onDelete(id);
+              },
+              onCancel: () {
+                Navigator.of(context).pop(context);
+              },
+            ),
+          );
+        }
+      },
+    ];
+
+    return Scaffold(
+      body: Column(
+        children: [
+          LetterSubjectSearchForm(
+            onSearch: onSearch,
+          ),
+          if (letterSubjects.isNotEmpty)
+            Pagination(
+              totalItems: search
+                  ? letterSubjects.where((singleSubject) {
+                      final matchesArabic = searchSubject.isEmpty ||
+                          singleSubject.subject
+                              .toLowerCase()
+                              .contains(searchSubject.toLowerCase());
+                      final matchesEnglish = searchTenderNumber.isEmpty ||
+                          singleSubject.tenderNumber
+                              .toLowerCase()
+                              .contains(searchTenderNumber.toLowerCase());
+                      return matchesArabic && matchesEnglish;
+                    }).length
+                  : letterSubjects.length,
+              initialPageSize: pageSize,
+              onPageChange: (pageNo, newPageSize) {
+                setState(() {
+                  pageNumber = pageNo;
+                  pageSize = newPageSize;
+                });
+              },
+            ),
+          if (letterSubjects.isEmpty)
+            const Center(child: Text('No items found'))
+          else
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayDetails(
+                  headers: const ['Tender Number', 'Subject'],
+                  data: const ['tenderNumber', 'subject'],
+                  details: LetterSubjecct.listToMap(filteredAndPaginatedList),
+                  expandable: true,
+                  iconButtons: iconButtons,
+                  onTap: (int index) {},
+                  detailKey: 'subjectId',
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

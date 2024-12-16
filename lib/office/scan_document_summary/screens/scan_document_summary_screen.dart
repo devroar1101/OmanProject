@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary.dart';
 import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary_repo.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_form.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_assign.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_close.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_followUp.dart';
@@ -21,13 +20,12 @@ class ScanDocumentSummaryScreen extends StatefulWidget {
 class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
   final ScanSummaryRepository _repository = ScanSummaryRepository();
   ScanDocumentSummary? _singleScanIndexItem;
-  bool _isLoading = true;
+  bool _isLoading = false;
   String _selectedTab = "Details";
 
   @override
   void initState() {
     super.initState();
-    _fetchSingleScanIndexData();
   }
 
   Future<void> _fetchSingleScanIndexData() async {
@@ -115,7 +113,7 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _singleScanIndexItem == null
+          : _singleScanIndexItem != null
               ? const Center(child: Text('No data found for the given ID'))
               : Row(
                   children: [
@@ -153,7 +151,7 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
   Widget _buildContent() {
     switch (_selectedTab) {
       case "Details":
-        return ScanDocumentSummaryForm(_singleScanIndexItem!);
+        return const Center(child: Text("Routing Content Placeholder"));
       case "Routing":
         return const Center(child: Text("Routing Content Placeholder"));
       case "Attachment":

@@ -1,33 +1,37 @@
 class DgMaster {
+  int id;
   String nameArabic;
   String nameEnglish;
   String code;
-  String dgObjectId;
+  //String objectId;
 
   DgMaster({
+    required this.id,
     required this.nameArabic,
     required this.nameEnglish,
     required this.code,
-    required this.dgObjectId,
+    //required this.objectId,
   });
 
   /// Convert a Map to a DgMaster object
   factory DgMaster.fromMap(Map<String, dynamic> map) {
     return DgMaster(
-      nameArabic: map['nameArabic'] ?? '', // Default to empty string if null
-      nameEnglish: map['nameEnglish'] ?? '',
+      id: map['dgId'] ?? 0, // Default to empty string if null
+      nameArabic: map['dgNameArabic'] ?? '', // Default to empty string if null
+      nameEnglish: map['dgNameEnglish'] ?? '',
       code: map['code'] ?? '',
-      dgObjectId: map['dgObjectId'] ?? '',
+      //objectId: map['objectId'] ?? '',
     );
   }
 
   /// Convert a DgMaster object to a Map
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       'code': code,
-      'dgObjectId': dgObjectId,
+      //'objectId': objectId,
     };
   }
 
