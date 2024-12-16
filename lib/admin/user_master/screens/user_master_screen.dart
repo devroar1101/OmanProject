@@ -15,41 +15,31 @@ class UserMasterScreen extends ConsumerStatefulWidget {
 class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
     with SingleTickerProviderStateMixin {
   bool _isSearchFormVisible = false;
-  late Future<List<UserMaster>> _userFuture;
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late Animation<double> _scaleAnimation;
 
+  // Pagination and search variables
+  int pageNumber = 1;
+  int pageSize = 10;
+  String searchLoginId = '';
+  String searchName = '';
+  String searchRole = '';
+
   @override
   void initState() {
-    final repository = ref.watch(UserMasterRepositoryProvider);
     super.initState();
-    _userFuture = repository.fetchUsers();
-
-    // Initialize animation controller
+    ref.read(UserMasterRepositoryProvider.notifier).fetchUsers();
     _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
       vsync: this,
-      duration:
-          const Duration(milliseconds: 500), // Duration for smooth transition
     );
-
-    // Opacity animation (fade in/out)
-    _opacityAnimation = Tween<double>(
-      begin: 0.0, // Start invisible
-      end: 1.0, // End fully visible
-    ).animate(CurvedAnimation(
+    _opacityAnimation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut, // Smooth transition
-    ));
-
-    // Scale animation (zoom in/out)
-    _scaleAnimation = Tween<double>(
-      begin: 0.8, // Start at 80% scale
-      end: 1.0, // End at 100% scale (normal size)
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut, // Smooth transition
-    ));
+      curve: Curves.easeIn,
+    );
+    _scaleAnimation =
+        Tween<double>(begin: 0.8, end: 1.0).animate(_animationController);
   }
 
   @override
@@ -62,87 +52,60 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
     setState(() {
       _isSearchFormVisible = !_isSearchFormVisible;
       if (_isSearchFormVisible) {
-        _animationController
-            .forward(); // Trigger animation forward (fade in & scale up)
+        _animationController.forward();
       } else {
-        _animationController
-            .reverse(); // Trigger animation reverse (fade out & scale down)
+        _animationController.reverse();
       }
+    });
+  }
+
+  void onSearch(String loginId, String name, String role) {
+    setState(() {
+      searchLoginId = loginId;
+      searchName = name;
+      searchRole = role;
+      pageNumber = 1; // Reset to first page on new search
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final users = ref.watch(UserMasterRepositoryProvider);
+    print('users122: $users');
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("User Master"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: _toggleSearchForm,
-          ),
-        ],
-      ),
       body: Column(
         children: [
-          // Combined Fade + Scale animation
-          FadeTransition(
-            opacity: _opacityAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child:
-                  _isSearchFormVisible ? const UsersSearchForm() : Container(),
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<UserMaster>>(
-              future: _userFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No items found'));
-                } else {
-                  final items = snapshot.data!;
-
-                  // Define headers and data keys
-                  final headers = [
+          const UsersSearchForm(),
+          if (users.isEmpty)
+            const Center(child: Text('No items found'))
+          else
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayDetails(
+                  headers: const [
                     'Login Id',
-                    'Name',
-                    'Role',
-                    'Organization',
-                    'LDAP Identifier',
-                    'Designation',
-                  ];
-                  final dataKeys = [
-                    'loginId',
+                    'DisplayName',
+                    'DG',
+                    'Department',
+                    'Section',
+                    //'Designation',
+                  ],
+                  data: const [
                     'name',
-                    'roleNameEnglish',
-                    'dgNameEnglish',
-                    'ldapIdentifier',
-                    'designationNameEnglish',
-                  ];
-
-                  // Convert ListMasterItem list to map list with sno
-                  final details = UserMaster.listToMap(items);
-
-                  // Pass the converted list to DisplayDetails
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DisplayDetails(
-                      detailKey: 'objectId',
-                      headers: headers,
-                      data: dataKeys,
-                      details: details, // Pass the list of maps
-                      expandable: true, // Set false to expand by default
-                    ),
-                  );
-                }
-              },
+                    'systemName',
+                    'dgName',
+                    'departmentName',
+                    'sectionName',
+                    //'designationNameEnglish',
+                  ],
+                  details: UserMaster.listToMap(users),
+                  expandable: true,
+                  onTap: (int id) {},
+                  detailKey: 'id',
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

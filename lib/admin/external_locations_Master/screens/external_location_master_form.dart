@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ExternalLocationMasterSearchForm extends StatefulWidget {
-  const ExternalLocationMasterSearchForm({super.key});
+  const ExternalLocationMasterSearchForm({super.key, required this.onSearch});
+
+  final Function(String, String) onSearch;
 
   @override
   _ExternalLocationMasterSearchFormState createState() =>
@@ -27,6 +29,7 @@ class _ExternalLocationMasterSearchFormState
     setState(() {
       _selectedType = null; // Reset the dropdown
     });
+    widget.onSearch('', '');
   }
 
   void _handleSearch() {
@@ -34,9 +37,11 @@ class _ExternalLocationMasterSearchFormState
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
     String? type = _selectedType;
+    widget.onSearch(nameArabic, nameEnglish);
 
     // Perform search logic with the collected values
-    print('Code: $code, Name English: $nameEnglish, Name Arabic: $nameArabic, Type: $type');
+    print(
+        'Code: $code, Name English: $nameEnglish, Name Arabic: $nameArabic, Type: $type');
   }
 
   @override
@@ -52,18 +57,18 @@ class _ExternalLocationMasterSearchFormState
             Row(
               children: [
                 // Code Text Field
-                Expanded(
-                  child: TextField(
-                    controller: _codeController,
-                    decoration: InputDecoration(
-                      labelText: 'Code',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8.0), // Spacing between fields
+                // Expanded(
+                //   child: TextField(
+                //     controller: _codeController,
+                //     decoration: InputDecoration(
+                //       labelText: 'Code',
+                //       border: OutlineInputBorder(
+                //         borderRadius: BorderRadius.circular(8.0),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(width: 8.0), // Spacing between fields
 
                 // Name English Text Field
                 Expanded(
@@ -91,13 +96,7 @@ class _ExternalLocationMasterSearchFormState
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16.0), // Spacing between rows
-
-            // Dropdown Field for Type
-            Row(
-              children: [
+                const SizedBox(width: 8.0), // Spacing between fields
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _selectedType,
@@ -120,7 +119,8 @@ class _ExternalLocationMasterSearchFormState
                     },
                   ),
                 ),
-                const SizedBox(width: 8.0), // Spacing between dropdown and buttons
+                const SizedBox(
+                    width: 8.0), // Spacing between dropdown and buttons
 
                 // Search Icon Button
                 Card(

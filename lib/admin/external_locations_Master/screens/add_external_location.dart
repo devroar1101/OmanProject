@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// State Providers for radio and switch
+final typeProvider = StateProvider<String?>((ref) => null);
+final newLocationProvider = StateProvider<bool>((ref) => false);
+
 class AddExternalLocation extends ConsumerWidget {
   AddExternalLocation({super.key});
 
@@ -8,28 +12,21 @@ class AddExternalLocation extends ConsumerWidget {
 
   String? _nameArabic;
   String? _nameEnglish;
-  String? _type;
-  bool _newLocation = false;
 
-  Future<void> _saveForm(BuildContext context) async {
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      try {
-        // Save logic here
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Location added successfully!')),
-        );
-        Navigator.pop(context); // Close the modal
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save location: $e')),
-        );
-      }
+
+      
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the state of radio and switch
+    final selectedType = ref.watch(typeProvider);
+    final isNewLocation = ref.watch(newLocationProvider);
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
@@ -100,9 +97,9 @@ class AddExternalLocation extends ConsumerWidget {
                       child: RadioListTile<String>(
                         title: const Text('Government'),
                         value: 'Government',
-                        groupValue: _type,
+                        groupValue: selectedType,
                         onChanged: (value) {
-                          _type = value!;
+                          ref.read(typeProvider.notifier).state = value;
                         },
                       ),
                     ),
@@ -110,9 +107,9 @@ class AddExternalLocation extends ConsumerWidget {
                       child: RadioListTile<String>(
                         title: const Text('Others'),
                         value: 'Others',
-                        groupValue: _type,
+                        groupValue: selectedType,
                         onChanged: (value) {
-                          _type = value!;
+                          ref.read(typeProvider.notifier).state = value;
                         },
                       ),
                     ),
@@ -126,9 +123,9 @@ class AddExternalLocation extends ConsumerWidget {
                   children: [
                     const Text('New Location'),
                     Switch(
-                      value: _newLocation,
+                      value: isNewLocation,
                       onChanged: (value) {
-                        _newLocation = value;
+                        ref.read(newLocationProvider.notifier).state = value;
                       },
                     ),
                   ],
@@ -146,7 +143,7 @@ class AddExternalLocation extends ConsumerWidget {
                       child: const Text('Cancel'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _saveForm(context),
+                      onPressed: () => _saveForm(context, ref),
                       icon: const Icon(Icons.add),
                       label: const Text('Add'),
                     ),

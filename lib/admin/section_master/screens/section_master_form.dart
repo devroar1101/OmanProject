@@ -1,48 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
-class SectionMasterSearchForm extends StatefulWidget {
-  const SectionMasterSearchForm({super.key});
+class SectionMasterSearchForm extends ConsumerStatefulWidget {
+  const SectionMasterSearchForm({super.key, required this.onSearch});
+
+  final Function(String, String, String, String, String) onSearch;
 
   @override
   _SectionMasterSearchFormState createState() =>
       _SectionMasterSearchFormState();
 }
 
-class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
+class _SectionMasterSearchFormState
+    extends ConsumerState<SectionMasterSearchForm> {
   final TextEditingController _nameEnglishController = TextEditingController();
   final TextEditingController _nameArabicController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
-  String? _selectedDGValue;
-  String? _selectedDepartmentValue;
-
-  // Example dropdown options
-  final List<SelectOption<String>> dgOptions = [
-    SelectOption(displayName: 'Section 1', key: 'sect1', value: 'Section 1'),
-    SelectOption(displayName: 'Section 2', key: 'sect2', value: 'Section 2'),
-    SelectOption(displayName: 'إدارة 3', key: 'sect3', value: 'إدارة 3'),
-    SelectOption(displayName: 'Section 4', key: 'sect4', value: 'Section 4'),
-  ];
-
-  // Example department options
-  final List<SelectOption<String>> departmentOptions = [
-    SelectOption(
-        displayName: 'Department A', key: 'deptA', value: 'Department A'),
-    SelectOption(
-        displayName: 'Department B', key: 'deptB', value: 'Department B'),
-    SelectOption(displayName: 'قسم C', key: 'deptC', value: 'قسم C'),
-    SelectOption(
-        displayName: 'Department D', key: 'deptD', value: 'Department D'),
-  ];
+  String? _selectedDGValue = '';
+  String? _selectedDepartmentValue = '';
 
   void _resetFields() {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
+    widget.onSearch('', '', '', '', '');
     setState(() {
-      _selectedDGValue = null;
-      _selectedDepartmentValue = null;
+      _selectedDGValue = '';
+      _selectedDepartmentValue = '';
     });
   }
 
@@ -53,6 +43,8 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
     String? dropdownValue = _selectedDGValue;
     String? departmentValue = _selectedDepartmentValue;
 
+    widget.onSearch(
+        nameArabic, nameEnglish, code, departmentValue!, dropdownValue!);
     // Perform search logic
     print('Search triggered with:');
     print('Name English: $nameEnglish');
@@ -64,6 +56,15 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
 
   @override
   Widget build(BuildContext context) {
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider);
+    final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
+
+    final departmentOptionsAsyncValue = _selectedDGValue != null
+        ? ref.watch(departmentOptionsProvider(_selectedDGValue!))
+        : const AsyncValue<List<SelectOption<Department>>>.data([]);
+
+    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
+
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -114,30 +115,34 @@ class _SectionMasterSearchFormState extends State<SectionMasterSearchForm> {
             ),
             const SizedBox(width: 8.0),
 
-            // Custom Dropdown Field
+            // DG Dropdown Field
             Expanded(
-              child: SelectField<String>(
+              child: SelectField<DgMaster>(
                 options: dgOptions,
                 onChanged: (value, selectedOption) {
                   setState(() {
-                    _selectedDGValue = value;
+                    _selectedDGValue = dg.id.toString();
+                    _selectedDepartmentValue =
+                        null; // Reset department when DG changes
                   });
                 },
                 hint: 'Select Section',
+                initialValue: _selectedDGValue,
               ),
             ),
             const SizedBox(width: 8.0),
 
-            // New Department Dropdown Field
+            // Department Dropdown Field
             Expanded(
-              child: SelectField<String>(
+              child: SelectField<Department>(
                 options: departmentOptions,
                 onChanged: (value, selectedOption) {
                   setState(() {
-                    _selectedDepartmentValue = value;
+                    _selectedDepartmentValue = department.id.toString();
                   });
                 },
                 hint: 'Select Department',
+                initialValue: _selectedDepartmentValue,
               ),
             ),
             const SizedBox(width: 8.0),

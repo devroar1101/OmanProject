@@ -2,7 +2,7 @@ class ListMasterItem {
   String objectId;
   int listMasterId;
   int id;
-  int code;
+  String code;
   String nameArabic;
   String nameEnglish;
   //String systemField;
@@ -23,7 +23,7 @@ class ListMasterItem {
       objectId: map['objectId'] ?? '',
       listMasterId: map['listMasterId'] ?? 0,
       id: map['listMasterItemId'] ?? 0,
-      code: map['code'] ?? 0,
+      code: map['code'] ?? '',
       nameArabic: map['listMasterItemNameArabic'] ?? '',
       nameEnglish: map['listMasterItemNameEnglish'] ?? '',
       //systemField: map['systemField'] ?? 'false',
@@ -34,8 +34,8 @@ class ListMasterItem {
   Map<String, dynamic> toMap() {
     return {
       'objectId': objectId,
-      'id': objectId,
-      'code': objectId,
+      'id': id,
+      'code': code,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       //'systemField': systemField,

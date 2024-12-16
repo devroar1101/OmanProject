@@ -174,7 +174,7 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddUserMasterScreen();
+          return  AddUserMasterScreen();
         },
       );
     } else if (screenName == 'ListMasterItem') {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/listmasteritem/model/listmasteritem_repo.dart';
 
@@ -39,6 +38,7 @@ class AddListMasterItemScreen extends ConsumerWidget {
               .read(listMasterItemRepositoryProvider.notifier)
               .editListMasterItem(
                 listMasterId: currentListMasterId,
+                listMasterItemId: currentListMasterItem!.id,
                 nameArabic: _nameArabic!,
                 nameEnglish: _nameEnglish!,
               );

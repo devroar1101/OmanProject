@@ -1,78 +1,64 @@
 import 'package:flutter/material.dart';
-
-import 'package:tenderboard/common/model/select_option.dart'; // Ensure this import path matches your structure
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/admin/department_master/model/department.dart';
+import 'package:tenderboard/admin/department_master/model/department_repo.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/section_master/model/section_master.dart';
+import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'dart:io';
 
-class AddUserMasterScreen extends StatefulWidget {
-  const AddUserMasterScreen({super.key});
+class AddUserMasterScreen extends ConsumerStatefulWidget {
+  const AddUserMasterScreen({Key? key}) : super(key: key);
 
   @override
   _AddUserMasterScreenState createState() => _AddUserMasterScreenState();
 }
 
-// Add a variable to store the profile image
-File? _profileImage;
-
-class _AddUserMasterScreenState extends State<AddUserMasterScreen>
+class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-
-  // Tab controller for switching between Details and Permissions
   late TabController _tabController;
 
-  /// Define your 3 lists of permissions with mutable state
-  List<Map<String, dynamic>> list1 = [
-    {'name': 'View Reports', 'value': false},
-    {'name': 'Edit Reports', 'value': false},
-    {'name': 'Delete Reports', 'value': false},
-    {'name': 'Export Data', 'value': false},
+  File? _profileImage;
+
+  final List<List<Map<String, dynamic>>> allPermissions = [
+    [
+      {'name': 'View Reports', 'value': false},
+      {'name': 'Edit Reports', 'value': false},
+      {'name': 'Delete Reports', 'value': false},
+      {'name': 'Export Data', 'value': false},
+    ],
+    [
+      {'name': 'Create Assignment', 'value': false},
+      {'name': 'Edit Assignment', 'value': false},
+      {'name': 'Delete Assignment', 'value': false},
+      {'name': 'Review Assignment', 'value': false},
+    ],
+    [
+      {'name': 'Search Documents', 'value': false},
+      {'name': 'Edit Documents', 'value': false},
+      {'name': 'Delete Documents', 'value': false},
+      {'name': 'Export Documents', 'value': false},
+    ],
   ];
 
-  List<Map<String, dynamic>> list2 = [
-    {'name': 'View Reports', 'value': false},
-    {'name': 'Edit Reports', 'value': false},
-    {'name': 'Delete Reports', 'value': false},
-    {'name': 'Export Data', 'value': false},
-  ];
-
-  List<Map<String, dynamic>> list3 = [
-    {'name': 'View Reports', 'value': false},
-    {'name': 'Edit Reports', 'value': false},
-    {'name': 'Delete Reports', 'value': false},
-    {'name': 'Export Data', 'value': false},
-  ];
-
-  // Titles for each section
   final List<String> titles = [
     'Privileges',
     'Assignment Permissions',
     'Document Search Permissions',
   ];
 
-  // Initialize the TabController
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  // Dispose the TabController when done
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  // Text controllers for text fields
   final _loginIdController = TextEditingController();
-  final _eofficeIdController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _ldapIdentifierController = TextEditingController();
   final _emailController = TextEditingController();
   final _officeNumberController = TextEditingController();
   final _nameController = TextEditingController();
 
-  // Dropdown selected values
   String? _selectedDesignation;
   String? _selectedAuthMode;
   String? _selectedRole;
@@ -80,113 +66,91 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
   String? _selectedDepartment;
   String? _selectedSection;
 
-  // Dropdown options
   final List<SelectOption<String>> designationOptions = [
     SelectOption(displayName: 'Manager', key: 'manager', value: 'Manager'),
     SelectOption(
         displayName: 'Developer', key: 'developer', value: 'Developer'),
   ];
+
   final List<SelectOption<String>> authModeOptions = [
     SelectOption(displayName: 'Password', key: 'password', value: 'Password'),
     SelectOption(
         displayName: 'Biometric', key: 'biometric', value: 'Biometric'),
   ];
+
   final List<SelectOption<String>> roleOptions = [
     SelectOption(displayName: 'Admin', key: 'admin', value: 'Admin'),
     SelectOption(displayName: 'User', key: 'user', value: 'User'),
   ];
-  final List<SelectOption<String>> dgOptions = [
-    SelectOption(displayName: 'DG1', key: 'dg1', value: 'DG1'),
-    SelectOption(displayName: 'DG2', key: 'dg2', value: 'DG2'),
-  ];
-  final List<SelectOption<String>> departmentOptions = [
-    SelectOption(displayName: 'HR', key: 'hr', value: 'HR'),
-    SelectOption(displayName: 'IT', key: 'it', value: 'IT'),
-  ];
-  final List<SelectOption<String>> sectionOptions = [
-    SelectOption(
-        displayName: 'Section A', key: 'section_a', value: 'Section A'),
-    SelectOption(
-        displayName: 'Section B', key: 'section_b', value: 'Section B'),
-  ];
 
-  // Method to pick image from gallery or camera
-  /* Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path);
-      });
-    }
-  }*/
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
-  // Save form logic
-  void _saveForm() {
+  Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
-      // Perform save actions here
-      print('Login ID: ${_loginIdController.text}');
-      print('Eoffice ID: ${_eofficeIdController.text}');
-      print('LDAP Identifier: ${_ldapIdentifierController.text}');
-      print('Email: ${_emailController.text}');
-      print('Office Number: ${_officeNumberController.text}');
-      print('Name: ${_nameController.text}');
-      print('Designation: $_selectedDesignation');
-      print('Auth Mode: $_selectedAuthMode');
-      print('Role: $_selectedRole');
-      print('DG: $_selectedDG');
-      print('Department: $_selectedDepartment');
-      print('Section: $_selectedSection');
-      if (_profileImage != null) {
-        print('Profile Image: ${_profileImage!.path}');
+      try {
+        await ref.read(UserMasterRepositoryProvider.notifier).addUserMaster(
+              name: _nameController.text,
+              displayName: _displayNameController.text,
+              dgId: 11,
+              departmentId: 13,
+              sectionId: 163,
+              email: _emailController.text,
+            );
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User added successfully!')));
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to save: $e')));
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User master added successfully!')),
-      );
-      Navigator.pop(context);
     }
+  }
+
+  void _pickProfileImage() {
+    // Add image picking functionality here
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: SizedBox(
-        width: 800.0, // Adjust width as needed
+        width: 800,
         child: Column(
           children: [
-            // TabBar
             TabBar(
               controller: _tabController,
               tabs: const [
                 Tab(text: 'Details'),
-                Tab(text: 'Permissions'),
+                //Tab(text: 'Permissions'),
               ],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // Details tab content
                   _buildDetailsTab(),
-                  // Permissions tab content
                   _buildPermissionsTab(),
                 ],
               ),
             ),
-            // Fixed Save and Cancel Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: _saveForm,
+                    onPressed: () => _saveForm(context, ref),
                     child: const Text('Save'),
                   ),
                   OutlinedButton(
@@ -202,8 +166,22 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
     );
   }
 
-  // Widget for the Details tab
   Widget _buildDetailsTab() {
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider);
+    final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
+
+    final departmentOptionsAsyncValue = _selectedDG != null
+        ? ref.watch(departmentOptionsProvider('11'))
+        : const AsyncValue<List<SelectOption<Department>>>.data([]);
+
+    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
+
+    final sectionOptionsAsyncValue = _selectedDepartment != null
+        ? ref.watch(sectionOptionsProvider('13'))
+        : const AsyncValue<List<SelectOption<SectionMaster>>>.data([]);
+
+    final sectionOptions = sectionOptionsAsyncValue.asData?.value ?? [];
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -212,21 +190,15 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Profile Image + Name and Display Name Fields in One Row
               Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Align text on left and avatar on right
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Add User Master',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
                   GestureDetector(
-                    // Open image picker when tapped
+                    onTap: _pickProfileImage,
                     child: CircleAvatar(
-                      radius: 30, // Adjust size for the circle
-                      backgroundColor:
-                          Colors.grey[200], // Circle background color
+                      radius: 50,
+                      backgroundColor: Colors.grey[200],
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
                           : null,
@@ -239,11 +211,107 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
                           : null,
                     ),
                   ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          controller: _nameController,
+                          label: 'Name',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _displayNameController,
+                          label: 'Display Name',
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16.0),
-              ..._buildFormFields(),
-              const SizedBox(height: 24.0),
+              const SizedBox(height: 24),
+              // Other Fields in Two-Column Layout
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _loginIdController,
+                      label: 'Login ID',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SelectField<String>(
+                      options: authModeOptions,
+                      onChanged: (value) =>
+                          setState(() => _selectedAuthMode = value),
+                      hint: 'Select Auth Mode',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _emailController,
+                      label: 'Email',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _officeNumberController,
+                      label: 'Office Number',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: SelectField<String>(
+                      options: roleOptions,
+                      onChanged: (value) =>
+                          setState(() => _selectedRole = value),
+                      hint: 'Select Role',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SelectField<DgMaster>(
+                      options: dgOptions,
+                      onChanged: (dg) =>
+                          setState(() => _selectedDG = dg.id.toString()),
+                      hint: 'Select DG',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: SelectField<Department>(
+                      options: departmentOptions,
+                      onChanged: (dept) => setState(
+                          () => _selectedDepartment = dept.id.toString()),
+                      hint: 'Select Department',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SelectField<SectionMaster>(
+                      options: sectionOptions,
+                      onChanged: (section) => setState(() =>
+                          _selectedSection = section.sectionId.toString()),
+                      hint: 'Select Section',
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -251,132 +319,6 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
     );
   }
 
-  // Helper to build form fields
-  List<Widget> _buildFormFields() {
-    return [
-      Row(
-        children: [
-          Expanded(
-            child: _buildTextField(
-              controller: _loginIdController,
-              label: 'Login ID',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildTextField(
-              controller: _eofficeIdController,
-              label: 'Eoffice ID',
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: SelectField<String>(
-              options: designationOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedDesignation = value),
-              hint: 'Select Designation',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: SelectField<String>(
-              options: authModeOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedAuthMode = value),
-              hint: 'Select Auth Mode',
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: SelectField<String>(
-              options: roleOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedRole = value),
-              hint: 'Select Role',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: SelectField<String>(
-              options: dgOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedDG = value),
-              hint: 'Select DG',
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: SelectField<String>(
-              options: departmentOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedDepartment = value),
-              hint: 'Select Department',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: SelectField<String>(
-              options: sectionOptions,
-              onChanged: (value, selectedOption) =>
-                  setState(() => _selectedSection = value),
-              hint: 'Select Section',
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: _buildTextField(
-              controller: _ldapIdentifierController,
-              label: 'LDAP Identifier',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildTextField(
-              controller: _emailController,
-              label: 'Email',
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          Expanded(
-            child: _buildTextField(
-              controller: _officeNumberController,
-              label: 'Office Number',
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildTextField(
-              controller: _nameController,
-              label: 'Name',
-            ),
-          ),
-        ],
-      ),
-    ];
-  }
-
-  // Helper to build text fields
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -385,10 +327,10 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
       validator: (value) {
-        if (value == null || value.trim().isEmpty) {
+        if (value == null || value.isEmpty) {
           return 'Please enter $label';
         }
         return null;
@@ -397,80 +339,30 @@ class _AddUserMasterScreenState extends State<AddUserMasterScreen>
   }
 
   Widget _buildPermissionsTab() {
-    List<List<Map<String, dynamic>>> allLists = [list1, list2, list3];
-
     return ListView.builder(
-      itemCount: allLists.length,
+      itemCount: allPermissions.length,
       itemBuilder: (context, index) {
-        var currentList = allLists[index];
-
-        // Split the current list into pairs
-        var permissionPairs = List.generate(
-          (currentList.length / 2).ceil(),
-          (pairIndex) => currentList.sublist(
-              pairIndex * 2,
-              (pairIndex + 1) * 2 > currentList.length
-                  ? currentList.length
-                  : (pairIndex + 1) * 2),
-        );
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Display the title for the current list
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Text(
-                  titles[index],
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-              ),
-              // Build the list of pairs
-              ...permissionPairs.map((pair) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 1.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: pair.map((permission) {
-                      return Expanded(
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.all(3.0), // Adjust the padding
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(45, 128, 126, 126),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: CheckboxListTile(
-                              title: Text(
-                                permission['name'],
-                                style: const TextStyle(
-                                    fontSize: 14), // Reduce text size
-                              ),
-                              value: permission['value'],
-                              visualDensity: VisualDensity.compact,
-                              contentPadding: EdgeInsets
-                                  .zero, // Reduce padding around the checkbox
-                              controlAffinity: ListTileControlAffinity
-                                  .leading, // Place the checkbox on the left
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  permission['value'] = value!;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              titles[index],
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Column(
+              children: allPermissions[index].map((permission) {
+                return CheckboxListTile(
+                  title: Text(permission['name']),
+                  value: permission['value'],
+                  onChanged: (value) {
+                    setState(() {
+                      permission['value'] = value;
+                    });
+                  },
                 );
-              }),
-            ],
-          ),
+              }).toList(),
+            ),
+          ],
         );
       },
     );

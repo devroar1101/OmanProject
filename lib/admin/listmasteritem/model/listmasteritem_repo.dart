@@ -21,8 +21,10 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> queryParams = {
       'listMasterId': currentListMasterId,
-      'pageSize': 15,
-      'pageNumber': 1,
+      'paginationDetail': {
+        'pageSize': 15,
+        'pageNumber': 1,
+      }
     };
 
     try {
@@ -33,19 +35,8 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data =
-            response.data['data']['searchAndListMasterResult'];
-        state = data.map((item) => ListMasterItem.fromMap(item)).toList();
-
-        // // Apply filters if nameArabic or nameEnglish is provided
-        // if (nameArabic != null || nameEnglish != null) {
-        //   state = state.where((item) {
-        //     final matchesArabic =
-        //         nameArabic == null || item.nameArabic.contains(nameArabic);
-        //     final matchesEnglish =
-        //         nameEnglish == null || item.nameEnglish.contains(nameEnglish);
-        //     return matchesArabic && matchesEnglish;
-        //   }).toList();
-        // }
+            response.data as List;
+        state = data.map((item) => ListMasterItem.fromMap(item as Map<String,dynamic>)).toList();
       } else {
         throw Exception('Failed to load ListMasterItems');
       }
@@ -75,8 +66,8 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
             listMasterId: listMasterId,
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
-            code: 0,
-            objectId: 'da-32,aaa')
+            code: '0',
+            objectId: 'da-32,aaa'),...state
       ];
     } catch (e) {
       throw Exception('Error occurred while adding ListMasterItem: $e');
@@ -86,11 +77,14 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
   //Edit
 
   Future<void> editListMasterItem(
-      {required int listMasterId,
+      {
+      required int listMasterItemId,
+      required int listMasterId,
       required nameEnglish,
       required nameArabic}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
+      'listMasterItemId': listMasterItemId,
       'listMasterId': listMasterId,
       'listMasterItemNameEnglish': nameEnglish,
       'listMasterItemNameArabic': nameArabic,
@@ -110,7 +104,7 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
         nameEnglish: nameEnglish,
         nameArabic: nameArabic,
         code:
-            0, // Optionally update this if you receive a new value from the backend
+            '1', // Optionally update this if you receive a new value from the backend
         objectId:
             'UpdatedObjectId', // Optionally update this if you receive a new value from the backend
       );

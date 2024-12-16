@@ -116,6 +116,32 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     }
   }
 
+  //Delete
+
+  // Add this method in the DgMasterRepository class
+  Future<void> deleteDgMaster({required int dgId}) async {
+    final dio = ref.watch(dioProvider);
+
+    try {
+      // Send the DELETE request to the API
+      final response = await dio.delete(
+        '/DG/Delete',
+        queryParameters: {'dgId': dgId}, // Add dgId as a query parameter
+      );
+
+      if (response.statusCode == 200) {
+        // Update the state by removing the deleted DgMaster
+        state = state.where((dgMaster) => dgMaster.id != dgId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete DGMaster. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting DGMaster: $e');
+    }
+  }
+
   /// Search and filter method for DgMaster based on optional nameArabic and nameEnglish
   Future<List<DgMaster>> searchAndFilter(List<DgMaster> dgMasters,
       {String? nameArabic, String? nameEnglish}) async {

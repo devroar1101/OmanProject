@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final sectionMasterRepositoryProvider =
@@ -37,7 +38,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
             sectionNameArabic: nameArabic,
             sectionNameEnglish: nameEnglish,
             objectId: response.data['data']['objectId']),
-            //timeStamp: response.data['data']['timeStamp'],
+        //timeStamp: response.data['data']['timeStamp'],
         ...state
       ];
     } catch (e) {
@@ -67,14 +68,14 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 
       if (response.statusCode == 200) {
         final updatedDepartment = SectionMaster(
-            code: response.data['data']['sectionId'],
-            sectionNameArabic: nameArabic,
-            sectionNameEnglish: nameEnglish,
-            objectId: response.data['data']['objectId'],
-            departmentId: currentDepartmentId,
-            dgId: currentDgId,
-            sectionId: currentsectionId,
-            );
+          code: response.data['data']['sectionId'],
+          sectionNameArabic: nameArabic,
+          sectionNameEnglish: nameEnglish,
+          objectId: response.data['data']['objectId'],
+          departmentId: currentDepartmentId,
+          dgId: currentDgId,
+          sectionId: currentsectionId,
+        );
 
         // Update the state with the edited DgMaster
         state = [
@@ -90,6 +91,28 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
       }
     } catch (e) {
       throw Exception('Error occurred while editing SectionMaster: $e');
+    }
+  }
+
+  Future<void> deleteSection({required int sectionId}) async {
+    final dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.delete(
+        '/Section/Delete',
+        queryParameters: {'SectionId': sectionId},
+      );
+
+      if (response.statusCode == 200) {
+        state =
+            state.where((section) => section.sectionId != sectionId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete section. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting Section: $e');
     }
   }
 
@@ -116,7 +139,6 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
         state = data
             .map((item) => SectionMaster.fromMap(item as Map<String, dynamic>))
             .toList();
-            
       } else {
         throw Exception('Failed to load Sections');
       }
@@ -142,4 +164,39 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 
     return filteredList;
   }
+
+  Future<List<SelectOption<SectionMaster>>> getSectionOptions(
+    String? currentDepartmentId,
+  ) async {
+    List<SectionMaster> sectionList = state;
+
+    if (sectionList.isEmpty) {
+      sectionList = await ref
+          .read(sectionMasterRepositoryProvider.notifier)
+          .fetchSections();
+    }
+    if (currentDepartmentId != null) {
+      sectionList = sectionList
+          .where((section) =>
+              section.departmentId.toString() == currentDepartmentId)
+          .toList();
+    }
+    List<SelectOption<SectionMaster>> options = sectionList
+        .map((section) => SelectOption<SectionMaster>(
+              displayName: section.sectionNameEnglish,
+              key: section.sectionId.toString(),
+              value: section,
+            ))
+        .toList();
+
+    return options;
+  }
 }
+
+final sectionOptionsProvider =
+    FutureProvider.family<List<SelectOption<SectionMaster>>, String?>(
+        (ref, currentdepatmentId) async {
+  return ref
+      .read(sectionMasterRepositoryProvider.notifier)
+      .getSectionOptions(currentdepatmentId);
+});
