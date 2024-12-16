@@ -12,7 +12,7 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 import 'dart:io';
 
 class AddUserMasterScreen extends ConsumerStatefulWidget {
-  const AddUserMasterScreen({Key? key}) : super(key: key);
+  const AddUserMasterScreen({super.key});
 
   @override
   _AddUserMasterScreenState createState() => _AddUserMasterScreenState();
@@ -167,7 +167,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
   }
 
   Widget _buildDetailsTab() {
-    final dgOptionAsyncValue = ref.watch(dgOptionsProvider);
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
     final departmentOptionsAsyncValue = _selectedDG != null
@@ -243,8 +243,9 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<String>(
                       options: authModeOptions,
-                      onChanged: (value) =>
-                          setState(() => _selectedAuthMode = value),
+                      onChanged: (value, selectedOption) {
+                        setState(() => _selectedAuthMode = value);
+                      },
                       hint: 'Select Auth Mode',
                     ),
                   ),
@@ -274,7 +275,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<String>(
                       options: roleOptions,
-                      onChanged: (value) =>
+                      onChanged: (value, selectedOption) =>
                           setState(() => _selectedRole = value),
                       hint: 'Select Role',
                     ),
@@ -283,7 +284,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<DgMaster>(
                       options: dgOptions,
-                      onChanged: (dg) =>
+                      onChanged: (dg, selectedOption) =>
                           setState(() => _selectedDG = dg.id.toString()),
                       hint: 'Select DG',
                     ),
@@ -296,7 +297,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<Department>(
                       options: departmentOptions,
-                      onChanged: (dept) => setState(
+                      onChanged: (dept, selectedOption) => setState(
                           () => _selectedDepartment = dept.id.toString()),
                       hint: 'Select Department',
                     ),
@@ -305,7 +306,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<SectionMaster>(
                       options: sectionOptions,
-                      onChanged: (section) => setState(() =>
+                      onChanged: (section, selectedOption) => setState(() =>
                           _selectedSection = section.sectionId.toString()),
                       hint: 'Select Section',
                     ),
@@ -327,7 +328,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {

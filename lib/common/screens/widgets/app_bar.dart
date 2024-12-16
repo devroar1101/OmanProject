@@ -160,7 +160,7 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AddSectionMaster();
+          return const AddSectionMaster();
         },
       );
     } else if (screenName == 'SubjectMaster') {
@@ -174,7 +174,7 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return  AddUserMasterScreen();
+          return const AddUserMasterScreen();
         },
       );
     } else if (screenName == 'ListMasterItem') {

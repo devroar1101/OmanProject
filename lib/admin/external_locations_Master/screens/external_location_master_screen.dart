@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
-import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -40,9 +39,11 @@ class _ExternalLocationMasterScreenState
     });
   }
 
-  List<ExternalLocationMaster> _applyFiltersAndPagination(List<ExternalLocationMaster> externalLocations) {
+  List<ExternalLocationMaster> _applyFiltersAndPagination(
+      List<ExternalLocationMaster> externalLocations) {
     // Apply search filters
-    List<ExternalLocationMaster> filteredList = externalLocations.where((externalLocation) {
+    List<ExternalLocationMaster> filteredList =
+        externalLocations.where((externalLocation) {
       final matchesArabic = searchNameArabic.isEmpty ||
           externalLocation.nameArabic
               .toLowerCase()
@@ -64,8 +65,10 @@ class _ExternalLocationMasterScreenState
 
   @override
   Widget build(BuildContext context) {
-    final externalLocations = ref.watch(ExternalLocationMasterRepositoryProvider);
-    final filteredAndPaginatedList = _applyFiltersAndPagination(externalLocations);
+    final externalLocations =
+        ref.watch(ExternalLocationMasterRepositoryProvider);
+    final filteredAndPaginatedList =
+        _applyFiltersAndPagination(externalLocations);
 
     final iconButtons = [
       {
@@ -78,7 +81,7 @@ class _ExternalLocationMasterScreenState
           //             context: context,
           //             builder: (BuildContext context) {
           //               return const AddUserMasterScreen(
-                          
+
           //               );
           //             },
           //           );
@@ -88,10 +91,9 @@ class _ExternalLocationMasterScreenState
     ];
 
     return Scaffold(
-      
       body: Column(
         children: [
-           ExternalLocationMasterSearchForm(
+          ExternalLocationMasterSearchForm(
             onSearch: onSearch,
           ),
           if (externalLocations.isNotEmpty)
@@ -131,19 +133,18 @@ class _ExternalLocationMasterScreenState
                     'Active',
                     'Location (New)',
                   ],
-                  data: const [                   
+                  data: const [
                     'nameArabic',
                     'nameEnglish',
                     'typeNameEnglish',
                     'active',
                     'isYes',
                   ],
-                  details: ExternalLocationMaster.listToMap(filteredAndPaginatedList),
+                  details: ExternalLocationMaster.listToMap(
+                      filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int index) {
-                    
-                  },
+                  onTap: (int index) {},
                   detailKey: 'objectId',
                 ),
               ),

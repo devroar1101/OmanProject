@@ -192,7 +192,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
           childOptions = filteredDepartment.map((department) {
             List<SelectOption<SectionMaster>>? subchildOptions;
 
-            /*  final List<SectionMaster> filteredSection = sections
+            final List<SectionMaster> filteredSection = sections
                 .where((section) => section.departmentId == department.id)
                 .toList();
 
@@ -204,20 +204,18 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
                 key: section.sectionId.toString(),
                 value: section,
               );
-            }).toList();*/
-
-            print(department.nameArabic);
-            print(department.nameEnglish);
+            }).toList();
 
             return SelectOption<Department>(
                 displayName: currentLanguage == 'en'
                     ? department.nameEnglish
                     : department.nameArabic,
                 key: department.id.toString(),
-                value: department);
+                value: department,
+                childOptions: subchildOptions);
           }).toList();
         }
-        print('${dg.id} -- ${childOptions![0].displayName}');
+
         return SelectOption<DgMaster>(
           displayName: currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
           key: dg.id.toString(),

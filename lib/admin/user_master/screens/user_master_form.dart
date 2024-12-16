@@ -48,7 +48,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
 
   @override
   Widget build(BuildContext context) {
-    final dgOptionAsyncValue = ref.watch(dgOptionsProvider);
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
     final departmentOptionsAsyncValue = _selectedDGValue!.isNotEmpty
@@ -108,7 +108,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 Expanded(
                   child: SelectField<DgMaster>(
                     options: dgOptions,
-                    onChanged: (dg) {
+                    onChanged: (dg, selectedOption) {
                       setState(() {
                         _selectedDGValue = dg.id.toString();
                         print('11dg: $_selectedDGValue');
@@ -126,7 +126,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 Expanded(
                   child: SelectField<Department>(
                     options: departmentOptions,
-                    onChanged: (department) {
+                    onChanged: (department, selectedOption) {
                       setState(() {
                         _selectedDepartmentValue = department.id.toString();
                         _selectedSectionValue = '';
@@ -142,7 +142,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 Expanded(
                   child: SelectField<SectionMaster>(
                     options: sectionOptions,
-                    onChanged: (section) {
+                    onChanged: (section, selectedOption) {
                       setState(() {
                         _selectedSectionValue = section.sectionId.toString();
                       });

@@ -37,14 +37,12 @@ class _DepartmentMasterScreenState
       searchNameArabic = nameArabic;
       searchNameEnglish = nameEnglish;
       searchCode = code;
-      searchDG = dg??'';
+      searchDG = dg ?? '';
       search = true;
       pageNumber = 1;
       pageSize = 15;
     });
   }
-
-  
 
   List<Department> _applyFiltersAndPagination(List<Department> departments) {
     if (departments.isEmpty) {
@@ -53,14 +51,13 @@ class _DepartmentMasterScreenState
 
     List<Department> filteredList = departments.where((department) {
       final matchesArabic = searchNameArabic.isEmpty ||
-          (department.departmentNameArabic.toLowerCase())
+          (department.nameArabic.toLowerCase())
               .contains(searchNameArabic.toLowerCase());
       final matchesEnglish = searchNameEnglish.isEmpty ||
-          (department.departmentNameEnglish.toLowerCase())
+          (department.dgNameEnglish.toLowerCase())
               .contains(searchNameEnglish.toLowerCase());
       final matchesCode = searchCode.isEmpty ||
-          (department.code.toLowerCase())
-              .contains(searchCode.toLowerCase());
+          (department.code.toLowerCase()).contains(searchCode.toLowerCase());
       final matchesDg =
           searchDG.isEmpty || department.dgId.toString() == searchDG;
       return matchesArabic &&
@@ -68,7 +65,6 @@ class _DepartmentMasterScreenState
           matchesCode &&
           matchesDg; // && matchesDg;
     }).toList();
-
 
     // Apply pagination
     int startIndex = (pageNumber - 1) * pageSize;
@@ -140,11 +136,11 @@ class _DepartmentMasterScreenState
               totalItems: search
                   ? departments.where((department) {
                       final matchesArabic = searchNameArabic.isEmpty ||
-                          department.departmentNameArabic
+                          department.nameArabic
                               .toLowerCase()
                               .contains(searchNameArabic.toLowerCase());
                       final matchesEnglish = searchNameEnglish.isEmpty ||
-                          department.departmentNameEnglish
+                          department.nameEnglish
                               .toLowerCase()
                               .contains(searchNameEnglish.toLowerCase());
                       final matchesCode = searchCode.isEmpty ||

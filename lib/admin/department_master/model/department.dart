@@ -21,8 +21,8 @@ class Department {
   factory Department.fromMap(Map<String, dynamic> map) {
     return Department(
       code: map['code'] ?? '',
-      nameArabic: map['nameArabic'] ?? '',
-      nameEnglish: map['nameEnglish'] ?? '',
+      nameArabic: map['departmentNameArabic'] ?? '',
+      nameEnglish: map['departmentNameEnglish'] ?? '',
       dgNameEnglish: map['dgNameEnglish'] ?? '',
       objectId: map['departmentObjectId'] ?? '',
       id: map['departmentId'] ?? 0,

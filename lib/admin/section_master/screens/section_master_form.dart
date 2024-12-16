@@ -56,7 +56,7 @@ class _SectionMasterSearchFormState
 
   @override
   Widget build(BuildContext context) {
-    final dgOptionAsyncValue = ref.watch(dgOptionsProvider);
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
     final departmentOptionsAsyncValue = _selectedDGValue != null
@@ -119,7 +119,7 @@ class _SectionMasterSearchFormState
             Expanded(
               child: SelectField<DgMaster>(
                 options: dgOptions,
-                onChanged: (value, selectedOption) {
+                onChanged: (dg, selectedOption) {
                   setState(() {
                     _selectedDGValue = dg.id.toString();
                     _selectedDepartmentValue =
@@ -136,7 +136,7 @@ class _SectionMasterSearchFormState
             Expanded(
               child: SelectField<Department>(
                 options: departmentOptions,
-                onChanged: (value, selectedOption) {
+                onChanged: (department, selectedOption) {
                   setState(() {
                     _selectedDepartmentValue = department.id.toString();
                   });

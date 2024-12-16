@@ -6,7 +6,8 @@ class ConfirmationAlertBox extends StatelessWidget {
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
 
-  ConfirmationAlertBox({
+  const ConfirmationAlertBox({
+    super.key,
     required this.messageType,
     required this.message,
     required this.onConfirm,
@@ -48,7 +49,7 @@ class ConfirmationAlertBox extends StatelessWidget {
       title: Row(
         children: [
           Icon(iconData, color: iconColor),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Text(
             title,
             style: TextStyle(color: iconColor),
@@ -57,7 +58,7 @@ class ConfirmationAlertBox extends StatelessWidget {
       ),
       content: Text(
         message,
-        style: TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 16),
       ),
       actions: [
         TextButton(
