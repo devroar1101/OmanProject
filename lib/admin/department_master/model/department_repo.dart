@@ -164,17 +164,19 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
     String? currentDGId,
   ) async {
     List<Department> departmentList = state;
-
+      
     if (departmentList.isEmpty) {
       departmentList = await ref
           .read(departmentMasterRepositoryProvider.notifier)
           .fetchDepartments();
     }
+    print('Department List1 : $departmentList');
     if (currentDGId != null) {
       departmentList = departmentList
           .where((deparment) => deparment.dgId.toString() == currentDGId)
           .toList();
     }
+    print('Department List2 : $departmentList');
     List<SelectOption<Department>> options = departmentList
         .map((depatment) => SelectOption<Department>(
               displayName: depatment.departmentNameEnglish,
@@ -190,6 +192,7 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
 final departmentOptionsProvider =
     FutureProvider.family<List<SelectOption<Department>>, String?>(
         (ref, dgId) async {
+          print('provider DGID : $dgId');
   return ref
       .read(departmentMasterRepositoryProvider.notifier)
       .getDepartMentOptions(dgId);

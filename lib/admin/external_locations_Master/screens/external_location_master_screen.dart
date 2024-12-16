@@ -71,17 +71,17 @@ class _ExternalLocationMasterScreenState
       {
         "button": Icons.edit,
         "function": (int id) {
-          final ExternalLocationMaster currentLocation =
-                        externalLocations.firstWhere(
-                            (location) => location.id == id);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const AddUserMasterScreen(
+          // final ExternalLocationMaster currentLocation =
+          //               externalLocations.firstWhere(
+          //                   (location) => location.id == id);
+          //           showDialog(
+          //             context: context,
+          //             builder: (BuildContext context) {
+          //               return const AddUserMasterScreen(
                           
-                        );
-                      },
-                    );
+          //               );
+          //             },
+          //           );
         },
       },
       {"button": Icons.delete, "function": (int id) => print("Delete $id")},

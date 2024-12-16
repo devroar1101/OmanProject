@@ -4,7 +4,6 @@ import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
 import 'package:tenderboard/admin/letter_subject/screens/add_letter_subject.dart';
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_form.dart';
-import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
@@ -45,13 +44,13 @@ class _LetterSubjectMasterScreenState
   List<LetterSubjecct> _applyFiltersAndPagination(
       List<LetterSubjecct> letterSubjects) {
     // Apply search filters
-    List<LetterSubjecct> filteredList = letterSubjects.where((SingleSubject) {
+    List<LetterSubjecct> filteredList = letterSubjects.where((singleSubject) {
       final matchesArabic = searchSubject.isEmpty ||
-          SingleSubject.subject
+          singleSubject.subject
               .toLowerCase()
               .contains(searchSubject.toLowerCase());
       final matchesEnglish = searchTenderNumber.isEmpty ||
-          SingleSubject.tenderNumber
+          singleSubject.tenderNumber
               .toLowerCase()
               .contains(searchTenderNumber.toLowerCase());
       return matchesArabic && matchesEnglish;

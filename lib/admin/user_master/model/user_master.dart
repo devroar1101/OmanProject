@@ -1,109 +1,70 @@
 class UserMaster {
-  String userId;
-  String objectId;
+  int id;
+  String eOfficeId;
   String name;
-  String loginId;
-  String roleNameEnglish;
-  String roleNameArabic;
-  String designationNameArabic;
-  String designationNameEnglish;
-  String active;
-  String dgNameEnglish;
-  String dgNameArabic;
-  String dgObjectId;
-  String departmentNameEnglish;
-  String departmentNameArabic;
-  String departmentObjectId;
-  String authenticationNameEnglish;
-  String authenticationNameArabic;
-  String sectionObjectId;
-  String sectionNameEnglish;
-  String sectionNameArabic;
-  String ldapIdentifier;
+  String systemName;
+  String designationName;
+  String dgName;
+  String departmentName;
+  String sectionName;
+  bool isActive;
   String email;
-  int officeNumber;
+  String roleName;
+  String objectId;
+  
 
   UserMaster({
-    required this.userId,
-    required this.objectId,
+    required this.id,
+    required this.eOfficeId,
     required this.name,
-    required this.loginId,
-    required this.roleNameEnglish,
-    required this.roleNameArabic,
-    required this.designationNameArabic,
-    required this.designationNameEnglish,
-    required this.active,
-    required this.dgNameEnglish,
-    required this.dgNameArabic,
-    required this.dgObjectId,
-    required this.departmentNameEnglish,
-    required this.departmentNameArabic,
-    required this.departmentObjectId,
-    required this.authenticationNameEnglish,
-    required this.authenticationNameArabic,
-    required this.sectionObjectId,
-    required this.sectionNameEnglish,
-    required this.sectionNameArabic,
-    required this.ldapIdentifier,
+    required this.systemName,
+    required this.designationName,
+    required this.dgName,
+    required this.departmentName,
+    required this.sectionName,
+    required this.isActive,
     required this.email,
-    required this.officeNumber,
+    required this.roleName,
+    required this.objectId,
+   
   });
 
   /// Create a `UserMaster` instance from a map.
   factory UserMaster.fromMap(Map<String, dynamic> map) {
     return UserMaster(
-      userId: map['userId'] ?? '',
-      objectId: map['objectId'] ?? '',
+      id: map['userId'] ?? 0,
+      eOfficeId: map['eOfficeId'] ?? '',
       name: map['name'] ?? '',
-      loginId: map['loginId'] ?? '',
-      roleNameEnglish: map['roleNameEnglish'] ?? '',
-      roleNameArabic: map['roleNameArabic'] ?? '',
-      designationNameArabic: map['designationNameArabic'] ?? '',
-      designationNameEnglish: map['designationNameEnglish'] ?? '',
-      active: map['active'] ?? '',
-      dgNameEnglish: map['dgNameEnglish'] ?? '',
-      dgNameArabic: map['dgNameArabic'] ?? '',
-      dgObjectId: map['dgObjectId'] ?? '',
-      departmentNameEnglish: map['departmentNameEnglish'] ?? '',
-      departmentNameArabic: map['departmentNameArabic'] ?? '',
-      departmentObjectId: map['departmentObjectId'] ?? '',
-      authenticationNameEnglish: map['authenticationNameEnglish'] ?? '',
-      authenticationNameArabic: map['authenticationNameArabic'] ?? '',
-      sectionObjectId: map['sectionObjectId'] ?? '',
-      sectionNameEnglish: map['sectionNameEnglish'] ?? '',
-      sectionNameArabic: map['sectionNameArabic'] ?? '',
-      ldapIdentifier: map['ldapIdentifier'] ?? '',
+      systemName: map['systemName'] ?? '',
+      designationName: map['designationItemName'] ?? '',
+      dgName: map['dgName'] ?? '',
+      departmentName: map['departmentName'] ?? '',
+      sectionName: map['sectionName'] ?? '',
+      isActive: map['isActive'] ?? false,
       email: map['email'] ?? '',
-      officeNumber: map['officeNumber'] ?? 0,
+      roleName: map['roleName'] ?? '',
+      objectId: map['objectId'] ?? '',
+    
+      
     );
   }
 
   /// Convert a `UserMaster` instance to a map.
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
-      'objectId': objectId,
+      'id': id,
+      'eOfficeId': eOfficeId,
       'name': name,
-      'loginId': loginId,
-      'roleNameEnglish': roleNameEnglish,
-      'roleNameArabic': roleNameArabic,
-      'designationNameArabic': designationNameArabic,
-      'designationNameEnglish': designationNameEnglish,
-      'active': active,
-      'dgNameEnglish': dgNameEnglish,
-      'dgNameArabic': dgNameArabic,
-      'dgObjectId': dgObjectId,
-      'departmentNameEnglish': departmentNameEnglish,
-      'departmentNameArabic': departmentNameArabic,
-      'departmentObjectId': departmentObjectId,
-      'authenticationNameEnglish': authenticationNameEnglish,
-      'authenticationNameArabic': authenticationNameArabic,
-      'sectionObjectId': sectionObjectId,
-      'sectionNameEnglish': sectionNameEnglish,
-      'sectionNameArabic': sectionNameArabic,
-      'ldapIdentifier': ldapIdentifier,
+      'systemName': systemName,
+      'designationName': designationName,
+      'dgName': dgName,
+      'departmentName': departmentName,
+      'sectionName': sectionName,
+      'isActive': isActive,
       'email': email,
-      'officeNumber': officeNumber,
+      'roleName': roleName,
+      'objectId': objectId,
+      
     };
   }
 
