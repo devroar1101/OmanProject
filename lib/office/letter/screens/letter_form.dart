@@ -12,6 +12,7 @@ import 'package:tenderboard/admin/external_locations_Master/model/external_locat
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
+import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
 
 class LetterForm extends ConsumerStatefulWidget {
   const LetterForm({super.key});
@@ -27,11 +28,26 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   final TextEditingController _sendToController = TextEditingController();
   final TextEditingController _receivedFromController = TextEditingController();
   final TextEditingController _summaryController = TextEditingController();
-  final TextEditingController _letterSubjectController =
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _actionToBeController = TextEditingController();
+  final TextEditingController _tenderNumberBeController =
       TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _referenceController.dispose();
+    _sendToController.dispose();
+    _receivedFromController.dispose();
+    _summaryController.dispose();
+    _subjectController.dispose();
+    _actionToBeController.dispose();
+    _tenderNumberBeController.dispose();
+  }
 
   DateTime _createdDate = DateTime.now();
   DateTime? _dateOnTheLetter;
+  DateTime? _receviedDate;
   final int currentUserId = 164;
 
   int _selectedYear = 2024;
@@ -40,6 +56,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   int? _selectedFolder;
   int? _selectedDG;
   int? _selectedDepartment;
+  int? _selectedUser;
   int? _selectedLocation;
   String _selectedPriority = 'High';
   String _selectedClassification = 'Confidential';
@@ -54,6 +71,33 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   List<SelectOption<DgMaster>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
   List<SelectOption<ExternalLocation>> locationOptions = [];
+
+  void save() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final response = LetterUtils(
+              actionToBeTaken: _actionToBeController.text,
+              cabinet: _selectedCabinet,
+              classification: 1, //replace
+              comments: _summaryController.text,
+              createdBy: currentUserId,
+              dateOnTheLetter: _dateOnTheLetter,
+              direction: _selectedDirection,
+              externalLocation: _selectedLocation,
+              folder: _selectedFolder,
+              fromUser: currentUserId,
+              locationId: _selectedLocation,
+              priority: 0, //replace
+              receivedDate: _receviedDate,
+              reference: _referenceController.text,
+              sendTo: _sendToController.text,
+              subject: _subjectController.text,
+              tenderNumber: _tenderNumberBeController.text,
+              toUser: _selectedUser,
+              year: _selectedYear)
+          .onSave();
+      print(response);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,22 +118,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 _letterForm2(ref),
               _letterForm3(ref),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Collect all form input values
-                    String reference = _referenceController.text;
-                    int year = _selectedYear;
-                    int cabinet = _selectedCabinet!;
-                    int folder = _selectedFolder!;
-                    int externalLocation = _selectedLocation!;
-                    String sendTo = _sendToController.text;
-                    String receivedFrom = _receivedFromController.text;
-                    String priority = _selectedPriority;
-                    String classification = _selectedClassification;
-                    String summary = _summaryController.text;
-                    String letterSubject = _letterSubjectController.text;
-                  }
-                },
+                onPressed: save,
                 child: const Text('Save'),
               ),
             ],
@@ -360,7 +389,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         const SizedBox(height: 5),
         _buildRow([
           _buildTextField('Received From:',
-              controller: _receivedFromController),
+              controller: _tenderNumberBeController),
           _buildTextField('Tender Number:'),
         ]),
         const SizedBox(height: 5),
@@ -402,13 +431,13 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         // Summary and Action to be Taken
         _buildRow([
           _buildTextField('Summary:', controller: _summaryController),
-          _buildTextField('Action to be Taken:')
+          _buildTextField('Action to be Taken:',
+              controller: _actionToBeController)
         ]),
         const SizedBox(height: 5),
 
         // Letter Subject
-        _buildTextField('Letter Subject:',
-            controller: _letterSubjectController),
+        _buildTextField('Letter Subject:', controller: _subjectController),
 
         // Save button
         const SizedBox(height: 10),

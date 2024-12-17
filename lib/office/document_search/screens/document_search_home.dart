@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/load_image.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_form.dart';
+import 'package:tenderboard/office/letter/screens/letter_form.dart';
 
 class DocumentSearchHome extends StatefulWidget {
   const DocumentSearchHome({super.key});
@@ -101,7 +102,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
             child: const Material(
               elevation: 0,
               color: Colors.white,
-              child: DocumentSearchForm(),
+              child: LetterForm(),
             ),
           ),
         ],
