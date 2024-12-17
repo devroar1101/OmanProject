@@ -1,15 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final ExternalLocationMasterRepositoryProvider = StateNotifierProvider<
-    ExternalLocationMasterRepository, List<ExternalLocationMaster>>((ref) {
-  return ExternalLocationMasterRepository(ref);
+final ExternalLocationRepositoryProvider =
+    StateNotifierProvider<ExternalLocationRepository, List<ExternalLocation>>(
+        (ref) {
+  return ExternalLocationRepository(ref);
 });
 
-class ExternalLocationMasterRepository
-    extends StateNotifier<List<ExternalLocationMaster>> {
-  ExternalLocationMasterRepository(this.ref) : super([]);
+class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
+  ExternalLocationRepository(this.ref) : super([]);
   final Ref ref;
 
   //Add
@@ -30,7 +32,7 @@ class ExternalLocationMasterRepository
           await dio.post('/ExternalLocation/Create', data: requestBody);
 
       state = [
-        ExternalLocationMaster(
+        ExternalLocation(
             id: 0,
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
@@ -65,7 +67,7 @@ class ExternalLocationMasterRepository
           await dio.put('/ExternalLocation/Update', data: requestBody);
 
       if (response.statusCode == 200) {
-        final updatedExternalLocation = ExternalLocationMaster(
+        final updatedExternalLocation = ExternalLocation(
             id: currentExternalLocationId,
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
@@ -92,7 +94,7 @@ class ExternalLocationMasterRepository
   }
 
   /// Fetch Departments from the API
-  Future<List<ExternalLocationMaster>> fetchExternalLocationMaster({
+  Future<List<ExternalLocation>> fetchExternalLocation({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
@@ -113,9 +115,8 @@ class ExternalLocationMasterRepository
         final List<dynamic> data = response.data as List;
         state = data
             .map((item) =>
-                ExternalLocationMaster.fromMap(item as Map<String, dynamic>))
+                ExternalLocation.fromMap(item as Map<String, dynamic>))
             .toList();
-            print( 'state :$state');
       } else {
         throw Exception('Failed to load External Location');
       }
@@ -126,19 +127,38 @@ class ExternalLocationMasterRepository
     return state;
   }
 
-  // /// Search and filter method for Departments based on optional nameArabic and nameEnglish
-  // Future<List<UserMaster>> searchAndFilter(List<UserMaster> users,
-  //     {String? nameArabic, String? nameEnglish}) async {
-  //   // Filter the list based on the provided nameArabic and nameEnglish filters
-  //   var filteredList = users.where((UserMaster) {
-  //     bool matchesArabic =
-  //         nameArabic == null || department.departmentNameArabic.contains(nameArabic);
-  //     bool matchesEnglish =
-  //         nameEnglish == null || department.departmentNameEnglish.contains(nameEnglish);
+  Future<List<SelectOption<ExternalLocation>>> getLocationOptions(
+      String currentLanguage) async {
+    List<ExternalLocation> locations = state;
 
-  //     return matchesArabic && matchesEnglish;
-  //   }).toList();
+    if (locations.isEmpty) {
+      locations = await fetchExternalLocation();
+    }
 
-  //   return filteredList;
-  // }
+    // Create the options list
+    final List<SelectOption<ExternalLocation>> options = await Future.wait(
+      locations.map((location) async {
+        return SelectOption<ExternalLocation>(
+          displayName: currentLanguage == 'en'
+              ? location.nameEnglish
+              : location.nameArabic,
+          key: location.id.toString(),
+          filter: location.typeNameEnglish.toString(),
+          filter1: location.isNew.toString(),
+          value: location,
+        );
+      }).toList(),
+    );
+
+    return options;
+  }
 }
+
+final locationOptionsProvider =
+    FutureProvider<List<SelectOption<ExternalLocation>>>((ref) async {
+  final authState = ref.watch(authProvider);
+
+  return ref
+      .read(ExternalLocationRepositoryProvider.notifier)
+      .getLocationOptions(authState.selectedLanguage);
+});

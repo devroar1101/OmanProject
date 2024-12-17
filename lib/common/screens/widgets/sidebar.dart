@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
+
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
@@ -96,7 +97,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'ExternalLocation',
         'icon': Icons.account_tree,
-        'navigate': const ExternalLocationMasterScreen()
+        'navigate': const ExternalLocationScreen()
       },
       {
         'title': 'User',

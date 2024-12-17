@@ -16,8 +16,6 @@ class AddExternalLocation extends ConsumerWidget {
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      
     }
   }
 

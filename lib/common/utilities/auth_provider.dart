@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
 import 'dart:html' as html; // Import for window.location.reload() on web
 import 'package:flutter/foundation.dart'; // Import to check platform
@@ -67,6 +68,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (state.isAuthenticated) {
       Future.microtask(() => ref.read(dgOptionsProvider(true)));
       Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
+      Future.microtask(() => ref.read(locationOptionsProvider));
     }
   }
 
