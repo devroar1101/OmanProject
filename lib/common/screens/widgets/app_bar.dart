@@ -22,13 +22,13 @@ class CustomAppBar {
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.8),
+          color: const Color.fromARGB(238,238,238,255).withOpacity(0.8),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5), // Shadow color
               spreadRadius: 1, // Spread radius
               blurRadius: 5, // Blur radius
-              offset: const Offset(0, 3), // Offset in x and y direction
+              offset: const Offset(0, 2), // Offset in x and y direction
             ),
           ],
         ),

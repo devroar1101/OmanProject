@@ -135,7 +135,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
       );
       // Check if the response is successful
       if (response.statusCode == 200) {
-        List data = response.data as List;
+        final List<dynamic> data = response.data as List;
         state = data
             .map((item) => SectionMaster.fromMap(item as Map<String, dynamic>))
             .toList();

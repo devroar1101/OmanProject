@@ -195,8 +195,9 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
             final List<SectionMaster> filteredSection = sections
                 .where((section) => section.departmentId == department.id)
                 .toList();
-
+           
             subchildOptions = filteredSection.map((section) {
+                 print('${department.id}--${section.sectionId}');
               return SelectOption<SectionMaster>(
                 displayName: currentLanguage == 'en'
                     ? section.sectionNameArabic

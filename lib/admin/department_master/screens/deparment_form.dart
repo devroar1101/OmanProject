@@ -47,9 +47,9 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      margin: const EdgeInsets.all(16.0),
+      // margin: const EdgeInsets.all(16.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         child: Row(
           children: [
             // Code Text Field
