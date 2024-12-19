@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 enum Priority {
   normal(1, 'Normal', 'عادي', Colors.green, Icons.check),
@@ -13,9 +15,11 @@ enum Priority {
 
   const Priority(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
+  String getLabel(WidgetRef ref) {
+    final selectedLanguage = ref.read(authProvider).selectedLanguage;
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  }
 }
 
 enum Classification {
@@ -33,8 +37,11 @@ enum Classification {
   const Classification(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(WidgetRef ref) {
+    final selectedLanguage = ref.read(authProvider).selectedLanguage;
+
+    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  }
 }
 
 enum ActionType {
@@ -65,6 +72,9 @@ enum ActionType {
   const ActionType(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(WidgetRef ref) {
+    final selectedLanguage = ref.read(authProvider).selectedLanguage;
+
+    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  }
 }

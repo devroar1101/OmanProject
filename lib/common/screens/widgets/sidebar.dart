@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
+
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
@@ -11,7 +12,7 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
-import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
+import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
@@ -34,7 +35,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxHome()},
+      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxScreen()},
       {
         'title': 'Outbox',
         'icon': Icons.outbox,
@@ -96,7 +97,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'ExternalLocation',
         'icon': Icons.account_tree,
-        'navigate': const ExternalLocationMasterScreen()
+        'navigate': const ExternalLocationScreen()
       },
       {
         'title': 'User',

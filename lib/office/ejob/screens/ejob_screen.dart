@@ -55,7 +55,7 @@ class _EjobScreenState extends State<EjobScreen> {
                         Expanded(
                           child: _selectedTabIndex == 0
                               ? _buildUploadContent() // Upload Content
-                              : const Scanner(), // Integrate Scanner widget here
+                              : Scanner(), // Integrate Scanner widget here
                         ),
                       ],
                     ),
@@ -71,16 +71,16 @@ class _EjobScreenState extends State<EjobScreen> {
     return Expanded(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: _selectedTabIndex == index
-              ? Colors.blue
-              : Colors.grey[300],
+          backgroundColor:
+              _selectedTabIndex == index ? Colors.blue : Colors.grey[300],
         ),
         onPressed: () => setState(() {
           _selectedTabIndex = index;
         }),
         child: Text(
           title,
-          style: TextStyle(color: _selectedTabIndex == index ? Colors.white : Colors.black),
+          style: TextStyle(
+              color: _selectedTabIndex == index ? Colors.white : Colors.black),
         ),
       ),
     );
@@ -120,12 +120,14 @@ class _EjobScreenState extends State<EjobScreen> {
             itemCount: 5, // Replace with actual uploaded files count
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("File $index", style: const TextStyle(fontSize: 16)),
-                    Text("Details $index", style: const TextStyle(color: Colors.grey)),
+                    Text("Details $index",
+                        style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
               );

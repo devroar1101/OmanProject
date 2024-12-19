@@ -170,7 +170,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
               _removeOverlay();
             }
           },
-          child: TextField(
+          child: TextFormField(
             controller: _searchController,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -183,6 +183,12 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
             onChanged: (value) {
               _onSearchChanged();
               (context as Element).markNeedsBuild();
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return widget.hint;
+              }
+              return null;
             },
           ),
         ));

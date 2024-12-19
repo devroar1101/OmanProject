@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class ExternalLocationMasterScreen extends ConsumerStatefulWidget {
-  const ExternalLocationMasterScreen({super.key});
+class ExternalLocationScreen extends ConsumerStatefulWidget {
+  const ExternalLocationScreen({super.key});
 
   @override
-  _ExternalLocationMasterScreenState createState() =>
-      _ExternalLocationMasterScreenState();
+  _ExternalLocationScreenState createState() => _ExternalLocationScreenState();
 }
 
-class _ExternalLocationMasterScreenState
-    extends ConsumerState<ExternalLocationMasterScreen> {
+class _ExternalLocationScreenState
+    extends ConsumerState<ExternalLocationScreen> {
   @override
   void initState() {
     super.initState();
     // Fetch External Location Master items during initialization
     ref
-        .read(ExternalLocationMasterRepositoryProvider.notifier)
-        .fetchExternalLocationMaster();
+        .read(ExternalLocationRepositoryProvider.notifier)
+        .fetchExternalLocation();
   }
 
   String searchNameArabic = '';
@@ -39,10 +39,10 @@ class _ExternalLocationMasterScreenState
     });
   }
 
-  List<ExternalLocationMaster> _applyFiltersAndPagination(
-      List<ExternalLocationMaster> externalLocations) {
+  List<ExternalLocation> _applyFiltersAndPagination(
+      List<ExternalLocation> externalLocations) {
     // Apply search filters
-    List<ExternalLocationMaster> filteredList =
+    List<ExternalLocation> filteredList =
         externalLocations.where((externalLocation) {
       final matchesArabic = searchNameArabic.isEmpty ||
           externalLocation.nameArabic
@@ -65,8 +65,7 @@ class _ExternalLocationMasterScreenState
 
   @override
   Widget build(BuildContext context) {
-    final externalLocations =
-        ref.watch(ExternalLocationMasterRepositoryProvider);
+    final externalLocations = ref.watch(ExternalLocationRepositoryProvider);
     final filteredAndPaginatedList =
         _applyFiltersAndPagination(externalLocations);
 
@@ -74,7 +73,7 @@ class _ExternalLocationMasterScreenState
       {
         "button": Icons.edit,
         "function": (int id) {
-          // final ExternalLocationMaster currentLocation =
+          // final ExternalLocation currentLocation =
           //               externalLocations.firstWhere(
           //                   (location) => location.id == id);
           //           showDialog(
@@ -147,8 +146,7 @@ class _ExternalLocationMasterScreenState
                     'active',
                     'isYes',
                   ],
-                  details: ExternalLocationMaster.listToMap(
-                      filteredAndPaginatedList),
+                  details: ExternalLocation.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
                   onTap: (int index) {},

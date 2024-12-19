@@ -1,4 +1,4 @@
-class ExternalLocationMaster {
+class ExternalLocation {
   int id;
   String nameArabic;
   String nameEnglish;
@@ -8,7 +8,7 @@ class ExternalLocationMaster {
   bool isDeleted;
   String objectId;
 
-  ExternalLocationMaster({
+  ExternalLocation({
     required this.id,
     required this.nameArabic,
     required this.nameEnglish,
@@ -20,8 +20,8 @@ class ExternalLocationMaster {
   });
 
   // Factory constructor to create an instance from a Map
-  factory ExternalLocationMaster.fromMap(Map<String, dynamic> map) {
-    return ExternalLocationMaster(
+  factory ExternalLocation.fromMap(Map<String, dynamic> map) {
+    return ExternalLocation(
       id: map['externalLocationId'] ?? 0,
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
@@ -48,7 +48,7 @@ class ExternalLocationMaster {
   }
 
   /// Convert a List of DgMaster objects to a List of Maps with 'sno' field
-  static List<Map<String, dynamic>> listToMap(List<ExternalLocationMaster> items) {
+  static List<Map<String, dynamic>> listToMap(List<ExternalLocation> items) {
     return List<Map<String, dynamic>>.generate(items.length, (index) {
       Map<String, dynamic> itemMap = items[index].toMap();
       return itemMap;

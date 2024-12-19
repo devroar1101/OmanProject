@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_twain_scanner/dynamsoft_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tenderboard/common/widgets/document_viewer.dart';
 
+// ignore: must_be_immutable
 class Scanner extends StatefulWidget {
-  const Scanner({super.key});
+  Scanner({super.key, this.scanDocumnets});
+
+  Function(List<String>)? scanDocumnets;
   @override
   _ScannerAppState createState() => _ScannerAppState();
 }
@@ -257,37 +262,47 @@ class _ScannerAppState extends State<Scanner> {
   }
 
   Future<void> _scanDocument(int index) async {
-    print("Starting scan for scanner: ${devices[index]['device']}");
     final Map<String, dynamic> parameters = {
       'license': dotenv.env['SCANNER_LICENSE'],
       'device': devices[index]['device'],
-    };
-    print('1111$colorMode,$resolution,$ifFeederEnabled,$ifDuplexEnabled');
-    // Adding configuration
-    parameters['config'] = {
-      'IfShowUI': ifShowUI,
-      'PixelType': colorMode, // 1: Black & White, 2: Grayscale, 3: Color
-      'Resolution': resolution,
-      'IfFeederEnabled': ifFeederEnabled,
-      'IfDuplexEnabled': ifDuplexEnabled,
+      'config': {
+        'IfShowUI': ifShowUI,
+        'PixelType': colorMode, // 1: Black & White, 2: Grayscale, 3: Color
+        'Resolution': resolution,
+        'IfFeederEnabled': ifFeederEnabled,
+        'IfDuplexEnabled': ifDuplexEnabled,
+      },
     };
 
     try {
       final String jobId =
           await dynamsoftService.scanDocument(host, parameters);
 
-      print("Scan job started with jobId: $jobId");
       if (jobId != '') {
-        List<Uint8List> paths =
+        // Fetch image streams (Uint8List) from the scanner service
+        List<Uint8List> imageStreams =
             await dynamsoftService.getImageStreams(host, jobId);
 
+        // Update UI with the raw images
         setState(() {
-          imagePaths.addAll(paths); // Append new images to the existing list
-          currentPage = imagePaths.length - paths.length; // Show new scans
+          imagePaths
+              .addAll(imageStreams); // Append raw image streams to the list
+          currentPage = imagePaths.length - imageStreams.length;
         });
+
+        if (widget.scanDocumnets != null) {
+          List<String> base64Strings =
+              await compute(_convertToBase64, imagePaths);
+          widget.scanDocumnets!(base64Strings);
+        }
       }
     } catch (e) {
       print('Error during scanning: $e');
     }
+  }
+
+// Background function to convert a list of images to Base64
+  List<String> _convertToBase64(List<Uint8List> images) {
+    return images.map((image) => base64Encode(image)).toList();
   }
 }
