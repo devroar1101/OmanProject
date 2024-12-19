@@ -30,12 +30,9 @@ class LetterContent {
 
   Map<String, dynamic> toMap() {
     return {
-      'letterContentId': letterContentId,
       'content': content,
       'pageNumber': pageNumber,
       'objectId': objectId,
-      'timeStamp': timeStamp?.toIso8601String(),
-      'isDeleted': isDeleted,
     };
   }
 }

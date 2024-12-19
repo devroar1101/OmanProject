@@ -18,24 +18,24 @@ class Folder {
   // Convert a Map to a Folder object
   factory Folder.fromMap(Map<String, dynamic> map) {
     return Folder(
-      id: map['cabinetFolderId'],
+      id: map['folderId'],
       cabinetId: map['cabinetId'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
-      code: map['cabinetFolderId'] ?? '', // Defaulting to empty string if null
-      nameArabic: map['cabinetFolderNameEnglish'] ?? '',
-      nameEnglish: map['cabinetFolderNameArabic'] ?? '',
+      code: map['folderId'] ?? '', // Defaulting to empty string if null
+      nameArabic: map['nameEnglish'] ?? '',
+      nameEnglish: map['nameArabic'] ?? '',
     );
   }
 
   // Convert a Folder object to a Map
   Map<String, dynamic> toMap() {
     return {
-      'cabinetFolderId': id,
+      'id': id,
       'cabinetId': cabinetId,
       'objectId': objectId,
       //'FolderCode': code,
-      'cabinetFolderNameArabic': nameArabic,
-      'cabinetFolderNameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
     };
   }
 

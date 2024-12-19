@@ -12,7 +12,7 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
-import 'package:tenderboard/office/inbox/screens/inbox_home.dart';
+import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
@@ -35,7 +35,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxHome()},
+      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxScreen()},
       {
         'title': 'Outbox',
         'icon': Icons.outbox,

@@ -11,7 +11,8 @@ class LetterActionRepository {
   Future<Response> createLetterAction(
       Map<String, dynamic> letterActionData) async {
     try {
-      final response = await dio.post('/CreateAction', data: letterActionData);
+      final response =
+          await dio.post('/LetterAction/Create', data: letterActionData);
       return response;
     } catch (e) {
       rethrow;

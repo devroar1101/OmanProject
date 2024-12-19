@@ -84,7 +84,6 @@ class Letter {
 
   Map<String, dynamic> toMap() {
     return {
-      'letterId': letterId,
       'cabinetId': cabinetId,
       'fileId': fileId,
       'subject': subject,

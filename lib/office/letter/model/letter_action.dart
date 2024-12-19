@@ -86,7 +86,6 @@ class LetterAction {
 
   Map<String, dynamic> toMap() {
     return {
-      'letterActionId': letterActionId,
       'fromUserId': fromUserId,
       'fromDGId': fromDGId,
       'locationId': locationId,

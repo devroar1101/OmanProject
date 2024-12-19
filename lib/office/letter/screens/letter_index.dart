@@ -11,6 +11,7 @@ class LetterIndex extends StatefulWidget {
 
 class _LetterIndexState extends State<LetterIndex> {
   final bool _isLoading = false;
+  List<String> scanDocuments = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +31,10 @@ class _LetterIndexState extends State<LetterIndex> {
                         constraints: BoxConstraints(
                           minHeight: MediaQuery.of(context).size.height,
                         ),
-                        child: const IntrinsicHeight(
-                          child: LetterForm(),
+                        child: IntrinsicHeight(
+                          child: LetterForm(
+                            scanDocumnets: scanDocuments,
+                          ),
                         ),
                       ),
                     ),
@@ -42,8 +45,11 @@ class _LetterIndexState extends State<LetterIndex> {
                   flex: 1,
                   child: Container(
                     color: Colors.white,
-                    child:
-                        const Scanner(), // Optional: Set to match your design
+                    child: Scanner(
+                      scanDocumnets: (scanDocuments) => setState(() {
+                        this.scanDocuments = scanDocuments;
+                      }),
+                    ), // Optional: Set to match your design
                   ),
                 ),
               ],

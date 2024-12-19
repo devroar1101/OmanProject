@@ -11,7 +11,7 @@ class LetterAttachmentRepository {
   Future<Response> createAttachment(Map<String, dynamic> attachmentData) async {
     try {
       final response =
-          await dio.post('/CreateAttachment', data: attachmentData);
+          await dio.post('/LetterAttachment/Create', data: attachmentData);
       return response;
     } catch (e) {
       rethrow;

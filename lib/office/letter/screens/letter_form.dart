@@ -15,7 +15,9 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
 
 class LetterForm extends ConsumerStatefulWidget {
-  const LetterForm({super.key});
+  LetterForm({super.key, this.scanDocumnets});
+
+  List<String>? scanDocumnets;
 
   @override
   _LetterFormState createState() => _LetterFormState();
@@ -93,7 +95,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               subject: _subjectController.text,
               tenderNumber: _tenderNumberBeController.text,
               toUser: _selectedUser,
-              year: _selectedYear)
+              year: _selectedYear,
+              scanDocuments: widget.scanDocumnets)
           .onSave();
       print(response);
     }

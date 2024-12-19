@@ -99,7 +99,7 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
             top: 0,
             bottom: 0,
             width: MediaQuery.of(context).size.width * 0.5,
-            child: const Material(
+            child: Material(
               elevation: 0,
               color: Colors.white,
               child: LetterForm(),

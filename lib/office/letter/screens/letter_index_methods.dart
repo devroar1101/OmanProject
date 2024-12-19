@@ -2,6 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/office/letter/model/letter.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 import 'package:tenderboard/office/letter/model/letter_action_repo.dart';
+import 'package:tenderboard/office/letter/model/letter_attachment.dart';
+import 'package:tenderboard/office/letter/model/letter_attachment_repo.dart';
+import 'package:tenderboard/office/letter/model/letter_content.dart';
+import 'package:tenderboard/office/letter/model/letter_content_repo.dart';
 import 'package:tenderboard/office/letter/model/letter_repo.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
@@ -28,33 +32,33 @@ class LetterUtils {
 
   final int? priority;
   final int? year;
+  List<String>? scanDocuments;
 
   static const Uuid _uuid = Uuid();
 
   /// Constructor to initialize all fields
-  LetterUtils({
-    this.actionToBeTaken,
-    this.cabinet,
-    this.classification,
-    this.comments,
-    this.createdBy,
-    this.dateOnTheLetter,
-    this.direction,
-    this.externalLocation,
-    this.folder,
-    this.fromUser,
-    this.locationId,
-    this.receivedDate,
-    this.reference,
-    this.sendTo,
-    this.subject,
-    this.tenderNumber,
-    this.toUser,
-    this.priority,
-    this.year,
-  });
+  LetterUtils(
+      {this.actionToBeTaken,
+      this.cabinet,
+      this.classification,
+      this.comments,
+      this.createdBy,
+      this.dateOnTheLetter,
+      this.direction,
+      this.externalLocation,
+      this.folder,
+      this.fromUser,
+      this.locationId,
+      this.receivedDate,
+      this.reference,
+      this.sendTo,
+      this.subject,
+      this.tenderNumber,
+      this.toUser,
+      this.priority,
+      this.year,
+      this.scanDocuments});
 
-  /// Method to save form data and return success/failure.
   Future<String> onSave() async {
     try {
       final objectId = _uuid.v4();
@@ -93,17 +97,47 @@ class LetterUtils {
         pageSelected: 'All',
         sequenceNo: 1,
         toUserId: toUser ?? 0,
+        objectId: objectId,
       );
+
+      final letterAttachment = LetterAttachment(
+        attachementType: 'ScanDocument',
+        createdBy: fromUser,
+        displayName: reference,
+        fileExtention: 'png',
+        fileName: reference,
+        objectId: objectId,
+        totalPage: scanDocuments?.length ?? 0,
+      );
+
+      // Generate list of LetterContent objects based on scanDocuments
+      final letterContents = scanDocuments
+              ?.asMap()
+              .entries
+              .map((entry) => LetterContent(
+                    content:
+                        entry.value, // Replace with actual content if needed
+                    objectId: objectId,
+                    pageNumber: entry.key + 1, // Page numbers start from 1
+                  ))
+              .toList() ??
+          [];
 
       // Initialize repository container
       final repo = ProviderContainer();
 
-      // Save Letter and LetterAction objects in parallel
+      // Save Letter and LetterAction objects in parallel with LetterContent list
       await Future.wait([
         repo.read(letterRepositoryProvider).createLetter(letter.toMap()),
         repo
             .read(letterActionRepositoryProvider)
             .createLetterAction(letterAction.toMap()),
+        repo
+            .read(letterAttachmentRepositoryProvider)
+            .createAttachment(letterAttachment.toMap()),
+        ...letterContents.map((content) => repo
+            .read(letterContentRepositoryProvider)
+            .createContent(content.toMap())),
       ]);
 
       return 'success';

@@ -1,36 +1,36 @@
-// LetterAttachmentRepository Class
+// LetterContentRepository Class
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-class LetterAttachmentRepository {
+class LetterContentRepository {
   final Dio dio;
 
-  LetterAttachmentRepository(this.dio);
+  LetterContentRepository(this.dio);
 
-  Future<Response> createAttachment(Map<String, dynamic> attachmentData) async {
+  Future<Response> createContent(Map<String, dynamic> contentData) async {
     try {
       final response =
-          await dio.post('/CreateAttachment', data: attachmentData);
+          await dio.post('/LetterContent/Create', data: contentData);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Response> updateAttachment(Map<String, dynamic> attachmentData) async {
+  Future<Response> updateContent(Map<String, dynamic> contentData) async {
     try {
-      final response = await dio.put('/UpdateAttachment', data: attachmentData);
+      final response = await dio.put('/UpdateContent', data: contentData);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Response> getAttachmentById({required int attachmentId}) async {
+  Future<Response> getContentById({required int contentId}) async {
     try {
-      final response = await dio.get('/GetAttachmentById', queryParameters: {
-        'LetterAttachmentId': attachmentId,
+      final response = await dio.get('/GetContentById', queryParameters: {
+        'LetterContentId': contentId,
       });
       return response;
     } catch (e) {
@@ -39,9 +39,9 @@ class LetterAttachmentRepository {
   }
 }
 
-// Provider for LetterAttachmentRepository
-final letterAttachmentRepositoryProvider =
-    Provider<LetterAttachmentRepository>((ref) {
+// Provider for LetterContentRepository
+final letterContentRepositoryProvider =
+    Provider<LetterContentRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return LetterAttachmentRepository(dio);
+  return LetterContentRepository(dio);
 });

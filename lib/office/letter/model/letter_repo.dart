@@ -10,7 +10,7 @@ class LetterRepository {
 
   Future<Response> createLetter(Map<String, dynamic> letterData) async {
     try {
-      final response = await dio.post('/Create', data: letterData);
+      final response = await dio.post('/Letter/Create', data: letterData);
       return response;
     } catch (e) {
       rethrow;

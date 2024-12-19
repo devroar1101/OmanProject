@@ -8,9 +8,9 @@ class ImageService {
 
   // Fetch a single image by its ID
   Future<Uint8List> fetchImageById(
-      int fileDataId, int fileInformationId) async {
+      String fileDataId, String fileInformationId) async {
     final url =
-        "http://192.168.1.12:8080/api/FileData/GetbyId?FileDataId=$fileDataId&FileInformationId=$fileInformationId";
+        "http://192.168.1.4:8081/api/LetterContent/GetByObjectId?LetterAttachementObjectId=$fileDataId&PageNumber=$fileInformationId";
 
     try {
       final response = await _dio.get(
@@ -20,7 +20,7 @@ class ImageService {
 
       if (response.statusCode == 200) {
         final data = response.data['data'];
-        final base64Content = data['base64Content'];
+        final base64Content = data['content'];
 
         if (base64Content == null) {
           throw Exception('No base64Content found in the response');
@@ -37,7 +37,7 @@ class ImageService {
   }
 
   // Fetch a list of images by their IDs
-  Future<List<Uint8List>> fetchImages(List<Map<String, int>> idPairs) async {
+  Future<List<Uint8List>> fetchImages(List<Map<String, String>> idPairs) async {
     List<Uint8List> images = [];
     try {
       for (var idPair in idPairs) {
@@ -77,8 +77,14 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   Future<void> _loadImages() async {
     try {
       final idPairs = [
-        {'fileDataId': 2, 'fileInformationId': 1},
-        {'fileDataId': 3, 'fileInformationId': 1},
+        {
+          'fileDataId': '62bde539-38c0-4fc4-ae84-cc4c8d2ccc00',
+          'fileInformationId': '2'
+        },
+        {
+          'fileDataId': '62bde539-38c0-4fc4-ae84-cc4c8d2ccc00',
+          'fileInformationId': '2'
+        },
 
         // Add more ID pairs as needed
       ];
