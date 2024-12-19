@@ -6,7 +6,7 @@ class AuthState {
   AuthState({
     this.accessToken,
     this.isAuthenticated = false,
-    this.selectedLanguage = 'en', // Default to English
+    this.selectedLanguage = 'ar', // Default to English
   });
 
   AuthState copyWith({

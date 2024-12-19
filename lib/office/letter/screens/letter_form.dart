@@ -9,6 +9,7 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
@@ -52,7 +53,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   DateTime? _receviedDate;
   final int currentUserId = 164;
 
-  int _selectedYear = 2024;
+  int selectedYear = 2024;
   int? _selectedCabinet;
   final String _selectedCabinetName = '';
   int? _selectedFolder;
@@ -60,8 +61,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   int? _selectedDepartment;
   int? _selectedUser;
   int? _selectedLocation;
-  String _selectedPriority = 'High';
-  String _selectedClassification = 'Confidential';
+  int selectedPriority = 1;
+  int selectedClassification = 1;
   String _selectedDirection = 'Incoming';
   String _selectedDirectionType = 'Internal';
   String _selectedLocationType = 'Government';
@@ -95,7 +96,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               subject: _subjectController.text,
               tenderNumber: _tenderNumberBeController.text,
               toUser: _selectedUser,
-              year: _selectedYear,
+              year: selectedYear,
               scanDocuments: widget.scanDocumnets)
           .onSave();
       print(response);
@@ -105,7 +106,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   @override
   Widget build(BuildContext context) {
     _referenceController.text =
-        'TB/$currentUserId/${_selectedDirection == 'Incoming' ? 1 : 2}-${_selectedDirectionType == 'Internal' ? 1 : 2}-$letterNo/$_selectedYear';
+        'TB/$currentUserId/${_selectedDirection == 'Incoming' ? 1 : 2}-${_selectedDirectionType == 'Internal' ? 1 : 2}-$letterNo/$selectedYear';
 
     return SingleChildScrollView(
       child: Padding(
@@ -163,7 +164,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           children: [
             Expanded(
               child: DropdownButtonFormField<int>(
-                value: _selectedYear,
+                value: selectedYear,
                 decoration: InputDecoration(
                   labelText: 'Year',
                   border: OutlineInputBorder(
@@ -183,12 +184,12 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 onChanged: (int? newValue) {
                   if (newValue != null) {
                     setState(() {
-                      _selectedYear = newValue;
+                      selectedYear = newValue;
                     });
                   }
                 },
                 validator: (value) {
-                  if (value == null || value == null) {
+                  if (value == null) {
                     return 'Please select Year';
                   }
                   return null;
@@ -381,13 +382,54 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     return Column(
       children: [
         _buildRow([
-          _buildDropdownField('Classification', ['Confidential', 'Public'],
-              value: _selectedClassification,
-              onChanged: (value) =>
-                  setState(() => _selectedClassification = value!)),
-          _buildDropdownField('Priority', ['High', 'Normal', 'Low'],
-              value: _selectedPriority,
-              onChanged: (value) => setState(() => _selectedPriority = value!))
+          Expanded(
+            child: DropdownButtonFormField<int>(
+              value: selectedPriority,
+              decoration: InputDecoration(
+                labelText: 'Priority',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              items: Priority.values.map((Priority item) {
+                return DropdownMenuItem<int>(
+                  value: item.id,
+                  child: Text(item.getLabel(ref)),
+                );
+              }).toList(),
+              onChanged: (int? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedPriority = newValue;
+                  });
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: DropdownButtonFormField<int>(
+              value: selectedClassification,
+              decoration: InputDecoration(
+                labelText: 'Classification',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              items: Classification.values.map((Classification item) {
+                return DropdownMenuItem<int>(
+                  value: item.id,
+                  child: Text(item.getLabel(ref)),
+                );
+              }).toList(),
+              onChanged: (int? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedClassification = newValue;
+                  });
+                }
+              },
+            ),
+          ),
         ]),
         const SizedBox(height: 5),
         _buildRow([
@@ -490,33 +532,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter $label';
-        }
-        return null;
-      },
-    );
-  }
-
-  // Dropdown Field widget
-  Widget _buildDropdownField(String label, List<String> options,
-      {required String value, required Function(String?) onChanged}) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-      items: options.map((option) {
-        return DropdownMenuItem(
-          value: option,
-          child: Text(option),
-        );
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please select $label';
         }
         return null;
       },

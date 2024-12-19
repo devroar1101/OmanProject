@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart'; // Import to check platform
 class AuthNotifier extends StateNotifier<AuthState> {
   final Ref ref; // Add reference to Ref for accessing other providers
 
-  AuthNotifier(this.ref) : super(AuthState(selectedLanguage: 'en')) {
+  AuthNotifier(this.ref) : super(AuthState()) {
     _initialize(); // Initialize the authentication state
   }
 
@@ -24,7 +24,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Load authentication state from SharedPreferences
   Future<void> _loadAuthState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final savedLanguage = prefs.getString('selectedLanguage') ?? 'en';
+    final savedLanguage = prefs.getString('selectedLanguage') ?? 'ar';
     final savedToken = prefs.getString('accessToken');
     final isAuthenticated = savedToken != null;
 
