@@ -128,41 +128,49 @@ class _DepartmentMasterScreenState
     return Scaffold(
       body: Column(
         children: [
-          DepartmentSearchForm(
-            onSearch: onSearch,
-          ),
-          if (departments.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? departments.where((department) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          department.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          department.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      final matchesCode = searchCode.isEmpty ||
-                          department.code
-                              .toLowerCase()
-                              .contains(searchCode.toLowerCase());
-                      final matchesDg = searchDG.isEmpty ||
-                          department.dgId.toString() == searchDG;
-                      return matchesArabic &&
-                          matchesEnglish &&
-                          matchesCode &&
-                          matchesDg; //&& matchesDg;
-                    }).length
-                  : departments.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ), // Search form widget
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: DepartmentSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? departments.where((department) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            department.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            department.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        final matchesCode = searchCode.isEmpty ||
+                            department.code
+                                .toLowerCase()
+                                .contains(searchCode.toLowerCase());
+                        final matchesDg = searchDG.isEmpty ||
+                            department.dgId.toString() == searchDG;
+                        return matchesArabic &&
+                            matchesEnglish &&
+                            matchesCode &&
+                            matchesDg; //&& matchesDg;
+                      }).length
+                    : departments.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
+          ), // Search form widget
+
           if (departments.isEmpty)
             const Center(child: Text('No items found'))
           else

@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
-import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
-import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 
 class UsersSearchForm extends ConsumerStatefulWidget {
-  const UsersSearchForm({super.key});
+  const UsersSearchForm({super.key, required this.onSearch});
+
+  final Function(String,String,String,String,String)onSearch;
 
   @override
   _UsersSearchFormState createState() => _UsersSearchFormState();
@@ -20,6 +20,10 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
+  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Department>> departmentOptions = [];
+  List<SelectOption<SectionMaster>> sectionOptions = [];
+
   String? _selectedDGValue = '';
   String? _selectedDepartmentValue = '';
   String? _selectedSectionValue = '';
@@ -27,6 +31,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   void _resetFields() {
     _loginIdController.clear();
     _nameController.clear();
+    widget.onSearch('','','','','',);
     setState(() {
       _selectedDGValue = '';
       _selectedDepartmentValue = '';
@@ -37,6 +42,10 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   void _handleSearch() {
     String loginId = _loginIdController.text;
     String name = _nameController.text;
+    String dg = _selectedDGValue!;
+    String department = _selectedDepartmentValue!;
+    String section = _selectedSectionValue!;
+    widget.onSearch(loginId,name,dg,department,section);
 
     print('Search triggered with:');
     print('Login ID: $loginId');
@@ -50,17 +59,6 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   Widget build(BuildContext context) {
     final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
-
-    final departmentOptionsAsyncValue = _selectedDGValue!.isNotEmpty
-        ? ref.watch(departmentOptionsProvider(_selectedDGValue))
-        : const AsyncValue<List<SelectOption<Department>>>.data([]);
-
-    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
-    final sectionOptionsAsyncValue = _selectedDepartmentValue != null
-        ? ref.watch(sectionOptionsProvider(_selectedDepartmentValue!))
-        : const AsyncValue<List<SelectOption<SectionMaster>>>.data([]);
-
-    final sectionOptions = sectionOptionsAsyncValue.asData?.value ?? [];
 
     return Card(
       elevation: 4.0,
@@ -110,8 +108,9 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                     options: dgOptions,
                     onChanged: (dg, selectedOption) {
                       setState(() {
+                       departmentOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<Department>>()?? [];
                         _selectedDGValue = dg.id.toString();
-                        print('11dg: $_selectedDGValue');
                         _selectedDepartmentValue = '';
                         _selectedSectionValue = '';
                       });
@@ -126,8 +125,11 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 Expanded(
                   child: SelectField<Department>(
                     options: departmentOptions,
+                    key: ValueKey(departmentOptions),
                     onChanged: (department, selectedOption) {
                       setState(() {
+                        sectionOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<SectionMaster>>()?? [];
                         _selectedDepartmentValue = department.id.toString();
                         _selectedSectionValue = '';
                       });
@@ -142,6 +144,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 Expanded(
                   child: SelectField<SectionMaster>(
                     options: sectionOptions,
+                    key: ValueKey(sectionOptions),
                     onChanged: (section, selectedOption) {
                       setState(() {
                         _selectedSectionValue = section.sectionId.toString();

@@ -131,14 +131,14 @@ class _CustomSidebarState extends State<CustomSidebar> {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     return Container(
-      margin: const EdgeInsets.all(16), // Detached sidebar with margin
+      margin:  EdgeInsets.only(top: 16,bottom: 16 , left: isRTL ? 8 :16 , right: isRTL ?16:8 ), // Detached sidebar with margin
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8), // Lighter background
+        color: const Color.fromARGB(200, 236, 234, 234).withOpacity(0.8), // Lighter background
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
-            blurRadius: 10,
+            blurRadius: 5,
             offset: const Offset(2, 4),
           ),
         ],

@@ -118,32 +118,39 @@ class _LetterSubjectMasterScreenState
     return Scaffold(
       body: Column(
         children: [
-          LetterSubjectSearchForm(
-            onSearch: onSearch,
+          const SizedBox(width: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: LetterSubjectSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? letterSubjects.where((singleSubject) {
+                        final matchesArabic = searchSubject.isEmpty ||
+                            singleSubject.subject
+                                .toLowerCase()
+                                .contains(searchSubject.toLowerCase());
+                        final matchesEnglish = searchTenderNumber.isEmpty ||
+                            singleSubject.tenderNumber
+                                .toLowerCase()
+                                .contains(searchTenderNumber.toLowerCase());
+                        return matchesArabic && matchesEnglish;
+                      }).length
+                    : letterSubjects.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (letterSubjects.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? letterSubjects.where((singleSubject) {
-                      final matchesArabic = searchSubject.isEmpty ||
-                          singleSubject.subject
-                              .toLowerCase()
-                              .contains(searchSubject.toLowerCase());
-                      final matchesEnglish = searchTenderNumber.isEmpty ||
-                          singleSubject.tenderNumber
-                              .toLowerCase()
-                              .contains(searchTenderNumber.toLowerCase());
-                      return matchesArabic && matchesEnglish;
-                    }).length
-                  : letterSubjects.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
           if (letterSubjects.isEmpty)
             const Center(child: Text('No items found'))
           else

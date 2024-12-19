@@ -110,32 +110,39 @@ class _ListMasterItemHomeState extends ConsumerState<ListMasterItemHome> {
       ),
       body: Column(
         children: [
-          ListMasterItemSearchForm(
-            onSearch: onSearch,
+          Row(
+            children: [
+              
+              Expanded(
+                child: ListMasterItemSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? listMasterItems.where((singlelistMaster) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            singlelistMaster.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            singlelistMaster.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        return matchesArabic && matchesEnglish;
+                      }).length
+                    : listMasterItems.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (listMasterItems.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? listMasterItems.where((singlelistMaster) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          singlelistMaster.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          singlelistMaster.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      return matchesArabic && matchesEnglish;
-                    }).length
-                  : listMasterItems.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
           if (listMasterItems.isEmpty)
             const Center(child: Text('No items found'))
           else

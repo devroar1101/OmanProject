@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
-import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
-import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'dart:io';
 
 class AddUserMasterScreen extends ConsumerStatefulWidget {
-  const AddUserMasterScreen({super.key});
+  const AddUserMasterScreen({super.key, this.currentUser});
+
+  final UserMaster? currentUser;
 
   @override
   _AddUserMasterScreenState createState() => _AddUserMasterScreenState();
@@ -58,6 +59,10 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
   final _emailController = TextEditingController();
   final _officeNumberController = TextEditingController();
   final _nameController = TextEditingController();
+
+   List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Department>> departmentOptions = [];
+  List<SelectOption<SectionMaster>> sectionOptions = [];
 
   String? _selectedDesignation;
   String? _selectedAuthMode;
@@ -168,19 +173,8 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
 
   Widget _buildDetailsTab() {
     final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
-    final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
+    dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
-    final departmentOptionsAsyncValue = _selectedDG != null
-        ? ref.watch(departmentOptionsProvider('11'))
-        : const AsyncValue<List<SelectOption<Department>>>.data([]);
-
-    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
-
-    final sectionOptionsAsyncValue = _selectedDepartment != null
-        ? ref.watch(sectionOptionsProvider('13'))
-        : const AsyncValue<List<SelectOption<SectionMaster>>>.data([]);
-
-    final sectionOptions = sectionOptionsAsyncValue.asData?.value ?? [];
 
     return SingleChildScrollView(
       child: Padding(
@@ -215,6 +209,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: Column(
                       children: [
+                        
                         _buildTextField(
                           controller: _nameController,
                           label: 'Name',
@@ -284,8 +279,14 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<DgMaster>(
                       options: dgOptions,
-                      onChanged: (dg, selectedOption) =>
-                          setState(() => _selectedDG = dg.id.toString()),
+                      onChanged: (dg, selectedOption){
+                        setState(() {
+                          departmentOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<Department>>()?? [];
+                          _selectedDepartment = '';
+                          _selectedDG = dg.id.toString();
+                        });
+                      },
                       hint: 'Select DG',
                     ),
                   ),
@@ -297,8 +298,15 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<Department>(
                       options: departmentOptions,
-                      onChanged: (dept, selectedOption) => setState(
-                          () => _selectedDepartment = dept.id.toString()),
+                      key: ValueKey(departmentOptions),
+                      onChanged: (dept, selectedOption) {
+                        setState(() {
+                          sectionOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<SectionMaster>>()?? [];
+                          _selectedSection = '';
+                          _selectedDepartment = dept.id.toString();
+                        });
+                      },
                       hint: 'Select Department',
                     ),
                   ),
@@ -306,8 +314,12 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<SectionMaster>(
                       options: sectionOptions,
-                      onChanged: (section, selectedOption) => setState(() =>
-                          _selectedSection = section.sectionId.toString()),
+                      key: ValueKey(sectionOptions),
+                      onChanged: (section, selectedOption) {
+                        setState(() {
+                          _selectedSection = section.sectionId.toString();
+                        });
+                      },
                       hint: 'Select Section',
                     ),
                   ),

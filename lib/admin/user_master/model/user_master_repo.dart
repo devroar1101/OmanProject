@@ -48,7 +48,10 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
             isActive: true,
             email: email,
             roleName: 'name',
-            objectId: 'das-da'),
+            objectId: 'das-da',
+            departmentId: departmentId,
+            sectionId: sectionId,
+            dgId: dgId),
         ...state
       ];
     } catch (e) {

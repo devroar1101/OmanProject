@@ -121,42 +121,53 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
     return Scaffold(
       body: Column(
         children: [
-          DgMasterSearchForm(
-            onSearch: onSearch,
+          const SizedBox(height: 8.0),
+          // Combine DgMasterSearchForm and Pagination in a single row
+          Row(crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: DgMasterSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(
+                  width: 8.0), // Add spacing between form and pagination
+              Pagination(
+                totalItems: search
+                    ? dgMasters.where((dgMaster) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            dgMaster.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            dgMaster.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        final matchesCode = searchCode.isEmpty ||
+                            dgMaster.code
+                                .toLowerCase()
+                                .contains(searchCode.toLowerCase());
+                        return matchesArabic && matchesEnglish && matchesCode;
+                      }).length
+                    : dgMasters.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (dgMasters.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? dgMasters.where((dgMaster) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          dgMaster.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          dgMaster.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      final matchesCode = searchCode.isEmpty ||
-                          dgMaster.code
-                              .toLowerCase()
-                              .contains(searchCode.toLowerCase());
-                      return matchesArabic && matchesEnglish && matchesCode;
-                    }).length
-                  : dgMasters.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
+          
           if (dgMasters.isEmpty)
             const Center(child: Text('No items found'))
           else
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 10,
+              shadowColor: Colors.grey.withOpacity(0.3),
                 child: DisplayDetails(
                   headers: const ['Code', 'Name Arabic', 'Name English'],
                   data: const ['code', 'nameArabic', 'nameEnglish'],

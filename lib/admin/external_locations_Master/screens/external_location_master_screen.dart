@@ -93,32 +93,39 @@ class _ExternalLocationMasterScreenState
     return Scaffold(
       body: Column(
         children: [
-          ExternalLocationMasterSearchForm(
-            onSearch: onSearch,
+          const SizedBox(width: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: ExternalLocationMasterSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? externalLocations.where((externalLocation) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            externalLocation.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            externalLocation.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        return matchesArabic && matchesEnglish;
+                      }).length
+                    : externalLocations.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (externalLocations.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? externalLocations.where((externalLocation) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          externalLocation.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          externalLocation.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      return matchesArabic && matchesEnglish;
-                    }).length
-                  : externalLocations.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
           if (externalLocations.isEmpty)
             const Center(child: Text('No items found'))
           else
