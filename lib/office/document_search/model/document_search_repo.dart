@@ -1,44 +1,49 @@
-
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/office/document_search/model/document_search.dart';
 
-class DocumentSearchRepository{
-   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://eofficetbdevdal.cloutics.net/api/JobWorkflowQueries',
-    headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json-patch+json',
-    },
-  ));
+final DocumentSearchRepositoryProvider =
+    StateNotifierProvider<DocumentSearchRepository, List<DocumentSearch>>((ref) {
+  return DocumentSearchRepository(ref);
+});
 
+class DocumentSearchRepository extends StateNotifier<List<DocumentSearch>> {
+  DocumentSearchRepository(this.ref) : super([]);
+  final Ref ref;
+
+  /// Fetch List of Document Searches
   Future<List<DocumentSearch>> fetchListDocumentSearch({
-    String? userObjectId,
     int pageSize = 15,
     int pageNumber = 1,
-  }) async{
+  }) async {
+    final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-    'userObjectId': userObjectId,
-    'paginationDetail': {
-      'pageSize': pageSize,
-      'pageNumber': pageNumber,
-    }};
+      'paginationDetail': {
+        'pageSize': pageSize,
+        'pageNumber': pageNumber,
+      }
+    };
     try {
-      final response = await _dio.post(
-        '/SearchAndListDocumentLetter',
+      final response = await dio.post(
+        '/JobFlow/SearchandListDocumentSearch',
         data: requestBody,
       );
+
       // Check if the response is successful
       if (response.statusCode == 200) {
-        List data = response.data as List;
-        List<DocumentSearch> listDocumentSearch = data.map((item) => DocumentSearch.fromMap(item)).toList();
-
-        return listDocumentSearch;
+        final List<dynamic> data = response.data as List;
+        state = data
+            .map((item) => DocumentSearch.fromMap(item as Map<String, dynamic>))
+            .toList();
       } else {
-        throw Exception('Failed to load Document Search');
+        throw Exception('Failed to load Document Searches');
       }
     } catch (e) {
       // Handle any errors during the request
-      throw Exception('Error occurred while fetching Document Search: $e');
+      throw Exception('Error occurred while fetching Document Searches: $e');
     }
+    return state;
   }
+
+  /// Additional methods (e.g., add, update, delete) can be implemented here
 }

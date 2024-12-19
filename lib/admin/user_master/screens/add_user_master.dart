@@ -175,6 +175,21 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
     final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
+    // Assign initial values
+  if (widget.currentUser != null) {
+    _nameController.text = widget.currentUser!.name ?? '';
+    _displayNameController.text = widget.currentUser!.systemName ?? '';
+    // _loginIdController.text = widget.currentUser!.loginId ?? '';
+    _emailController.text = widget.currentUser!.email ?? '';
+    // _officeNumberController.text = widget.currentUser!. ?? '';
+    // _selectedAuthMode = widget.currentUser!.authMode;
+    // _selectedRole = widget.currentUser!.role;
+    // _selectedDG = widget.currentUser!.dgName ?? '';
+    // _selectedDepartment = widget.currentUser!.departmentName ?? '';
+    // _selectedSection = widget.currentUser!.sectionName ?? '' ;
+  }
+
+
 
     return SingleChildScrollView(
       child: Padding(
@@ -279,6 +294,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: SelectField<DgMaster>(
                       options: dgOptions,
+                      initialValue: widget.currentUser!.dgName,
                       onChanged: (dg, selectedOption){
                         setState(() {
                           departmentOptions = selectedOption.childOptions
@@ -297,6 +313,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                 children: [
                   Expanded(
                     child: SelectField<Department>(
+                      initialValue: widget.currentUser!.departmentName,
                       options: departmentOptions,
                       key: ValueKey(departmentOptions),
                       onChanged: (dept, selectedOption) {
@@ -313,6 +330,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: SelectField<SectionMaster>(
+                      initialValue: widget.currentUser!.sectionName,
                       options: sectionOptions,
                       key: ValueKey(sectionOptions),
                       onChanged: (section, selectedOption) {

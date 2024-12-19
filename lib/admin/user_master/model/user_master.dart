@@ -14,6 +14,8 @@ class UserMaster {
   int dgId;
   int departmentId;
   int sectionId;
+  String loginId;
+
   
 
   UserMaster({
@@ -32,6 +34,7 @@ class UserMaster {
     required this.dgId,
     required this.departmentId,
     required this.sectionId,
+    required this.loginId,
    
   });
 
@@ -53,6 +56,7 @@ class UserMaster {
       dgId: map['dgId'] ?? 0,
       departmentId: map['departmentId'] ?? 0,
       sectionId: map['sectionId'] ?? 0,
+      loginId: map['loginId'] ?? '',
     
       
     );
