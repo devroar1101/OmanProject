@@ -10,50 +10,46 @@ class LetterIndex extends StatefulWidget {
 }
 
 class _LetterIndexState extends State<LetterIndex> {
-  final bool _isLoading = false;
   List<String> scanDocuments = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator()) // Show loading indicator
-          : Row(
-              children: [
-                // Left Side - ScanIndexFormIndex widget (50% width)
-                Expanded(
-                  flex: 1,
-                  child: SingleChildScrollView(
+      body: Row(
+        children: [
+          // Left Side - ScanIndexFormIndex widget (50% width)
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: IntrinsicHeight(
+                  child: Card(
+                    color: Colors.grey[200],
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: MediaQuery.of(context).size.height,
-                        ),
-                        child: IntrinsicHeight(
-                          child: LetterForm(
-                            scanDocumnets: scanDocuments,
-                          ),
-                        ),
+                      child: LetterForm(
+                        scanDocumnets: scanDocuments,
                       ),
                     ),
                   ),
                 ),
-                // Right Side - Empty Space (50% width)
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: Colors.white,
-                    child: Scanner(
-                      scanDocumnets: (scanDocuments) => setState(() {
-                        this.scanDocuments = scanDocuments;
-                      }),
-                    ), // Optional: Set to match your design
-                  ),
-                ),
-              ],
+              ),
             ),
+          ),
+          // Right Side - Empty Space (50% width)
+          Expanded(
+            flex: 1,
+            child: Scanner(
+              scanDocumnets: (scanDocuments) => setState(() {
+                this.scanDocuments = scanDocuments;
+              }),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

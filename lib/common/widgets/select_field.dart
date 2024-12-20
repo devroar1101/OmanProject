@@ -124,30 +124,35 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                                   style: TextStyle(color: Colors.grey)),
                             ),
                           )
-                        : ListView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: filteredOptions.length,
-                            itemBuilder: (context, index) {
-                              final option = filteredOptions[index];
+                        : SizedBox(
+                            height: 100,
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: filteredOptions.length,
+                              itemBuilder: (context, index) {
+                                final option = filteredOptions[index];
 
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _searchController.text = option.displayName;
-                                    widget.selectedOption = option.key;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _searchController.text =
+                                          option.displayName;
+                                      widget.selectedOption = option.key;
 
-                                    filteredOptions = widget.options;
-                                  });
-                                  widget.onChanged(option.value, option);
-                                  _removeOverlay();
-                                },
-                                child: ListTile(
-                                  selected: option.key == widget.selectedOption,
-                                  title: Text(option.displayName),
-                                ),
-                              );
-                            },
+                                      filteredOptions = widget.options;
+                                    });
+                                    widget.onChanged(option.value, option);
+                                    _removeOverlay();
+                                  },
+                                  child: ListTile(
+                                    selected:
+                                        option.key == widget.selectedOption,
+                                    title: Text(option.displayName),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                   ),
                 ),
