@@ -60,7 +60,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
   final _officeNumberController = TextEditingController();
   final _nameController = TextEditingController();
 
-   List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<DgMaster>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
   List<SelectOption<SectionMaster>> sectionOptions = [];
 
@@ -224,7 +224,6 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                   Expanded(
                     child: Column(
                       children: [
-                        
                         _buildTextField(
                           controller: _nameController,
                           label: 'Name',
@@ -298,7 +297,8 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                       onChanged: (dg, selectedOption){
                         setState(() {
                           departmentOptions = selectedOption.childOptions
-                          ?.cast<SelectOption<Department>>()?? [];
+                                  ?.cast<SelectOption<Department>>() ??
+                              [];
                           _selectedDepartment = '';
                           _selectedDG = dg.id.toString();
                         });
@@ -319,7 +319,8 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
                       onChanged: (dept, selectedOption) {
                         setState(() {
                           sectionOptions = selectedOption.childOptions
-                          ?.cast<SelectOption<SectionMaster>>()?? [];
+                                  ?.cast<SelectOption<SectionMaster>>() ??
+                              [];
                           _selectedSection = '';
                           _selectedDepartment = dept.id.toString();
                         });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 
+// ignore: must_be_immutable
 class DisplayDetails extends StatefulWidget {
   final List<String> headers;
   final List<String> data;
@@ -40,6 +41,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
     int headerColumns = widget.headers.length <= maxColumns
         ? widget.headers.length
         : maxColumns;
+    bool isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +150,8 @@ class _DisplayDetailsState extends State<DisplayDetails>
                       activeRowIndex == rowIndex &&
                       widget.isSelected.toString() == id.toString())
                     Positioned(
-                      right: 16,
+                      right: isRtl ? null : 16,
+                      left: isRtl ? 16 : null,
                       top: 0,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

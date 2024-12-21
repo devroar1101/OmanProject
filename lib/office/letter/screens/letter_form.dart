@@ -9,12 +9,15 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
+import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
 
+// ignore: must_be_immutable
 class LetterForm extends ConsumerStatefulWidget {
   LetterForm({super.key, this.scanDocumnets});
 
@@ -52,11 +55,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   DateTime? _dateOnTheLetter;
   DateTime? _receviedDate;
   final int currentUserId = 164;
-
   int selectedYear = 2024;
-  int? _selectedCabinet;
+  int? _selectedCabinet = 2;
   final String _selectedCabinetName = '';
-  int? _selectedFolder;
+  int? _selectedFolder = 2;
   int? _selectedDG;
   int? _selectedDepartment;
   int? _selectedUser;
@@ -74,13 +76,14 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   List<SelectOption<DgMaster>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
   List<SelectOption<ExternalLocation>> locationOptions = [];
-
+  List<SelectOption<UserMaster>> usersOptions = [];
+  List<SelectOption<UserMaster>> filteredUserOption = [];
   void save() {
     if (_formKey.currentState?.validate() ?? false) {
       final response = LetterUtils(
               actionToBeTaken: _actionToBeController.text,
               cabinet: _selectedCabinet,
-              classification: 1, //replace
+              classification: selectedClassification, //replace
               comments: _summaryController.text,
               createdBy: currentUserId,
               dateOnTheLetter: _dateOnTheLetter,
@@ -89,7 +92,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               folder: _selectedFolder,
               fromUser: currentUserId,
               locationId: _selectedLocation,
-              priority: 0, //replace
+              priority: selectedPriority, //replace
               receivedDate: _receviedDate,
               reference: _referenceController.text,
               sendTo: _sendToController.text,
@@ -144,61 +147,80 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+        _buildRow([
+          Row(
+            children: [
+              SizedBox(
+                width: 100, // Provide more space for the dropdown
+                child: DropdownButtonFormField<int>(
+                  value: selectedYear,
+                  decoration: InputDecoration(
+                    labelText: 'Year',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  items: List.generate(
+                    61, // Total range: 30 years before + current year + 30 years after
+                    (index) {
+                      int year = DateTime.now().year - 30 + index;
+                      return DropdownMenuItem(
+                        value: year,
+                        child: Text(year.toString()),
+                      );
+                    },
+                  ),
+                  onChanged: (int? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        selectedYear = newValue;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select Year';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(
+                  width: 20), // Add spacing between dropdown and card
+              Expanded(
+                child: Card(
+                  elevation:
+                      3, // Increased elevation for a more prominent shadow
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Smoother corners
+                  ),
+                  color: Colors.blue.shade50, // Light blue background
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 6.0, horizontal: 8.0), // Generous padding
+                    child: Center(
+                      // Center-align the text
+                      child: Text(
+                        _referenceController.text,
+                        style: const TextStyle(
+                          fontSize: 18, // Larger font size
+                          fontWeight: FontWeight.bold, // Bold text
+                          // Accent color for the text
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(6.0),
-            child: Text(
-              _referenceController.text,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ),
+        ]),
         const SizedBox(
           height: 12,
         ),
         Row(
           children: [
-            Expanded(
-              child: DropdownButtonFormField<int>(
-                value: selectedYear,
-                decoration: InputDecoration(
-                  labelText: 'Year',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                items: List.generate(
-                  61, // Total range: 30 years before + current year + 30 years after
-                  (index) {
-                    int year = DateTime.now().year - 30 + index;
-                    return DropdownMenuItem(
-                      value: year,
-                      child: Text(year.toString()),
-                    );
-                  },
-                ),
-                onChanged: (int? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      selectedYear = newValue;
-                    });
-                  }
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select Year';
-                  }
-                  return null;
-                },
-              ),
-            ),
-
-            const SizedBox(width: 5),
-            // Created Date TextFormField with Calendar Icon
             Expanded(
               child: TextFormField(
                 readOnly: true, // Disable manual input
@@ -239,6 +261,30 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 controller: TextEditingController(
                   text: _dateOnTheLetter != null
                       ? DateFormat('yyyy-MM-dd').format(_dateOnTheLetter!)
+                      : '', // Display empty string if null
+                ),
+              ),
+            ),
+            const SizedBox(width: 5),
+            // Date on the Letter TextFormField with Calendar Icon
+            Expanded(
+              child: TextFormField(
+                readOnly: true, // Disable manual input
+                decoration: InputDecoration(
+                  labelText: 'Recevied Date',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () => selectDate(
+                      context,
+                      _receviedDate ?? DateTime.now(),
+                      (picked) => setState(() => _receviedDate = picked),
+                    ),
+                  ),
+                  border: const OutlineInputBorder(),
+                ),
+                controller: TextEditingController(
+                  text: _receviedDate != null
+                      ? DateFormat('yyyy-MM-dd').format(_receviedDate!)
                       : '', // Display empty string if null
                 ),
               ),
@@ -379,8 +425,28 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     final dgAsyncValue = ref.watch(dgOptionsProvider(true));
     dgOptions = dgAsyncValue.asData?.value ?? [];
 
+    if (_selectedDG != null) {
+      final userAsyncValue = ref.watch(userOptionsProvider);
+      if (usersOptions.isEmpty) {
+        usersOptions = userAsyncValue.asData?.value ?? [];
+      }
+
+      filteredUserOption = usersOptions.where((option) {
+        bool matchesDG =
+            (_selectedDG == null || option.filter == _selectedDG.toString());
+
+        bool matchesDepartment = (_selectedDepartment == null ||
+            option.filter1 == _selectedDepartment.toString());
+
+        return matchesDG && matchesDepartment;
+      }).toList();
+    } else {
+      filteredUserOption = [];
+    }
+
     return Column(
       children: [
+        const SizedBox(height: 5),
         _buildRow([
           Expanded(
             child: DropdownButtonFormField<int>(
@@ -433,7 +499,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ]),
         const SizedBox(height: 5),
         _buildRow([
-          _buildTextField('Received From:',
+          _buildTextField('Tender Status:',
               controller: _tenderNumberBeController),
           _buildTextField('Tender Number:'),
         ]),
@@ -470,7 +536,20 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           ),
         ]),
         const SizedBox(height: 5),
-        _buildTextField('User:'),
+        _buildRow([
+          Expanded(
+            child: SelectField<UserMaster>(
+              options: filteredUserOption,
+              key: ValueKey(filteredUserOption),
+              onChanged: (user, selectedOption) {
+                _selectedUser = user.id;
+              },
+              hint: departmentOptions.isNotEmpty
+                  ? 'Select User'
+                  : 'No User Available',
+            ),
+          ),
+        ]),
         const SizedBox(height: 5),
 
         // Summary and Action to be Taken

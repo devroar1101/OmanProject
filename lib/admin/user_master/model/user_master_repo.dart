@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final UserMasterRepositoryProvider =
@@ -32,8 +34,7 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
     };
 
     try {
-      final response = await dio.post('/User/Create', data: requestBody);
-      print(requestBody);
+      await dio.post('/User/Create', data: requestBody);
 
       state = [
         UserMaster(
@@ -42,7 +43,7 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
             name: name,
             systemName: name,
             designationName: '',
-            dgName: 'test DG',
+            dgName: 'test User',
             departmentName: 'test Depat',
             sectionName: 'Test Section',
             isActive: true,
@@ -93,19 +94,32 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
     return state;
   }
 
-  // /// Search and filter method for Departments based on optional nameArabic and nameEnglish
-  // Future<List<UserMaster>> searchAndFilter(List<UserMaster> users,
-  //     {String? nameArabic, String? nameEnglish}) async {
-  //   // Filter the list based on the provided nameArabic and nameEnglish filters
-  //   var filteredList = users.where((UserMaster) {
-  //     bool matchesArabic =
-  //         nameArabic == null || department.departmentNameArabic.contains(nameArabic);
-  //     bool matchesEnglish =
-  //         nameEnglish == null || department.departmentNameEnglish.contains(nameEnglish);
+  Future<List<SelectOption<UserMaster>>> getUserOptions() async {
+    List<UserMaster> userList = state;
 
-  //     return matchesArabic && matchesEnglish;
-  //   }).toList();
+    // Fetch userList if not already available
+    if (userList.isEmpty) {
+      userList = await fetchUsers();
+    }
 
-  //   return filteredList;
-  // }
+    // Build User Options with or without child options
+    final List<SelectOption<UserMaster>> options = await Future.wait(
+      userList.map((user) async {
+        return SelectOption<UserMaster>(
+          displayName: user.name,
+          key: user.id.toString(),
+          value: user,
+          filter: user.dgId.toString(),
+          filter1: user.departmentId.toString(),
+        );
+      }).toList(),
+    );
+
+    return options;
+  }
 }
+
+final userOptionsProvider =
+    FutureProvider<List<SelectOption<UserMaster>>>((ref) async {
+  return ref.read(UserMasterRepositoryProvider.notifier).getUserOptions();
+});
