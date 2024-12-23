@@ -64,54 +64,50 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
     });
   }
 
-    void onSearch(String loginId, String name, String dg, String department,
-        String section) {
-      setState(() {
-        searchLoginId = loginId;
-        searchName = name;
-        searchDG = dg;
-        searchDepartment = department;
-        searchSection = section;
-        pageNumber = 1;
-        pageSize = 15; // Reset to first page on new search
-        search = true;
-      });
+  void onSearch(String loginId, String name, String dg, String department,
+      String section) {
+    setState(() {
+      searchLoginId = loginId;
+      searchName = name;
+      searchDG = dg;
+      searchDepartment = department;
+      searchSection = section;
+      pageNumber = 1;
+      pageSize = 15; // Reset to first page on new search
+      search = true;
+    });
+  }
+
+  List<UserMaster> _applyFiltersAndPagination(List<UserMaster> users) {
+    if (users.isEmpty) {
+      return [];
     }
 
-    List<UserMaster> _applyFiltersAndPagination(List<UserMaster> users) {
-      if (users.isEmpty) {
-        return [];
-      }
+    List<UserMaster> filteredList = users.where((singleUser) {
+      // final matchesLoginId = searchLoginId.isEmpty ||
+      //     (singleUser.loginId.toLowerCase())
+      // .contains(searchNameArabic.toLowerCase());
+      final matchesName = searchName.isEmpty ||
+          (singleUser.name.toLowerCase()).contains(searchName.toLowerCase());
+      final matchesDg =
+          searchDG.isEmpty || singleUser.dgId.toString() == searchDG;
+      final matchesDepartment = searchDepartment.isEmpty ||
+          singleUser.departmentId.toString() == searchDepartment;
+      final matchesSection = searchSection.isEmpty ||
+          singleUser.sectionId.toString() == searchSection;
+      return matchesDg &&
+          matchesSection &&
+          matchesDepartment &&
+          matchesName; // && matchesDg;
+    }).toList();
+    print('filters count : ${filteredList.length}');
+    // Apply pagination
+    int startIndex = (pageNumber - 1) * pageSize;
+    int endIndex = startIndex + pageSize;
+    endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
 
-      List<UserMaster> filteredList = users.where((singleUser) {
-        // final matchesLoginId = searchLoginId.isEmpty ||
-        //     (singleUser.loginId.toLowerCase())
-        // .contains(searchNameArabic.toLowerCase());
-        final matchesName = searchName.isEmpty ||
-            (singleUser.name.toLowerCase()).contains(searchName.toLowerCase());
-        final matchesDg = searchDG.isEmpty ||
-            singleUser.dgId.toString() == searchDG;
-        final matchesDepartment = searchDepartment.isEmpty ||
-            singleUser.departmentId
-                .toString() == searchDepartment;
-        final matchesSection = searchSection.isEmpty ||
-            singleUser.sectionId
-                .toString() == searchSection;
-        return matchesDg &&
-            matchesSection &&
-            matchesDepartment &&
-            matchesName; // && matchesDg;
-      }).toList();
-      print('filters count : ${filteredList.length}');
-      // Apply pagination
-      int startIndex = (pageNumber - 1) * pageSize;
-      int endIndex = startIndex + pageSize;
-      endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
-
-      return filteredList.sublist(startIndex, endIndex);
-    }
-
-    
+    return filteredList.sublist(startIndex, endIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +118,8 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
       {
         "button": Icons.edit,
         "function": (int id) {
-          final UserMaster currentUser = users.firstWhere((user) => user.id == id);
+          final UserMaster currentUser =
+              users.firstWhere((user) => user.id == id);
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -133,25 +130,19 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
           );
         },
       },
-      {
-        "button": Icons.delete,
-        "function": (int id) {
-          
-        }
-      },
+      {"button": Icons.delete, "function": (int id) {}},
     ];
 
     return Scaffold(
       body: Column(
         children: [
-           UsersSearchForm(
+          UsersSearchForm(
             onSearch: onSearch,
           ),
           if (users.isNotEmpty)
             Pagination(
-              totalItems: search ?
-                 filteredAndPaginatedList.length : users.length,
-                  
+              totalItems:
+                  search ? filteredAndPaginatedList.length : users.length,
               initialPageSize: pageSize,
               onPageChange: (pageNo, newPageSize) {
                 setState(() {
@@ -186,7 +177,7 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
                   details: UserMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id) {},
+                  onTap: (int id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

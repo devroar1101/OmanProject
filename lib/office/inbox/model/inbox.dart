@@ -34,7 +34,7 @@ class LetterInbox {
       'subject': subject,
       'locationNameArabic': locationNameArabic,
       'locationNameEnglish': locationNameEnglish,
-      'letterObjectId': letterObjectId,
+      'objectId': letterObjectId,
     };
   }
 }

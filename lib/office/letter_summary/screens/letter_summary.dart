@@ -1,49 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
-import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary.dart';
-import 'package:tenderboard/office/scan_document_summary/model/scan_document_summary_repo.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_assign.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_close.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_followUp.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_reply.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/widgets/summary_suspent.dart';
+import 'package:tenderboard/office/letter/model/letter.dart';
+import 'package:tenderboard/office/letter/model/letter_action.dart';
+import 'package:tenderboard/office/letter/model/letter_attachment.dart';
+import 'package:tenderboard/office/letter/screens/letter_form.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_assign.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_close.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_followUp.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_reply.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_suspent.dart';
 
-class ScanDocumentSummaryScreen extends StatefulWidget {
-  final String scanDocumentObjectId;
-  const ScanDocumentSummaryScreen(this.scanDocumentObjectId, {super.key});
+class LetterSummary extends StatefulWidget {
+  final String letterObjectId;
+  const LetterSummary(this.letterObjectId, {super.key});
 
   @override
-  _ScanDocumentSummaryScreenState createState() =>
-      _ScanDocumentSummaryScreenState();
+  _LetterSummaryState createState() => _LetterSummaryState();
 }
 
-class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
-  final ScanSummaryRepository _repository = ScanSummaryRepository();
-  ScanDocumentSummary? _singleScanIndexItem;
-  bool _isLoading = false;
+class _LetterSummaryState extends State<LetterSummary> {
   String _selectedTab = "Details";
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<void> _fetchSingleScanIndexData() async {
-    try {
-      ScanDocumentSummary? item = await _repository.fetchSingleScanSummaryItem(
-        scanDocumentObjectId: widget.scanDocumentObjectId,
-      );
-      setState(() {
-        _singleScanIndexItem = item;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Error fetching single scan index item: $e');
-    }
-  }
+  late Letter letter;
+  late LetterAction letterAction;
+  late LetterAttachment letterAttachment;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +32,6 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
         title: Row(
           children: [
             Container(
-              // width: MediaQuery.of(context).size.width * 0.5,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -111,47 +90,43 @@ class _ScanDocumentSummaryScreenState extends State<ScanDocumentSummaryScreen> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _singleScanIndexItem != null
-              ? const Center(child: Text('No data found for the given ID'))
-              : Row(
-                  children: [
-                    // Left Side - Conditional Content
-                    Expanded(
-                      flex: 1,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight: MediaQuery.of(context).size.height,
-                            ),
-                            child: IntrinsicHeight(
-                              child: _buildContent(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Right Side - Empty Space
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.grey[200], // Optional background color
-                        child: Scanner(), // Your scanner widget here
-                      ),
-                    ),
-                  ],
+      body: Row(
+        children: [
+          // Left Side - Conditional Content
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height,
+                  ),
+                  child: IntrinsicHeight(
+                    child: _buildContent(),
+                  ),
                 ),
+              ),
+            ),
+          ),
+
+          // Right Side - Empty Space
+          Expanded(
+            flex: 1,
+            child: Container(
+              color: Colors.grey[200], // Optional background color
+              child: Scanner(), // Your scanner widget here
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildContent() {
     switch (_selectedTab) {
       case "Details":
-        return const Center(child: Text("Routing Content Placeholder"));
+        return LetterForm();
       case "Routing":
         return const Center(child: Text("Routing Content Placeholder"));
       case "Attachment":

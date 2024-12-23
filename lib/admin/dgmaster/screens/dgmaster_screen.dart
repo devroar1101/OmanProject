@@ -123,7 +123,8 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
         children: [
           const SizedBox(height: 8.0),
           // Combine DgMasterSearchForm and Pagination in a single row
-          Row(crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: DgMasterSearchForm(
@@ -160,21 +161,21 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
               ),
             ],
           ),
-          
+
           if (dgMasters.isEmpty)
             const Center(child: Text('No items found'))
           else
             Expanded(
               child: Card(
                 elevation: 10,
-              shadowColor: Colors.grey.withOpacity(0.3),
+                shadowColor: Colors.grey.withOpacity(0.3),
                 child: DisplayDetails(
                   headers: const ['Code', 'Name Arabic', 'Name English'],
                   data: const ['code', 'nameArabic', 'nameEnglish'],
                   details: DgMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id) {},
+                  onTap: (int id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

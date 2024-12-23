@@ -14,7 +14,7 @@ import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
+import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
 
 class CustomSidebar extends StatefulWidget {
@@ -44,7 +44,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'CC',
         'icon': Icons.mail,
-        'navigate': const ScanDocumentSummaryScreen('121212')
+        'navigate': const LetterSummary('121212')
       },
       {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
@@ -132,9 +132,14 @@ class _CustomSidebarState extends State<CustomSidebar> {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     return Container(
-      margin:  EdgeInsets.only(top: 16,bottom: 16 , left: isRTL ? 8 :16 , right: isRTL ?16:8 ), // Detached sidebar with margin
+      margin: EdgeInsets.only(
+          top: 16,
+          bottom: 16,
+          left: isRTL ? 8 : 16,
+          right: isRTL ? 16 : 8), // Detached sidebar with margin
       decoration: BoxDecoration(
-        color: const Color.fromARGB(200, 236, 234, 234).withOpacity(0.8), // Lighter background
+        color: const Color.fromARGB(200, 236, 234, 234)
+            .withOpacity(0.8), // Lighter background
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(

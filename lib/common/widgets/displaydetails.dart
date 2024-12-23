@@ -8,7 +8,7 @@ class DisplayDetails extends StatefulWidget {
   final List<Map<String, dynamic>> details;
   final List<Map<String, dynamic>>? iconButtons; // Actions with icons
   final bool expandable;
-  final Function(int)? onTap;
+  final Function(int, {String? objectId})? onTap;
   final Function()? onLongPress;
   String isSelected;
   final String detailKey;
@@ -88,7 +88,8 @@ class _DisplayDetailsState extends State<DisplayDetails>
                   InkWell(
                     onTap: () {
                       if (widget.onTap != null) {
-                        widget.onTap!(row[widget.detailKey]);
+                        widget.onTap!(int.tryParse(id) != null ? id : 0,
+                            objectId: id);
                       }
                       setState(() {
                         activeRowIndex = null;

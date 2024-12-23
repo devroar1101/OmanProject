@@ -199,7 +199,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true,
                   iconButtons: iconButtons, // Expandable table rows
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'sectionId', // Unique key for row selection
                 ),
               ),

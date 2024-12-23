@@ -53,7 +53,7 @@ class CabinetSection extends StatelessWidget {
                 expandable: true,
                 selected: selectedCabinetId.toString(),
                 detailKey: 'id',
-                onTap: (index) {
+                onTap: (index, {objectId}) {
                   onSelectCabinet(index);
                 },
               ),

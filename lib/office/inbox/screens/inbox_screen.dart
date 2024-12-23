@@ -4,7 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
+import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
   const InboxScreen({super.key});
@@ -45,7 +45,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                       'Location (Arabic)',
                       'Location (English)',
                     ],
-                    detailKey: 'letterObjectId',
+                    detailKey: 'objectId',
                     data: const [
                       'referenceNumber',
                       'systemName',
@@ -57,15 +57,12 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                       return inboxItem.toMap();
                     }).toList(),
                     expandable: true,
-                    onTap: (int index) {
-                      final letterObjectId =
-                          inboxProvider[index].letterObjectId;
-
+                    onTap: (index, {objectId}) {
+                      print(objectId);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ScanDocumentSummaryScreen(letterObjectId!),
+                          builder: (context) => LetterSummary(objectId!),
                         ),
                       );
                     },

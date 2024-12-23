@@ -149,7 +149,7 @@ class _ExternalLocationScreenState
                   details: ExternalLocation.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'objectId',
                 ),
               ),
