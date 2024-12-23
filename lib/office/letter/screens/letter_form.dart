@@ -460,7 +460,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               items: Priority.values.map((Priority item) {
                 return DropdownMenuItem<int>(
                   value: item.id,
-                  child: Text(item.getLabel(ref)),
+                  child: Text(item.getLabel(context)),
                 );
               }).toList(),
               onChanged: (int? newValue) {
@@ -484,7 +484,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               items: Classification.values.map((Classification item) {
                 return DropdownMenuItem<int>(
                   value: item.id,
-                  child: Text(item.getLabel(ref)),
+                  child: Text(item.getLabel(context)),
                 );
               }).toList(),
               onChanged: (int? newValue) {

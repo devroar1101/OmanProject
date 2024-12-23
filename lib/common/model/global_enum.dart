@@ -15,10 +15,10 @@ enum Priority {
 
   const Priority(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
-
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
   }
 }
 
@@ -37,10 +37,10 @@ enum Classification {
   const Classification(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
-
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
   }
 }
 
@@ -72,9 +72,9 @@ enum ActionType {
   const ActionType(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
-
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
   }
 }

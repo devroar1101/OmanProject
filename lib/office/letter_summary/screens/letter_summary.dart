@@ -4,6 +4,7 @@ import 'package:tenderboard/office/letter/model/letter.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 import 'package:tenderboard/office/letter/model/letter_attachment.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
+import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
 import 'package:tenderboard/office/letter_summary/screens/widgets/summary_assign.dart';
 import 'package:tenderboard/office/letter_summary/screens/widgets/summary_close.dart';
 import 'package:tenderboard/office/letter_summary/screens/widgets/summary_followUp.dart';
@@ -95,18 +96,11 @@ class _LetterSummaryState extends State<LetterSummary> {
           // Left Side - Conditional Content
           Expanded(
             flex: 1,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height,
-                  ),
-                  child: IntrinsicHeight(
-                    child: _buildContent(),
-                  ),
-                ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
               ),
+              child: Card(elevation: 2, child: _buildContent()),
             ),
           ),
 
@@ -128,7 +122,7 @@ class _LetterSummaryState extends State<LetterSummary> {
       case "Details":
         return LetterForm();
       case "Routing":
-        return const Center(child: Text("Routing Content Placeholder"));
+        return const RoutingHistory();
       case "Attachment":
         return const Center(child: Text("Attachment Content Placeholder"));
       case "Assign Job":
