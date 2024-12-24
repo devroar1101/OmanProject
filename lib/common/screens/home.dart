@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _currentWidget = widget;
       AppscreenName = screenName;
-      if (screenName == 'Document Search') {
+      if (screenName == 'Document Search' || screenName == 'CC') {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => widget));
         _currentWidget = const Dashboard();

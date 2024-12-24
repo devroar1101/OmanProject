@@ -124,6 +124,7 @@ class LetterUtils {
               .toList() ??
           [];
 
+      print('${toUser},${scanDocuments?.length}');
       // Initialize repository container
       final repo = ProviderContainer();
 

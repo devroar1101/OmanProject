@@ -1,5 +1,5 @@
-// For encoding CSV data
 import 'dart:html' as html; // For file download on web
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
@@ -66,10 +66,9 @@ class RoutingHistory extends StatelessWidget {
       final url = html.Url.createObjectUrlFromBlob(blob);
 
       // Create an anchor element and trigger the download
-      final anchor = html.AnchorElement(href: url)
+      html.AnchorElement(href: url)
         ..setAttribute('download', 'letter_actions.csv')
         ..click();
-
       // Clean up the URL after the download is triggered
       html.Url.revokeObjectUrl(url);
 
@@ -114,7 +113,8 @@ class RoutingHistory extends StatelessWidget {
         classificationId: 3,
         priorityId: 3,
         timeStamp: DateTime.now().add(Duration(hours: 2)),
-        comments: "Forwarded to User 106",
+        comments:
+            "Effective performance management forms the backbone of a successful organization. A critical element of this process is the provision of feedback during performance reviews, which directly influences an employee's productivity, job satisfaction, and professional growth Specific and personal feedback plays a pivotal role in this scenario. It assists in clearly displaying what an employee is doing well and where they can improve, fostering a culture of continuous learning and development.",
       ),
     ];
 
@@ -143,64 +143,31 @@ class RoutingHistory extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Date Column
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    Icon(
+                      actionType.icon,
+                      color: actionType.color,
+                      size: 32,
+                    ),
                     Text(
-                      action.timeStamp != null
-                          ? DateFormat('MM/dd/yyyy')
-                              .format(action.timeStamp!.toLocal())
-                          : "No Date",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      actionType.getLabel(context),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: actionType.color,
+                          fontSize: 15),
                     ),
+                    Text(
+                        action.timeStamp != null
+                            ? DateFormat('MM/dd/yyyy')
+                                .format(action.timeStamp!.toLocal())
+                            : "No Date",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
-                SizedBox(width: 16),
-
-                // Vertical Timeline with Icon
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 2,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            actionType.icon,
-                            color: actionType.color,
-                            size: 32,
-                          ),
-                          Text(
-                            actionType.getLabel(context),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: actionType.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      height: 20,
-                      width: 2,
-                      color: Colors.grey[400],
-                    ),
-                  ],
-                ),
-                SizedBox(width: 16),
-
+                const SizedBox(width: 8),
                 // Action Details in a Card
                 Expanded(
                   child: ActionCard(
@@ -217,7 +184,6 @@ class RoutingHistory extends StatelessWidget {
   }
 }
 
-// ActionCard Widget (unchanged)
 class ActionCard extends StatelessWidget {
   final LetterAction action;
   final ActionType actionType;
@@ -226,43 +192,75 @@ class ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch priority and classification using their IDs
+    final Priority? priority = Priority.byId(action.priorityId!);
+    final Classification? classification =
+        Classification.byId(action.classificationId!);
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.start,
-          spacing: 4,
-          children: [
-            buildLabelValueColumn("From User", "${action.fromUserId ?? 'N/A'}"),
-            buildLabelValueColumn("To User", "${action.toUserId ?? 'N/A'}"),
-            buildLabelValueColumn(
-                "Classification", "${action.classificationId ?? 'N/A'}"),
-            buildLabelValueColumn("Priority", "${action.priorityId ?? 'N/A'}"),
-            if (action.comments != null && action.comments!.isNotEmpty)
-              buildLabelValueColumn("Comments", action.comments!),
-          ],
-        ),
+      child: Stack(
+        children: [
+          if (priority != null)
+            Positioned(
+                top: 0,
+                left: 0,
+                right: null,
+                child: Container(
+                  padding: const EdgeInsets.all(
+                      12), // Adjust padding for a balanced look
+                  decoration: BoxDecoration(
+                    color: priority.color,
+                    shape: BoxShape.circle, // Make the container circular
+                  ),
+                  child: Icon(
+                    priority.icon,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                )), // Classification label
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  spacing: 16,
+                  runSpacing: 8,
+                  children: [
+                    buildLabelValueColumn("From User", 'أمت السلام أمت السلام'),
+                    buildLabelValueColumn("To User",
+                        "أمت السلام أمت السلام أمت السلام أمت السلام"),
+                    if (classification != null)
+                      buildLabelValueColumn(
+                          "Classification", classification.getLabel(context)),
+                    if (action.comments != null && action.comments!.isNotEmpty)
+                      buildLabelValueColumn("Comments", action.comments!),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget buildLabelValueColumn(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$label: ",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text(value, style: TextStyle(color: Colors.black87)),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "$label:",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        Text(value,
+            style: const TextStyle(color: Colors.black87, fontSize: 14)),
+      ],
     );
   }
 }

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 enum Priority {
   normal(1, 'Normal', 'عادي', Colors.green, Icons.check),
@@ -19,6 +17,11 @@ enum Priority {
     return Directionality.of(context) == TextDirection.rtl
         ? labelArabic
         : labelEnglish;
+  }
+
+  // Static method to get a Priority by id
+  static Priority? byId(int id) {
+    return Priority.values.firstWhere((priority) => priority.id == id);
   }
 }
 
@@ -41,6 +44,11 @@ enum Classification {
     return Directionality.of(context) == TextDirection.rtl
         ? labelArabic
         : labelEnglish;
+  }
+
+  static Classification? byId(int id) {
+    return Classification.values
+        .firstWhere((classification) => classification.id == id);
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/common/widgets/load_image.dart';
-import 'package:tenderboard/office/document_search/screens/document_search_form.dart';
+import 'package:tenderboard/common/widgets/load_letter_document.dart';
+
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 
 class DocumentSearchHome extends StatefulWidget {
@@ -87,7 +87,9 @@ class _StackWithSliderState extends State<DocumentSearchHome> {
               ),
               const Expanded(
                 flex: 1,
-                child: ImageViewerScreen(),
+                child: LoadLetterDocument(
+                  objectId: '62bde539-38c0-4fc4-ae84-cc4c8d2ccc00',
+                ),
               ),
             ],
           ),

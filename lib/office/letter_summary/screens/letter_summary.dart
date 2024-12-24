@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/widgets/load_letter_document.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/letter/model/letter.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
@@ -109,7 +110,8 @@ class _LetterSummaryState extends State<LetterSummary> {
             flex: 1,
             child: Container(
               color: Colors.grey[200], // Optional background color
-              child: Scanner(), // Your scanner widget here
+              child: LoadLetterDocument(
+                  objectId: widget.letterObjectId), // Your scanner widget here
             ),
           ),
         ],
@@ -120,7 +122,9 @@ class _LetterSummaryState extends State<LetterSummary> {
   Widget _buildContent() {
     switch (_selectedTab) {
       case "Details":
-        return LetterForm();
+        return LetterForm(
+          letterObjectId: widget.letterObjectId,
+        );
       case "Routing":
         return const RoutingHistory();
       case "Attachment":
