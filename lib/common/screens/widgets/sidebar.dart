@@ -133,11 +133,6 @@ class _CustomSidebarState extends State<CustomSidebar> {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     return Container(
-      margin: EdgeInsets.only(
-          top: 16,
-          bottom: 16,
-          left: isRTL ? 8 : 16,
-          right: isRTL ? 16 : 8), // Detached sidebar with margin
       decoration: BoxDecoration(
         color: const Color.fromARGB(200, 236, 234, 234)
             .withOpacity(0.8), // Lighter background
@@ -152,8 +147,14 @@ class _CustomSidebarState extends State<CustomSidebar> {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
-        width: _isMinimized ? 70 : 220,
+        curve: Easing.legacy,
+        width: _isMinimized
+            ? isRTL
+                ? 60
+                : 50
+            : 220,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Sidebar items
             Expanded(
@@ -208,16 +209,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
               ),
             ),
             // Toggle minimize button at the bottom
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: Icon(
-                  _isMinimized
-                      ? (isRTL ? Icons.arrow_back : Icons.arrow_forward)
-                      : (isRTL ? Icons.arrow_forward : Icons.arrow_back),
-                ),
-                onPressed: _toggleMinimize,
+            IconButton(
+              icon: Icon(
+                _isMinimized ? (Icons.arrow_forward) : (Icons.arrow_back),
               ),
+              onPressed: _toggleMinimize,
             ),
           ],
         ),

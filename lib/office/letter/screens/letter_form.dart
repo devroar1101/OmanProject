@@ -125,7 +125,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           // _dateOnTheLetter = letter.dateOnTheLetter;
           // _receviedDate = letter.receivedDate;
 
-          // selectedYear = letter.year; int type
+          //selectedYear = letter.year!;
 
           _selectedCabinetName = letter.cabinetName ?? '';
 
@@ -138,10 +138,17 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           _selectedUserName = letter.systemName ?? '';
 
           _selectedLocationName = letter.locationName ?? '';
-          //  selectedPriority = letter.priority; int type
-          //selectedClassification = letter.classificationId;
+          // selectedPriority = letter.priority!;
+          //selectedClassification = letter.classificationId!;
           _selectedDirection = letter.direction ?? 'Incoming';
           _selectedDirectionType = letter.directionType ?? 'Internal';
+          cabinetOptions = [];
+          folderOptions = [];
+          dgOptions = [];
+          departmentOptions = [];
+          locationOptions = [];
+          usersOptions = [];
+          filteredUserOption = [];
         });
       }).catchError((error) {
         // Handle any errors during the fetch
@@ -400,6 +407,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               child: SelectField<Cabinet>(
                 options: cabinetOptions,
                 initialValue: _selectedCabinetName,
+                key: ValueKey(cabinetOptions),
                 onChanged: (cabinet, selectedOption) {
                   setState(() {
                     folderOptions = selectedOption.childOptions
@@ -470,6 +478,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                   return option.filter == _selectedLocationType &&
                       option.filter1!.toString() == _isNewLocation.toString();
                 }).toList(),
+                key: ValueKey(locationOptions),
                 initialValue: _selectedLocationName,
                 onChanged: (location, selectedOption) {
                   setState(() {
@@ -575,6 +584,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           Expanded(
             child: SelectField<DgMaster>(
               options: dgOptions,
+              key: ValueKey(dgOptions),
               initialValue: _selectedDGName,
               onChanged: (dg, selectedOption) {
                 setState(() {

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
-import 'package:tenderboard/office/letter_summary/model/letter_summary.dart';
+import 'package:tenderboard/office/letter_summary/model/letter_summary_result.dart';
 
 // Repository Class
 class LetterSummaryRepository {
