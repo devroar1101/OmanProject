@@ -133,7 +133,7 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
                   details: ListMaster.listToMap(filteredAndPaginatedList),
                   iconButtons: iconButtons,
                   expandable: true,
-                  onTap: (int id) {
+                  onTap: (int id, {objectId}) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -23,7 +23,6 @@ class _PaginationState extends State<Pagination> {
   late int pageSize;
   late int totalItem;
 
-
   @override
   void initState() {
     super.initState();
@@ -41,7 +40,6 @@ class _PaginationState extends State<Pagination> {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

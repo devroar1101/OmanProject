@@ -15,13 +15,15 @@ import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
+import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
 
 // ignore: must_be_immutable
 class LetterForm extends ConsumerStatefulWidget {
-  LetterForm({super.key, this.scanDocumnets});
+  LetterForm({super.key, this.scanDocumnets, this.letterObjectId});
 
   List<String>? scanDocumnets;
+  String? letterObjectId;
 
   @override
   _LetterFormState createState() => _LetterFormState();
@@ -39,6 +41,39 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   final TextEditingController _tenderNumberBeController =
       TextEditingController();
 
+  DateTime _createdDate = DateTime.now();
+  DateTime? _dateOnTheLetter;
+  DateTime? _receviedDate;
+  final int currentUserId = 164;
+  int selectedYear = 2024;
+  int? _selectedCabinet;
+  String _selectedCabinetName = '';
+  int? _selectedFolder;
+  String _selectedFolderName = '';
+  int? _selectedDG;
+  String _selectedDGName = '';
+  int? _selectedDepartment;
+  String _selectedDepartmentName = '';
+  int? _selectedUser;
+  String _selectedUserName = '';
+  int? _selectedLocation;
+  String _selectedLocationName = '';
+  int selectedPriority = 1;
+  int selectedClassification = 1;
+  String _selectedDirection = 'Incoming';
+  String _selectedDirectionType = 'Internal';
+  String _selectedLocationType = 'Government';
+  bool _isNewLocation = true;
+  int letterNo = 1101;
+
+  late List<SelectOption<Cabinet>> cabinetOptions = [];
+  late List<SelectOption<Folder>> folderOptions = [];
+  late List<SelectOption<DgMaster>> dgOptions = [];
+  late List<SelectOption<Department>> departmentOptions = [];
+  late List<SelectOption<ExternalLocation>> locationOptions = [];
+  late List<SelectOption<UserMaster>> usersOptions = [];
+  late List<SelectOption<UserMaster>> filteredUserOption = [];
+
   @override
   void dispose() {
     super.dispose();
@@ -51,33 +86,78 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     _tenderNumberBeController.dispose();
   }
 
-  DateTime _createdDate = DateTime.now();
-  DateTime? _dateOnTheLetter;
-  DateTime? _receviedDate;
-  final int currentUserId = 164;
-  int selectedYear = 2024;
-  int? _selectedCabinet = 2;
-  final String _selectedCabinetName = '';
-  int? _selectedFolder = 2;
-  int? _selectedDG;
-  int? _selectedDepartment;
-  int? _selectedUser;
-  int? _selectedLocation;
-  int selectedPriority = 1;
-  int selectedClassification = 1;
-  String _selectedDirection = 'Incoming';
-  String _selectedDirectionType = 'Internal';
-  String _selectedLocationType = 'Government';
-  bool _isNewLocation = true;
-  int letterNo = 1101;
+  @override
+  void initState() {
+    super.initState();
+    initialise();
+  }
 
-  List<SelectOption<Cabinet>> cabinetOptions = [];
-  List<SelectOption<Folder>> folderOptions = [];
-  List<SelectOption<DgMaster>> dgOptions = [];
-  List<SelectOption<Department>> departmentOptions = [];
-  List<SelectOption<ExternalLocation>> locationOptions = [];
-  List<SelectOption<UserMaster>> usersOptions = [];
-  List<SelectOption<UserMaster>> filteredUserOption = [];
+  void initialise() async {
+    // Check if widget.letterObjectId is null
+    if (widget.letterObjectId == null) {
+      // Fetch options for cabinet, location, and dg when letterObjectId is null
+      final cabinetAsyncValue = ref.read(cabinetOptionsProvider(true));
+      cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
+
+      final locationAsyncValue = ref.read(locationOptionsProvider);
+      locationOptions = locationAsyncValue.asData?.value ?? [];
+
+      final dgAsyncValue = ref.read(dgOptionsProvider(true));
+      dgOptions = dgAsyncValue.asData?.value ?? [];
+    } else {
+      // When letterObjectId is not null, fetch the letter summary
+      final letterSummaryFuture = ref
+          .read(letterSummaryRepositoryProvider)
+          .fetchLetterSummary(widget.letterObjectId!);
+
+      letterSummaryFuture.then((letter) {
+        // After fetching the letter summary, initialize your variables
+        setState(() {
+          // Assign values to the controllers and other variables
+          _referenceController.text = letter.referenceNumber ?? '';
+          _sendToController.text = letter.referenceNumber ?? ''; //missing
+          _summaryController.text = letter.summary ?? '';
+          _subjectController.text = letter.subject ?? '';
+          _actionToBeController.text = letter.actionToBeTaken ?? '';
+          _tenderNumberBeController.text = letter.tenderNumber ?? '';
+
+          //  _createdDate = letter.createdDate ?? DateTime.now(); date type
+          // _dateOnTheLetter = letter.dateOnTheLetter;
+          // _receviedDate = letter.receivedDate;
+
+          //selectedYear = letter.year!;
+
+          _selectedCabinetName = letter.cabinetName ?? '';
+
+          _selectedFolderName = letter.folderName ?? '';
+
+          _selectedDGName = letter.dgName ?? '';
+
+          _selectedDepartmentName = letter.departmentName ?? '';
+
+          _selectedUserName = letter.systemName ?? '';
+
+          _selectedLocationName = letter.locationName ?? '';
+          // selectedPriority = letter.priority!;
+          //selectedClassification = letter.classificationId!;
+          _selectedDirection = letter.direction ?? 'Incoming';
+          _selectedDirectionType = letter.directionType ?? 'Internal';
+          cabinetOptions = [];
+          folderOptions = [];
+          dgOptions = [];
+          departmentOptions = [];
+          locationOptions = [];
+          usersOptions = [];
+          filteredUserOption = [];
+        });
+      }).catchError((error) {
+        // Handle any errors during the fetch
+        print("Error fetching letter summary: $error");
+      });
+    }
+    setState(() {});
+  }
+
   void save() {
     if (_formKey.currentState?.validate() ?? false) {
       final response = LetterUtils(
@@ -102,7 +182,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               year: selectedYear,
               scanDocuments: widget.scanDocumnets)
           .onSave();
-      print(response);
     }
   }
 
@@ -140,9 +219,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   Widget _letterForm1(
     WidgetRef ref,
   ) {
-    final cabinetAsyncValue = ref.watch(cabinetOptionsProvider(true));
-    cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,6 +407,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               child: SelectField<Cabinet>(
                 options: cabinetOptions,
                 initialValue: _selectedCabinetName,
+                key: ValueKey(cabinetOptions),
                 onChanged: (cabinet, selectedOption) {
                   setState(() {
                     folderOptions = selectedOption.childOptions
@@ -350,6 +427,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               child: SelectField<Folder>(
                 options: folderOptions,
                 key: ValueKey(folderOptions),
+                initialValue: _selectedFolderName,
                 onChanged: (folder, selectedOption) {
                   setState(() {
                     _selectedFolder = folder.id;
@@ -368,9 +446,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   }
 
   Widget _letterForm2(WidgetRef ref) {
-    final locationAsyncValue = ref.watch(locationOptionsProvider);
-
-    locationOptions = locationAsyncValue.asData?.value ?? [];
     return Column(
       children: [
         Row(
@@ -403,6 +478,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                   return option.filter == _selectedLocationType &&
                       option.filter1!.toString() == _isNewLocation.toString();
                 }).toList(),
+                key: ValueKey(locationOptions),
+                initialValue: _selectedLocationName,
                 onChanged: (location, selectedOption) {
                   setState(() {
                     // Clear the selected folder when cabinet changes
@@ -422,11 +499,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   }
 
   Widget _letterForm3(WidgetRef ref) {
-    final dgAsyncValue = ref.watch(dgOptionsProvider(true));
-    dgOptions = dgAsyncValue.asData?.value ?? [];
-
     if (_selectedDG != null) {
-      final userAsyncValue = ref.watch(userOptionsProvider);
+      final userAsyncValue = ref.read(userOptionsProvider);
       if (usersOptions.isEmpty) {
         usersOptions = userAsyncValue.asData?.value ?? [];
       }
@@ -460,7 +534,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               items: Priority.values.map((Priority item) {
                 return DropdownMenuItem<int>(
                   value: item.id,
-                  child: Text(item.getLabel(ref)),
+                  child: Text(item.getLabel(context)),
                 );
               }).toList(),
               onChanged: (int? newValue) {
@@ -484,7 +558,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               items: Classification.values.map((Classification item) {
                 return DropdownMenuItem<int>(
                   value: item.id,
-                  child: Text(item.getLabel(ref)),
+                  child: Text(item.getLabel(context)),
                 );
               }).toList(),
               onChanged: (int? newValue) {
@@ -499,15 +573,19 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ]),
         const SizedBox(height: 5),
         _buildRow([
-          _buildTextField('Tender Status:',
+          _buildTextField(
+            'Tender Status:',
+          ),
+          _buildTextField('Tender Number:',
               controller: _tenderNumberBeController),
-          _buildTextField('Tender Number:'),
         ]),
         const SizedBox(height: 5),
         _buildRow([
           Expanded(
             child: SelectField<DgMaster>(
               options: dgOptions,
+              key: ValueKey(dgOptions),
+              initialValue: _selectedDGName,
               onChanged: (dg, selectedOption) {
                 setState(() {
                   departmentOptions = selectedOption.childOptions
@@ -523,6 +601,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           Expanded(
             child: SelectField<Department>(
               options: departmentOptions,
+              initialValue: _selectedDepartmentName,
               key: ValueKey(departmentOptions),
               onChanged: (department, selectedOption) {
                 setState(() {
@@ -541,6 +620,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
             child: SelectField<UserMaster>(
               options: filteredUserOption,
               key: ValueKey(filteredUserOption),
+              initialValue: _selectedUserName,
               onChanged: (user, selectedOption) {
                 _selectedUser = user.id;
               },

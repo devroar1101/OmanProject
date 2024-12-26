@@ -163,7 +163,7 @@ class _LetterSubjectMasterScreenState
                   details: LetterSubjecct.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'subjectId',
                 ),
               ),

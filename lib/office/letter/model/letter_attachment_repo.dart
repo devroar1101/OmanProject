@@ -1,7 +1,7 @@
-// LetterAttachmentRepository Class
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
+import 'package:tenderboard/office/letter/model/letter_attachment.dart';
 
 class LetterAttachmentRepository {
   final Dio dio;
@@ -35,6 +35,27 @@ class LetterAttachmentRepository {
       return response;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<LetterAttachment?> getAttachmentByObjectId({
+    required String objectId,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/LetterAttachment/GetByObjectId',
+        queryParameters: {'LetterAttachementObjectId': objectId},
+      );
+
+      // Parse the data field into a LetterAttachment object
+      if (response.data != null && response.data['data'] != null) {
+        return LetterAttachment.fromMap(response.data['data']);
+      }
+      return null; // Return null if data is not available
+    } catch (e) {
+      // Handle errors and return null or rethrow as needed
+      print('Error: $e');
+      return null;
     }
   }
 }

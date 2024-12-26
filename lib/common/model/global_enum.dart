@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tenderboard/common/utilities/auth_provider.dart';
 
 enum Priority {
   normal(1, 'Normal', 'عادي', Colors.green, Icons.check),
@@ -15,10 +13,15 @@ enum Priority {
 
   const Priority(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
+  }
 
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  // Static method to get a Priority by id
+  static Priority? byId(int id) {
+    return Priority.values.firstWhere((priority) => priority.id == id);
   }
 }
 
@@ -37,10 +40,15 @@ enum Classification {
   const Classification(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
+  }
 
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  static Classification? byId(int id) {
+    return Classification.values
+        .firstWhere((classification) => classification.id == id);
   }
 }
 
@@ -72,9 +80,9 @@ enum ActionType {
   const ActionType(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(WidgetRef ref) {
-    final selectedLanguage = ref.read(authProvider).selectedLanguage;
-
-    return selectedLanguage == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
   }
 }

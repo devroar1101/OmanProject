@@ -158,14 +158,14 @@ class _DocumentViewerState extends State<DocumentViewer> {
                               : Icons.view_sidebar),
                           onPressed: _toggleThumbnails,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         if (widget.showScannerDialog != null)
                           IconButton(
                             iconSize: 28, // Bigger icon size
                             icon: const Icon(Icons.settings),
                             onPressed: () => widget.showScannerDialog!(context),
                           ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         SizedBox(
                           width: 30,
                           height: 30,
@@ -183,19 +183,19 @@ class _DocumentViewerState extends State<DocumentViewer> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         Text(
                           '/ ${widget.imagePaths.length}',
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.edit),
                           onPressed: _editImage,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.delete),
@@ -211,7 +211,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                             });
                           },
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.delete_forever),
@@ -222,7 +222,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                             });
                           },
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: Icon(isFullScreen
@@ -230,7 +230,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                               : Icons.fullscreen),
                           onPressed: _toggleFullScreen,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.arrow_back),
@@ -238,7 +238,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                               ? () => _changePage(validCurrentPage - 1)
                               : null,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.arrow_forward),
@@ -247,7 +247,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                                   ? () => _changePage(validCurrentPage + 1)
                                   : null,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
                         if (widget.startScan != null)
                           IconButton(
                             iconSize: 28, // Bigger icon size

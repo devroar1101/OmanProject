@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/common/widgets/load_image.dart';
+
 import 'package:tenderboard/office/document_search/model/document_search.dart';
 import 'package:tenderboard/office/document_search/model/document_search_repo.dart';
+import 'package:tenderboard/common/widgets/load_letter_document.dart';
+
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 
 class DocumentSearchHome extends ConsumerStatefulWidget {
@@ -16,13 +18,12 @@ class _StackWithSliderState extends ConsumerState<DocumentSearchHome> {
   bool _isSliderVisible = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    ref.read(DocumentSearchRepositoryProvider.notifier).fetchListDocumentSearch();
-    
+    ref
+        .read(DocumentSearchRepositoryProvider.notifier)
+        .fetchListDocumentSearch();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +95,7 @@ class _StackWithSliderState extends ConsumerState<DocumentSearchHome> {
                     'subject',
                     'jobReferenceNumber',
                     'letterNumber'
-                    'location',
+                        'location',
                     'direction',
                   ],
                   details: DocumentSearch.listToMap(documents),
@@ -102,7 +103,9 @@ class _StackWithSliderState extends ConsumerState<DocumentSearchHome> {
               ),
               const Expanded(
                 flex: 1,
-                child: ImageViewerScreen(),
+                child: LoadLetterDocument(
+                  objectId: '62bde539-38c0-4fc4-ae84-cc4c8d2ccc00',
+                ),
               ),
             ],
           ),

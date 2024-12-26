@@ -1,4 +1,6 @@
 // LetterAction Class
+import 'package:tenderboard/common/model/global_enum.dart';
+
 class LetterAction {
   final int? letterActionId;
   final int? fromUserId;
@@ -109,5 +111,10 @@ class LetterAction {
       'isDeleted': isDeleted,
       'objectId': objectId,
     };
+  }
+
+  // Helper function to map actionId to ActionType
+  ActionType? getActionTypeById(int id) {
+    return ActionType.values.firstWhere((action) => action.id == id);
   }
 }

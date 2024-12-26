@@ -1,6 +1,5 @@
+// main.dart
 import 'package:flutter/material.dart';
-
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
@@ -11,7 +10,6 @@ import 'package:tenderboard/common/utilities/language_mannager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalizationManager().init();
-  await dotenv.load(fileName: "assets/env/tb.env");
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -21,25 +19,26 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final selectedLanguage = authState.selectedLanguage;
+    final authState = ref.watch(authProvider); // Watch authState
+    final selectedLanguage =
+        authState.selectedLanguage; // Watch language provider
 
     return MaterialApp(
+      key: ValueKey(selectedLanguage),
+
       debugShowCheckedModeBanner: false,
-      title: 'Tenderboard App',
+      title: LocalizationManager().getTranslation('TenderboardApp'),
       theme: AppTheme.getTheme(isDarkMode: false), // Light theme
       darkTheme: AppTheme.getTheme(isDarkMode: true), // Dark theme
       themeMode: ThemeMode
           .system, // Automatically switch between light/dark based on system setting
       builder: (context, child) {
-        // Apply directionality based on selected language (Arabic or English)
         return Directionality(
           textDirection:
               selectedLanguage == 'ar' ? TextDirection.rtl : TextDirection.ltr,
           child: child!,
         );
       },
-      // If authenticated, go to the Home Screen; otherwise, stay on the Login Screen
       home: authState.isAuthenticated ? const Home() : const LoginScreen(),
     );
   }

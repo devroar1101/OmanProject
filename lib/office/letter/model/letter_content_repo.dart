@@ -1,7 +1,7 @@
-// LetterContentRepository Class
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
+import 'package:tenderboard/office/letter/model/letter_content.dart';
 
 class LetterContentRepository {
   final Dio dio;
@@ -35,6 +35,31 @@ class LetterContentRepository {
       return response;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<LetterContent?> getContentByObjectId({
+    required String objectId,
+    required int pageNumber,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/LetterContent/GetByObjectId',
+        queryParameters: {
+          'LetterAttachementObjectId': objectId,
+          'PageNumber': pageNumber,
+        },
+      );
+
+      // Parse the data field into a LetterContent object
+      if (response.data != null && response.data['data'] != null) {
+        return LetterContent.fromMap(response.data['data']);
+      }
+      return null; // Return null if data is not available
+    } catch (e) {
+      // Handle errors and return null or rethrow as needed
+      print('Error: $e');
+      return null;
     }
   }
 }

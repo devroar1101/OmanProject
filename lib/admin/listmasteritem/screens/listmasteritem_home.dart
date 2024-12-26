@@ -112,7 +112,6 @@ class _ListMasterItemHomeState extends ConsumerState<ListMasterItemHome> {
         children: [
           Row(
             children: [
-              
               Expanded(
                 child: ListMasterItemSearchForm(
                   onSearch: onSearch,
@@ -156,7 +155,7 @@ class _ListMasterItemHomeState extends ConsumerState<ListMasterItemHome> {
                   expandable: true,
                   selected: '1',
                   iconButtons: iconButtons,
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

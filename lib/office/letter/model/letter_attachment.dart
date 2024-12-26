@@ -29,7 +29,7 @@ class LetterAttachment {
       letterAttachmentId: map['letterAttachmentId'],
       attachementType: map['attachementType'],
       displayName: map['displayName'],
-      totalPage: map['totalPage'],
+      totalPage: map['totalPage'] ?? 1,
       fileName: map['fileName'],
       fileExtention: map['fileExtention'],
       createdBy: map['createdBy'],

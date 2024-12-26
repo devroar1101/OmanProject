@@ -13,7 +13,7 @@ class InboxRepository extends StateNotifier<List<LetterInbox>> {
 
   // Fetch Inbox Items
   Future<List<LetterInbox>> fetchInbox(
-      {required int userId, int pageSize = 15, int pageNumber = 1}) async {
+      {required int userId, int pageSize = 30, int pageNumber = 1}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       // 'userId': userId,

@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _currentWidget = widget;
       AppscreenName = screenName;
-      if (screenName == 'Document Search') {
+      if (screenName == 'Document Search' || screenName == 'CC') {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => widget));
         _currentWidget = const Dashboard();
@@ -41,7 +41,10 @@ class _HomeState extends State<Home> {
           context: context, side: side, screenName: AppscreenName,buttonTitle: AppscreenName),
       body: Row(
         children: [
-          CustomSidebar(onNavigate: _onNavigate), // Pass the callback function
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomSidebar(onNavigate: _onNavigate),
+          ), // Pass the callback function
           Expanded(child: _currentWidget), // Display the current widget
         ],
       ),

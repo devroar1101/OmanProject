@@ -14,8 +14,9 @@ import 'package:tenderboard/office/document_search/screens/document_search_home.
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
+
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-import 'package:tenderboard/office/scan_document_summary/screens/scan_document_summary_screen.dart';
+import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
 
 class CustomSidebar extends StatefulWidget {
@@ -45,7 +46,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('CC'),
         'icon': Icons.mail,
-        'navigate': const ScanDocumentSummaryScreen('121212')
+        'navigate': const LetterSummary('121212')
       },
       {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
@@ -133,9 +134,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     return Container(
-      margin:  EdgeInsets.only(top: 16,bottom: 16 , left: isRTL ? 8 :16 , right: isRTL ?16:8 ), // Detached sidebar with margin
       decoration: BoxDecoration(
-        color: const Color.fromARGB(200, 236, 234, 234).withOpacity(0.8), // Lighter background
+        color: const Color.fromARGB(200, 236, 234, 234)
+            .withOpacity(0.8), // Lighter background
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
@@ -147,8 +148,14 @@ class _CustomSidebarState extends State<CustomSidebar> {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
-        width: _isMinimized ? 70 : 220,
+        curve: Easing.legacy,
+        width: _isMinimized
+            ? isRTL
+                ? 60
+                : 50
+            : 220,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Sidebar items
             Expanded(
@@ -203,16 +210,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
               ),
             ),
             // Toggle minimize button at the bottom
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: Icon(
-                  _isMinimized
-                      ? (isRTL ? Icons.arrow_back : Icons.arrow_forward)
-                      : (isRTL ? Icons.arrow_forward : Icons.arrow_back),
-                ),
-                onPressed: _toggleMinimize,
+            IconButton(
+              icon: Icon(
+                _isMinimized ? (Icons.arrow_forward) : (Icons.arrow_back),
               ),
+              onPressed: _toggleMinimize,
             ),
           ],
         ),
