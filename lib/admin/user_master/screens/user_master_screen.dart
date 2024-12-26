@@ -168,7 +168,7 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
                   headers: const [
-                    'Login Id',
+                    'LoginId',
                     'DisplayName',
                     'DG',
                     'Department',

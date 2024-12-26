@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/common/model/select_option.dart';
-import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
 final UserMasterRepositoryProvider =
@@ -32,7 +31,9 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
       'departmentId': departmentId,
       'sectionId': sectionId,
     };
-
+      print('Secton ID $sectionId');
+      print('dg ID $dgId');
+      print('depat ID $departmentId');
     try {
       await dio.post('/User/Create', data: requestBody);
 

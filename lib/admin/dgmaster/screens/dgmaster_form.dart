@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/widgets/pagenation.dart';
-
+import 'package:tenderboard/common/utilities/global_helper.dart';
 class DgMasterSearchForm extends StatefulWidget {
   const DgMasterSearchForm({super.key, required this.onSearch});
 
@@ -52,7 +51,7 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     child: TextField(
                       controller: _codeController,
                       decoration: InputDecoration(
-                        labelText: 'Code',
+                        labelText: getTranslation('Code'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -66,7 +65,7 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     child: TextField(
                       controller: _nameEnglishController,
                       decoration: InputDecoration(
-                        labelText: 'Name English',
+                        labelText: getTranslation('NameEnglish'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -80,7 +79,7 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     child: TextField(
                       controller: _nameArabicController,
                       decoration: InputDecoration(
-                        labelText: 'Name Arabic',
+                        labelText: getTranslation('NameArabic'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -96,7 +95,7 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     child: IconButton(
                       icon: const Icon(Icons.search),
                       onPressed: _handleSearch,
-                      tooltip: 'Search',
+                      tooltip: getTranslation('Search'),
                     ),
                   ),
 
@@ -107,7 +106,7 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     child: IconButton(
                       icon: const Icon(Icons.refresh),
                       onPressed: _resetFields,
-                      tooltip: 'Reset',
+                      tooltip: getTranslation('Reset'),
                     ),
                   ),
                 ],

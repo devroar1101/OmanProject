@@ -39,11 +39,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                 ? _buildShimmerEffect()
                 : DisplayDetails(
                     headers: const [
-                      'Reference #',
-                      'System Name',
+                      'ReferenceNumber',
+                      'From',
                       'Subject',
-                      'Location (Arabic)',
-                      'Location (English)',
+                      'Location',
                     ],
                     detailKey: 'letterObjectId',
                     data: const [
@@ -51,7 +50,6 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                       'systemName',
                       'subject',
                       'locationNameArabic',
-                      'locationNameEnglish',
                     ],
                     details: inboxProvider.map((inboxItem) {
                       return inboxItem.toMap();

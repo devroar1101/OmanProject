@@ -9,6 +9,7 @@ import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_screen.dart';
 import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
@@ -35,72 +36,72 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': 'Inbox', 'icon': Icons.inbox, 'navigate': const InboxScreen()},
+      {'title': getTranslation('Inbox'), 'icon': Icons.inbox, 'navigate': const InboxScreen()},
       {
-        'title': 'Outbox',
+        'title': getTranslation('Outbox'),
         'icon': Icons.outbox,
         'navigate': const OutboxScreen()
       },
       {
-        'title': 'CC',
+        'title': getTranslation('CC'),
         'icon': Icons.mail,
         'navigate': const ScanDocumentSummaryScreen('121212')
       },
       {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
-        'title': 'Document Search',
+        'title': getTranslation('DocumentSearch'),
         'icon': Icons.search,
         'navigate': const DocumentSearchHome(),
       },
       {
-        'title': 'Circular',
+        'title': getTranslation('Circular'),
         'icon': Icons.circle,
         'navigate': const LetterIndex(),
       },
       {
-        'title': 'Decision',
+        'title': getTranslation('Decision'),
         'icon': Icons.check_circle,
         'navigate': const EjobSummaryScreen(),
       },
     ],
     'Admin': [
       {
-        'title': 'DG',
+        'title': getTranslation('DG'),
         'icon': Icons.account_balance,
         'navigate': const DgMasterScreen()
       },
       {
-        'title': 'Department',
+        'title': getTranslation('Department'),
         'icon': Icons.business,
         'navigate': const DepartmentMasterScreen()
       },
       {
-        'title': 'Section',
+        'title': getTranslation('Section'),
         'icon': Icons.folder,
         'navigate': const SectionMasterScreen()
       },
       {
-        'title': 'ListMaster',
+        'title': getTranslation('ListMaster'),
         'icon': Icons.list,
         'navigate': const ListMasterHome()
       },
       {
-        'title': 'Cabinet',
+        'title': getTranslation('Cabinet'),
         'icon': Icons.storage,
         'navigate': const CabinetHome()
       },
       {
-        'title': 'SubjectMaster',
+        'title': getTranslation('SubjectMaster'),
         'icon': Icons.subject,
         'navigate': const LetterSubjectMasterScreen()
       },
       {
-        'title': 'ExternalLocation',
+        'title': getTranslation('ExternalLocation'),
         'icon': Icons.account_tree,
         'navigate': const ExternalLocationScreen()
       },
       {
-        'title': 'User',
+        'title': getTranslation('Users'),
         'icon': Icons.person,
         'navigate': const UserMasterScreen()
       },

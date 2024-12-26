@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
@@ -114,7 +115,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
             context: context,
             builder: (context) => ConfirmationAlertBox(
               messageType: 3,
-              message: 'Are you sure you want to delete this section?',
+              message: getTranslation('Areyousureyouwanttodeletethissection?'),
               onConfirm: () {
                 onDelete(id);
               },
@@ -185,8 +186,8 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                 child: DisplayDetails(
                   headers: const [
                     'Code',
-                    'Name Arabic',
-                    'Name English',
+                    'NameArabic',
+                    'NameEnglish',
                     'Department',
                   ], // Headers for columns
                   data: const [

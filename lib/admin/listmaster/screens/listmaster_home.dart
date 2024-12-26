@@ -127,7 +127,7 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
-                  headers: const ['Code', 'Name Arabic', 'Name English'],
+                  headers: const ['Code', 'NameArabic', 'NameEnglish'],
                   data: const ['id', 'nameArabic', 'nameEnglish'],
                   selected: '1',
                   details: ListMaster.listToMap(filteredAndPaginatedList),

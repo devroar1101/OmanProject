@@ -62,7 +62,7 @@ class AppTheme {
     return ThemeData(
       primaryColor: primaryColor,
       scaffoldBackgroundColor:
-          isDarkMode ? const Color.fromARGB(255, 218, 221, 220) : backgroundColor,
+          isDarkMode ? const Color.fromARGB(255, 178, 180, 180) : backgroundColor,
       colorScheme: ColorScheme(
         primary: primaryColor,
         secondary: secondaryColor,
