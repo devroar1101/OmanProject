@@ -159,7 +159,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                                 onChanged: (value, selectedOption) {
                                   setState(() => _selectedAuthMode = value);
                                 },
-                                hint: 'Select Auth Mode',
+                                label: 'Select Auth Mode',
                               ),
                             ),
                           ],
@@ -190,18 +190,20 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                                 options: roleOptions,
                                 onChanged: (value, selectedOption) =>
                                     setState(() => _selectedRole = value),
-                                hint: 'Select Role',
+                                label: 'Select Role',
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: SelectField<DgMaster>(
+                                label: 'DG',
                                 options: dgOptions,
                                 onChanged: (dg, selectedOption) {
                                   setState(() {
-                                    departmentOptions = selectedOption.childOptions
-                                            ?.cast<SelectOption<Department>>() ??
-                                        [];
+                                    departmentOptions =
+                                        selectedOption.childOptions?.cast<
+                                                SelectOption<Department>>() ??
+                                            [];
                                     _selectedDG = dg.id;
                                     _selectedDepartment = null;
                                   });
@@ -216,12 +218,15 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                           children: [
                             Expanded(
                               child: SelectField<Department>(
+                                label: 'Department',
                                 options: departmentOptions,
                                 key: ValueKey(departmentOptions),
                                 onChanged: (dept, selectedOption) {
                                   setState(() {
                                     sectionOptions = selectedOption.childOptions
-                                            ?.cast<SelectOption<SectionMaster>>() ??
+                                            ?.cast<
+                                                SelectOption<
+                                                    SectionMaster>>() ??
                                         [];
                                     _selectedSection = null;
                                     _selectedDepartment = dept.id;
@@ -233,6 +238,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                             const SizedBox(width: 16),
                             Expanded(
                               child: SelectField<SectionMaster>(
+                                label: 'Section',
                                 options: sectionOptions,
                                 key: ValueKey(sectionOptions),
                                 onChanged: (section, selectedOption) {

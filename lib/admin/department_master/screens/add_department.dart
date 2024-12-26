@@ -93,6 +93,7 @@ class AddDepartmentMaster extends ConsumerWidget {
                 SizedBox(
                   width: 450.0,
                   child: SelectField<DgMaster>(
+                    label: 'DG',
                     options: dgOptions!,
                     initialValue: currentDepartment != null
                         ? dgOptions

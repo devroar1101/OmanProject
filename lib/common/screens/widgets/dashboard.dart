@@ -30,7 +30,8 @@ class Dashboard extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(12.0), // Rounded corners
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
@@ -45,7 +46,8 @@ class Dashboard extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               decoration: BoxDecoration(
-                                color: Colors.black54, // Semi-transparent background
+                                color: Colors
+                                    .black54, // Semi-transparent background
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: const Text(
@@ -101,7 +103,8 @@ class Dashboard extends StatelessWidget {
         width: 150, // Smaller width for compact cards
         height: 150, // Smaller height
         decoration: BoxDecoration(
-          color: const Color(0xFFE8F5E9), // Pastel green background for all cards
+          color:
+              const Color(0xFFE8F5E9), // Pastel green background for all cards
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Center(

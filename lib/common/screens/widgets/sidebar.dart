@@ -135,8 +135,6 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = Directionality.of(context) == TextDirection.rtl;
-
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(200, 236, 234, 234)

@@ -7,7 +7,7 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 class DepartmentSearchForm extends ConsumerStatefulWidget {
   const DepartmentSearchForm({super.key, required this.onSearch});
 
-  final Function(String, String, String,String?) onSearch;
+  final Function(String, String, String, String?) onSearch;
 
   @override
   _DepartmentSearchFormState createState() => _DepartmentSearchFormState();
@@ -23,7 +23,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
-    widget.onSearch('', '', '','');
+    widget.onSearch('', '', '', '');
     setState(() {
       _selectedDropdownValue = '';
     });
@@ -35,9 +35,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     String code = _codeController.text;
     String? dGdropdownValue = _selectedDropdownValue;
 
-    
-
-    widget.onSearch(nameArabic,nameEnglish,code,dGdropdownValue!);
+    widget.onSearch(nameArabic, nameEnglish, code, dGdropdownValue!);
   }
 
   @override
@@ -97,6 +95,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
             // Custom Dropdown Field
             Expanded(
               child: SelectField<DgMaster>(
+                label: 'DG',
                 options: dgOptions!,
                 onChanged: (dg, selectedOption) {
                   setState(() {
