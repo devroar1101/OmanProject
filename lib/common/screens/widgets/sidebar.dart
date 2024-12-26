@@ -37,7 +37,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
   // Define the items for Office and Admin categories
   final Map<String, List<Map<String, dynamic>>> _menuItems = {
     'Office': [
-      {'title': getTranslation('Inbox'), 'icon': Icons.inbox, 'navigate': const InboxScreen()},
+      {
+        'title': getTranslation('Inbox'),
+        'icon': Icons.inbox,
+        'navigate': const InboxScreen()
+      },
       {
         'title': getTranslation('Outbox'),
         'icon': Icons.outbox,
@@ -149,11 +153,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300), // Smooth animation
         curve: Easing.legacy,
-        width: _isMinimized
-            ? isRTL
-                ? 60
-                : 50
-            : 220,
+        width: _isMinimized ? 70 : 220,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -165,46 +165,52 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   if (index == _menuItems[_currentCategory]!.length) {
                     final toggleCategory =
                         _currentCategory == 'Office' ? 'Admin' : 'Office';
-                    return ListTile(
-                      iconColor: Theme.of(context).iconTheme.color,
-                      leading: const Icon(Icons.swap_horiz),
-                      title: _isMinimized ? null : Text(toggleCategory),
-                      onTap: () {
-                        _changeCategory(toggleCategory);
-                      },
+                    return Center(
+                      child: ListTile(
+                        iconColor: Theme.of(context).iconTheme.color,
+                        leading: const Icon(Icons.swap_horiz),
+                        title: _isMinimized ? null : Text(toggleCategory),
+                        onTap: () {
+                          _changeCategory(toggleCategory);
+                        },
+                      ),
                     );
                   }
                   final item = _menuItems[_currentCategory]![index];
                   final bool isActive = _activeItem == item['title'];
 
-                  return ListTile(
-                    leading: Icon(
-                      item['icon'],
-                      color: isActive ? Colors.blueAccent : AppTheme.iconColor,
-                    ),
-                    title: _isMinimized
-                        ? null
-                        : Text(
-                            item['title'],
-                            style: TextStyle(
-                              fontWeight: isActive
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color:
-                                  isActive ? Colors.blueAccent : Colors.black87,
+                  return Center(
+                    child: ListTile(
+                      leading: Icon(
+                        item['icon'],
+                        color:
+                            isActive ? Colors.blueAccent : AppTheme.iconColor,
+                      ),
+                      title: _isMinimized
+                          ? null
+                          : Text(
+                              item['title'],
+                              style: TextStyle(
+                                fontWeight: isActive
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isActive
+                                    ? Colors.blueAccent
+                                    : Colors.black87,
+                              ),
                             ),
-                          ),
-                    tileColor: isActive ? Colors.blue.withOpacity(0.1) : null,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      tileColor: isActive ? Colors.blue.withOpacity(0.1) : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _activeItem = item['title'];
+                        });
+                        // For Document Search, hide sidebar on navigation
+                        _navigate(item['navigate'], item['title']);
+                      },
                     ),
-                    onTap: () {
-                      setState(() {
-                        _activeItem = item['title'];
-                      });
-                      // For Document Search, hide sidebar on navigation
-                      _navigate(item['navigate'], item['title']);
-                    },
                   );
                 },
               ),
