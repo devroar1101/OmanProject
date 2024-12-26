@@ -1,5 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/screens/home.dart';
@@ -10,7 +11,7 @@ import 'package:tenderboard/common/utilities/language_mannager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalizationManager().init();
-
+  await dotenv.load(fileName: "assets/env/tb.env");
   runApp(const ProviderScope(child: MyApp()));
 }
 
