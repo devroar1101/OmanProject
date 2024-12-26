@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 
 class AddDGmasterScreen extends ConsumerWidget {
   AddDGmasterScreen(
@@ -28,9 +30,9 @@ class AddDGmasterScreen extends ConsumerWidget {
                   editNameEnglish: _dgNameEnglish!,
                 );
         // Navigate or display a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('DG master added successfully!')),
-        );
+        CustomSnackbar.show(context: context, title: 'successfully', message: getTranslation(
+          'Dgaddedsuccessfully!'
+        ), typeId: 1, durationInSeconds: 3);
         Navigator.pop(context); // Close the modal after saving
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

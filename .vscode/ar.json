@@ -1,0 +1,19 @@
+{
+    "Inbox": "الوارد",
+    "Outbox": "الصادر",
+    "CC" :  "نُسخ للعلم",
+    "DocumentSearch" :  "البحث عن الوثائق المؤرشفة ",
+    "Circular" :  "التعاميم ",
+    "Decision" :  "القرارات ",
+    "ReferenceNumber" :  "الرقم المرجعي #", 
+    "From" :  "من",
+    "Name" :  "اسم",
+    "Subject" :  "الموضوع",
+    "Location" :  "نوع الموقع",
+    "Code" :  "الشفرة",
+    "NameArabic" :  "الاسم عربي",
+    "NameEnglish" :  "اسم انجليزي",
+    "DG" :  "المديرية",
+    "Department" :  "الدائرة",
+    "Section" :  "القسم"
+}

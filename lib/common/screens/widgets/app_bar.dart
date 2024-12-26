@@ -11,18 +11,27 @@ import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart'; // Import the screen
 
+/// Utility function to convert camel case or Pascal case to space-separated words
+String formatTitle(String title) {
+  return title.replaceAllMapped(
+    RegExp(r'([a-z])([A-Z])'),
+    (Match match) => '${match.group(1)} ${match.group(2)}',
+  );
+}
+
 class CustomAppBar {
   /// A method to create and return a custom AppBar widget.
   static PreferredSizeWidget build({
     required BuildContext context, // Pass BuildContext here
     required String side,
     required String screenName,
+    required String buttonTitle,
   }) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(238,238,238,255).withOpacity(0.8),
+          color: const Color.fromARGB(238, 238, 238, 255).withOpacity(0.8),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5), // Shadow color
@@ -37,21 +46,53 @@ class CustomAppBar {
                 automaticallyImplyLeading: false, // Removes the pop-back icon
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                title: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    'assets/gstb_logo.png',
-                    height: 40,
-                    fit: BoxFit.contain,
-                  ),
+                title: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/gstb_logo.png',
+                        height: 40,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        debugPrint('Button clicked');
+                      },
+                      child: Card(
+                        color: const Color.fromARGB(255, 206, 204, 204), // Background color for the card
+                        elevation: 2.0, // Elevation for shadow effect
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8.0), // Rounded corners
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Text(
+                            formatTitle(buttonTitle), // Apply formatting
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold, // Make the text bold
+                              color:
+                                  Color.fromARGB(255, 20, 20, 20), // Text color
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.dashboard),
-                    onPressed: () {
-                      debugPrint('Dashboard clicked');
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.dashboard),
+                  //   onPressed: () {
+                  //     debugPrint('Dashboard clicked');
+                  //   },
+                  // ),
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
@@ -65,13 +106,45 @@ class CustomAppBar {
                 automaticallyImplyLeading: false, // Removes the pop-back icon
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                title: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    'assets/gstb_logo.png',
-                    height: 40,
-                    fit: BoxFit.contain,
-                  ),
+                title: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/gstb_logo.png',
+                        height: 40,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        debugPrint('Button clicked');
+                      },
+                      child: Card(
+                        color: const Color.fromARGB(255, 206, 204, 204), // Background color for the card
+                        elevation: 2.0, // Elevation for shadow effect
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8.0), // Rounded corners
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Text(
+                            formatTitle(buttonTitle.isNotEmpty ? buttonTitle : 'Dashboard'), // Apply formatting
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold, // Make the text bold
+                              color:
+                                  Color.fromARGB(255, 20, 20, 20), // Text color
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 actions: [
                   IconButton(

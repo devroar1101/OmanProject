@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/department_master/screens/add_department.dart';
 import 'package:tenderboard/admin/department_master/screens/deparment_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
@@ -112,7 +113,7 @@ class _DepartmentMasterScreenState
             context: context,
             builder: (context) => ConfirmationAlertBox(
               messageType: 3,
-              message: 'Are you sure you want to delete this department?',
+              message: getTranslation('Areyousureyouwanttodeletethisdg?'),
               onConfirm: () {
                 onDelete(id);
               },
@@ -180,9 +181,9 @@ class _DepartmentMasterScreenState
                 child: DisplayDetails(
                   headers: const [
                     'Code',
-                    'Name Arabic',
-                    'Name English',
-                    'DG Name',
+                    'NameArabic',
+                    'NameEnglish',
+                    'DG',
                   ], // Headers for columns
                   data: const [
                     'code',

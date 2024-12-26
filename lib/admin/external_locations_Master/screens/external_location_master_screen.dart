@@ -133,11 +133,11 @@ class _ExternalLocationScreenState
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
                   headers: const [
-                    'Name Arabic',
-                    'Name English',
+                    'NameArabic',
+                    'NameEnglish',
                     'Type',
                     'Active',
-                    'Location (New)',
+                    'Location',
                   ],
                   data: const [
                     'nameArabic',

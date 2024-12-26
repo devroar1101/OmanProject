@@ -19,39 +19,10 @@ class AddUserMasterScreen extends ConsumerStatefulWidget {
   _AddUserMasterScreenState createState() => _AddUserMasterScreenState();
 }
 
-class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
-    with SingleTickerProviderStateMixin {
+class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TabController _tabController;
 
   File? _profileImage;
-
-  final List<List<Map<String, dynamic>>> allPermissions = [
-    [
-      {'name': 'View Reports', 'value': false},
-      {'name': 'Edit Reports', 'value': false},
-      {'name': 'Delete Reports', 'value': false},
-      {'name': 'Export Data', 'value': false},
-    ],
-    [
-      {'name': 'Create Assignment', 'value': false},
-      {'name': 'Edit Assignment', 'value': false},
-      {'name': 'Delete Assignment', 'value': false},
-      {'name': 'Review Assignment', 'value': false},
-    ],
-    [
-      {'name': 'Search Documents', 'value': false},
-      {'name': 'Edit Documents', 'value': false},
-      {'name': 'Delete Documents', 'value': false},
-      {'name': 'Export Documents', 'value': false},
-    ],
-  ];
-
-  final List<String> titles = [
-    'Privileges',
-    'Assignment Permissions',
-    'Document Search Permissions',
-  ];
 
   final _loginIdController = TextEditingController();
   final _displayNameController = TextEditingController();
@@ -67,9 +38,9 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
   String? _selectedDesignation;
   String? _selectedAuthMode;
   String? _selectedRole;
-  String? _selectedDG;
-  String? _selectedDepartment;
-  String? _selectedSection;
+  int? _selectedDG;
+  int? _selectedDepartment;
+  int? _selectedSection;
 
   final List<SelectOption<String>> designationOptions = [
     SelectOption(displayName: 'Manager', key: 'manager', value: 'Manager'),
@@ -88,27 +59,15 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
     SelectOption(displayName: 'User', key: 'user', value: 'User'),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       try {
         await ref.read(UserMasterRepositoryProvider.notifier).addUserMaster(
               name: _nameController.text,
               displayName: _displayNameController.text,
-              dgId: 11,
-              departmentId: 13,
-              sectionId: 163,
+              dgId: _selectedDG!,
+              departmentId: _selectedDepartment!,
+              sectionId: _selectedSection!,
               email: _emailController.text,
             );
         ScaffoldMessenger.of(context).showSnackBar(
@@ -127,26 +86,169 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
 
   @override
   Widget build(BuildContext context) {
+    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
+    dgOptions = dgOptionAsyncValue.asData?.value ?? [];
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: SizedBox(
         width: 800,
         child: Column(
           children: [
-            TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: 'Details'),
-                //Tab(text: 'Permissions'),
-              ],
-            ),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildDetailsTab(),
-                  _buildPermissionsTab(),
-                ],
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Profile Image + Name and Display Name Fields in One Row
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: _pickProfileImage,
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: _profileImage != null
+                                    ? FileImage(_profileImage!)
+                                    : null,
+                                child: _profileImage == null
+                                    ? const Icon(
+                                        Icons.add_a_photo,
+                                        size: 30,
+                                        color: Colors.grey,
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  _buildTextField(
+                                    controller: _nameController,
+                                    label: 'Name',
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _buildTextField(
+                                    controller: _displayNameController,
+                                    label: 'Display Name',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Other Fields in Two-Column Layout
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _loginIdController,
+                                label: 'Login ID',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: SelectField<String>(
+                                options: authModeOptions,
+                                onChanged: (value, selectedOption) {
+                                  setState(() => _selectedAuthMode = value);
+                                },
+                                hint: 'Select Auth Mode',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _emailController,
+                                label: 'Email',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _officeNumberController,
+                                label: 'Office Number',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SelectField<String>(
+                                options: roleOptions,
+                                onChanged: (value, selectedOption) =>
+                                    setState(() => _selectedRole = value),
+                                hint: 'Select Role',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: SelectField<DgMaster>(
+                                options: dgOptions,
+                                onChanged: (dg, selectedOption) {
+                                  setState(() {
+                                    departmentOptions = selectedOption.childOptions
+                                            ?.cast<SelectOption<Department>>() ??
+                                        [];
+                                    _selectedDG = dg.id;
+                                    _selectedDepartment = null;
+                                  });
+                                },
+                                hint: 'Select DG',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SelectField<Department>(
+                                options: departmentOptions,
+                                key: ValueKey(departmentOptions),
+                                onChanged: (dept, selectedOption) {
+                                  setState(() {
+                                    sectionOptions = selectedOption.childOptions
+                                            ?.cast<SelectOption<SectionMaster>>() ??
+                                        [];
+                                    _selectedSection = null;
+                                    _selectedDepartment = dept.id;
+                                  });
+                                },
+                                hint: 'Select Department',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: SelectField<SectionMaster>(
+                                options: sectionOptions,
+                                key: ValueKey(sectionOptions),
+                                onChanged: (section, selectedOption) {
+                                  setState(() {
+                                    _selectedSection = section.sectionId;
+                                  });
+                                },
+                                hint: 'Select Section',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -171,167 +273,6 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
     );
   }
 
-  Widget _buildDetailsTab() {
-    final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
-    dgOptions = dgOptionAsyncValue.asData?.value ?? [];
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Profile Image + Name and Display Name Fields in One Row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: _pickProfileImage,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : null,
-                      child: _profileImage == null
-                          ? const Icon(
-                              Icons.add_a_photo,
-                              size: 30,
-                              color: Colors.grey,
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        _buildTextField(
-                          controller: _nameController,
-                          label: 'Name',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _displayNameController,
-                          label: 'Display Name',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Other Fields in Two-Column Layout
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _loginIdController,
-                      label: 'Login ID',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: SelectField<String>(
-                      options: authModeOptions,
-                      onChanged: (value, selectedOption) {
-                        setState(() => _selectedAuthMode = value);
-                      },
-                      hint: 'Select Auth Mode',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _officeNumberController,
-                      label: 'Office Number',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: SelectField<String>(
-                      options: roleOptions,
-                      onChanged: (value, selectedOption) =>
-                          setState(() => _selectedRole = value),
-                      hint: 'Select Role',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: SelectField<DgMaster>(
-                      options: dgOptions,
-                      onChanged: (dg, selectedOption) {
-                        setState(() {
-                          departmentOptions = selectedOption.childOptions
-                                  ?.cast<SelectOption<Department>>() ??
-                              [];
-                          _selectedDepartment = '';
-                          _selectedDG = dg.id.toString();
-                        });
-                      },
-                      hint: 'Select DG',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: SelectField<Department>(
-                      options: departmentOptions,
-                      key: ValueKey(departmentOptions),
-                      onChanged: (dept, selectedOption) {
-                        setState(() {
-                          sectionOptions = selectedOption.childOptions
-                                  ?.cast<SelectOption<SectionMaster>>() ??
-                              [];
-                          _selectedSection = '';
-                          _selectedDepartment = dept.id.toString();
-                        });
-                      },
-                      hint: 'Select Department',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: SelectField<SectionMaster>(
-                      options: sectionOptions,
-                      key: ValueKey(sectionOptions),
-                      onChanged: (section, selectedOption) {
-                        setState(() {
-                          _selectedSection = section.sectionId.toString();
-                        });
-                      },
-                      hint: 'Select Section',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -347,36 +288,6 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen>
           return 'Please enter $label';
         }
         return null;
-      },
-    );
-  }
-
-  Widget _buildPermissionsTab() {
-    return ListView.builder(
-      itemCount: allPermissions.length,
-      itemBuilder: (context, index) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              titles[index],
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Column(
-              children: allPermissions[index].map((permission) {
-                return CheckboxListTile(
-                  title: Text(permission['name']),
-                  value: permission['value'],
-                  onChanged: (value) {
-                    setState(() {
-                      permission['value'] = value;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        );
       },
     );
   }

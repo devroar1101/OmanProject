@@ -158,7 +158,7 @@ class _LetterSubjectMasterScreenState
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
-                  headers: const ['Tender Number', 'Subject'],
+                  headers: const ['TenderNumber', 'Subject'],
                   data: const ['tenderNumber', 'subject'],
                   details: LetterSubjecct.listToMap(filteredAndPaginatedList),
                   expandable: true,

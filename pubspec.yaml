@@ -80,6 +80,9 @@ flutter:
     - assets/lang/ar.json
     - assets/lang/en.json
     - assets/env/tb.env
+    - assets/image1.jpg
+    - assets/image2.jpg
+    - assets/image3.jpg
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

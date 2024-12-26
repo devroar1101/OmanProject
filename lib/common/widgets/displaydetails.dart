@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 
 // ignore: must_be_immutable
 class DisplayDetails extends StatefulWidget {
@@ -56,7 +57,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
             children: widget.headers.take(headerColumns).map((header) {
               return Expanded(
                 child: Text(
-                  header,
+                 getTranslation(header),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
