@@ -9,32 +9,62 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Add the image carousel at the top
-        CarouselSlider(
-          options: CarouselOptions(
-            height: 200, // Height of the carousel
-            autoPlay: true, // Enable auto-scrolling
-            enlargeCenterPage: true, // Enlarge the center image
-            aspectRatio: 16 / 9, // Aspect ratio of the carousel
-            viewportFraction: 0.8, // How much of the viewport each image takes
+        // Add the styled image carousel at the top
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: CarouselSlider(
+            options: CarouselOptions(
+              height: 250, // Height of the carousel
+              autoPlay: true, // Enable auto-scrolling
+              enlargeCenterPage: true, // Highlight the center image
+              aspectRatio: 16 / 9, // Aspect ratio of the carousel
+              viewportFraction: 0.6, // Show part of the adjacent images
+            ),
+            items: [
+              'assets/image1.jpg',
+              'assets/image2.jpg',
+              'assets/image3.jpg',
+            ].map((imagePath) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            left: 10,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              decoration: BoxDecoration(
+                                color: Colors.black54, // Semi-transparent background
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: const Text(
+                                'التنقل بين الصفحاتتسجيل الدخول إلى حسابك',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
           ),
-          items: [
-            'assets/image1.jpg',
-            'assets/image2.jpg',
-            'assets/image3.jpg',
-          ].map((imagePath) {
-            return Builder(
-              builder: (BuildContext context) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
-            );
-          }).toList(),
         ),
         Expanded(
           child: Stack(
