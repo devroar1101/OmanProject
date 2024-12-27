@@ -278,12 +278,14 @@ class _ScannerAppState extends State<Scanner> {
         'IfDuplexEnabled': ifDuplexEnabled,
       },
     };
+    print(parameters);
 
     try {
       final String jobId =
           await dynamsoftService.scanDocument(host, parameters);
 
       if (jobId != '') {
+        print(jobId);
         // Fetch image streams (Uint8List) from the scanner service
         List<Uint8List> imageStreams =
             await dynamsoftService.getImageStreams(host, jobId);

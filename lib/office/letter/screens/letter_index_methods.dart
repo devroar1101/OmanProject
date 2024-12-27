@@ -124,8 +124,6 @@ class LetterUtils {
               .toList() ??
           [];
 
-      print('${toUser},${scanDocuments?.length}');
-      // Initialize repository container
       final repo = ProviderContainer();
 
       // Save Letter and LetterAction objects in parallel with LetterContent list

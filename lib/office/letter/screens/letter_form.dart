@@ -15,16 +15,24 @@ import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
 
 // ignore: must_be_immutable
 class LetterForm extends ConsumerStatefulWidget {
-  LetterForm({super.key, this.scanDocumnets, this.letterObjectId});
+  LetterForm(
+      {super.key,
+      this.scanDocumnets,
+      this.letterObjectId,
+      this.clear,
+      required this.screenName});
 
   List<String>? scanDocumnets;
   String? letterObjectId;
+  void Function()? clear;
+  final String screenName;
 
   @override
   _LetterFormState createState() => _LetterFormState();
@@ -45,7 +53,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   DateTime _createdDate = DateTime.now();
   DateTime? _dateOnTheLetter;
   DateTime? _receviedDate;
-  final int currentUserId = 164;
+  final int currentUserId = 2;
   int selectedYear = 2024;
   int? _selectedCabinet;
   String _selectedCabinetName = '';
@@ -67,6 +75,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   bool _isNewLocation = true;
   int letterNo = 1101;
   double fieldHeight = 45;
+  bool isSaving = false;
+  bool saved = false;
 
   late List<SelectOption<Cabinet>> cabinetOptions = [];
   late List<SelectOption<Folder>> folderOptions = [];
@@ -111,6 +121,11 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
       final dgAsyncValue = ref.read(dgOptionsProvider(true));
       dgOptions = dgAsyncValue.asData?.value ?? [];
+
+      final userAsyncValue = ref.read(userOptionsProvider);
+      if (usersOptions.isEmpty) {
+        usersOptions = userAsyncValue.asData?.value ?? [];
+      }
     } else {
       // When letterObjectId is not null, fetch the letter summary
       final letterSummaryFuture = ref
@@ -165,9 +180,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     setState(() {});
   }
 
-  void save() {
+  void save(context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      final response = LetterUtils(
+      final response = await LetterUtils(
               actionToBeTaken: _actionToBeController.text,
               cabinet: _selectedCabinet,
               classification: selectedClassification, //replace
@@ -189,6 +204,24 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               year: selectedYear,
               scanDocuments: widget.scanDocumnets)
           .onSave();
+
+      CustomSnackbar.show(
+          context: context,
+          durationInSeconds: 3,
+          message: 'Letter saved successfully',
+          title: 'Successful',
+          typeId: 1,
+          asset: 'assets/saving.gif');
+
+      setState(() {
+        isSaving = false;
+        saved = response == 'success';
+      });
+    } else {
+      setState(() {
+        isSaving = false;
+        saved = false;
+      });
     }
   }
 
@@ -202,16 +235,34 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _letterForm1(ref),
             if (_selectedDirection == 'Outgoing' &&
                 _selectedDirectionType == 'External')
               _letterForm2(ref),
             _letterForm3(ref),
-            ElevatedButton(
-              onPressed: save,
-              child: const Text('Save'),
-            ),
+            if (widget.screenName == 'LetterIndex')
+              if (!isSaving)
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      isSaving = true; // Corrected assignment
+                    });
+
+                    save(context);
+                  },
+                  label: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      saved ? 'Send' : 'Save',
+                      textDirection: Directionality.of(context),
+                    ),
+                  ),
+                  icon: saved ? const Icon(Icons.send) : const Icon(Icons.save),
+                )
+              else
+                const CircularProgressIndicator(),
           ],
         ),
       ),
@@ -282,7 +333,106 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 },
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(
+              width: 4,
+            ),
+            GestureDetector(
+              onTapDown: (_) => _directionScale.value = 0.95, // Shrink on tap
+              onTapUp: (_) =>
+                  _directionScale.value = 1.0, // Return to normal size
+              onTapCancel: () => _directionScale.value = 1.0,
+              onTap: () => setState(() {
+                _selectedDirection =
+                    _selectedDirection == 'Incoming' ? 'Outgoing' : 'Incoming';
+              }),
+              child: ValueListenableBuilder<double>(
+                valueListenable: _directionScale,
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      color: Colors.blue.shade50,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 3.0, horizontal: 4.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _selectedDirection == 'Incoming'
+                                  ? Icons.arrow_circle_down_outlined
+                                  : Icons.arrow_circle_up_outlined,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _selectedDirection,
+                              style: const TextStyle(
+                                fontSize: 16, // Slightly smaller font
+                                fontWeight: FontWeight.w500, // Medium weight
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 2),
+            GestureDetector(
+              onTapDown: (_) => _typeScale.value = 0.95, // Shrink on tap
+              onTapUp: (_) => _typeScale.value = 1.0, // Return to normal size
+              onTapCancel: () => _typeScale.value = 1.0,
+              onTap: () => setState(() {
+                _selectedDirectionType = _selectedDirectionType == 'Internal'
+                    ? 'External'
+                    : 'Internal';
+              }),
+              child: ValueListenableBuilder<double>(
+                valueListenable: _typeScale,
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      color: Colors.blue.shade50,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 3.0, horizontal: 4.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _selectedDirectionType == 'Internal'
+                                  ? Icons.arrow_circle_left_outlined
+                                  : Icons.arrow_circle_right_outlined,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _selectedDirectionType,
+                              style: const TextStyle(
+                                fontSize: 16, // Slightly smaller font
+                                fontWeight: FontWeight.w500, // Medium weight
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const Spacer(),
             // Reduced spacing
             GestureDetector(
               onTap: () {
@@ -461,101 +611,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         // Row for Year, Cabinet, Folder
         Row(
           children: [
-            GestureDetector(
-              onTapDown: (_) => _directionScale.value = 0.95, // Shrink on tap
-              onTapUp: (_) =>
-                  _directionScale.value = 1.0, // Return to normal size
-              onTapCancel: () => _directionScale.value = 1.0,
-              onTap: () => setState(() {
-                _selectedDirection =
-                    _selectedDirection == 'Incoming' ? 'Outgoing' : 'Incoming';
-              }),
-              child: ValueListenableBuilder<double>(
-                valueListenable: _directionScale,
-                builder: (context, scale, child) {
-                  return Transform.scale(
-                    scale: scale,
-                    child: Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      color: Colors.blue.shade50,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 3.0, horizontal: 4.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _selectedDirection == 'Incoming'
-                                  ? Icons.arrow_circle_down_outlined
-                                  : Icons.arrow_circle_up_outlined,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _selectedDirection,
-                              style: const TextStyle(
-                                fontSize: 16, // Slightly smaller font
-                                fontWeight: FontWeight.w500, // Medium weight
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 2),
-            GestureDetector(
-              onTapDown: (_) => _typeScale.value = 0.95, // Shrink on tap
-              onTapUp: (_) => _typeScale.value = 1.0, // Return to normal size
-              onTapCancel: () => _typeScale.value = 1.0,
-              onTap: () => setState(() {
-                _selectedDirectionType = _selectedDirectionType == 'Internal'
-                    ? 'External'
-                    : 'Internal';
-              }),
-              child: ValueListenableBuilder<double>(
-                valueListenable: _typeScale,
-                builder: (context, scale, child) {
-                  return Transform.scale(
-                    scale: scale,
-                    child: Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      color: Colors.blue.shade50,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 3.0, horizontal: 4.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _selectedDirectionType == 'Internal'
-                                  ? Icons.arrow_circle_left_outlined
-                                  : Icons.arrow_circle_right_outlined,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _selectedDirectionType,
-                              style: const TextStyle(
-                                fontSize: 16, // Slightly smaller font
-                                fontWeight: FontWeight.w500, // Medium weight
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
             Expanded(
               child: SizedBox(
                 height: fieldHeight,
@@ -598,6 +653,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 ),
               ),
             ),
+            const SizedBox(width: 5),
             Expanded(
               child: SizedBox(
                 height: fieldHeight,
@@ -765,11 +821,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   Widget _letterForm3(WidgetRef ref) {
     if (_selectedDG != null) {
-      final userAsyncValue = ref.read(userOptionsProvider);
-      if (usersOptions.isEmpty) {
-        usersOptions = userAsyncValue.asData?.value ?? [];
-      }
-
       filteredUserOption = usersOptions.where((option) {
         bool matchesDG =
             (_selectedDG == null || option.filter == _selectedDG.toString());

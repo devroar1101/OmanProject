@@ -12,6 +12,10 @@ class LetterIndex extends StatefulWidget {
 class _LetterIndexState extends State<LetterIndex> {
   List<String> scanDocuments = [];
 
+  void clear() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +35,7 @@ class _LetterIndexState extends State<LetterIndex> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: LetterForm(
+                        screenName: 'LetterIndex',
                         scanDocumnets: scanDocuments,
                       ),
                     ),
