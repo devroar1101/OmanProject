@@ -9,6 +9,7 @@ import 'package:tenderboard/admin/listmasteritem/screens/add_listmasteritem.dart
 import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart'; // Import the screen
@@ -33,13 +34,10 @@ class CustomAppBar {
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         decoration: BoxDecoration(
-          gradient:const LinearGradient(colors: [
-            Color.fromARGB(255,10, 31, 61),
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 10, 31, 61),
             Color.fromARGB(52, 10, 31, 61)
-            
-
-        ],begin: Alignment.bottomLeft,end: Alignment.topRight
-        ),
+          ], begin: Alignment.bottomLeft, end: Alignment.topRight),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5), // Shadow color
@@ -73,7 +71,8 @@ class CustomAppBar {
                         debugPrint('Button clicked');
                       },
                       child: Card(
-                        color: const Color.fromARGB(238,238,238,255), // Background color for the card
+                        color: const Color.fromARGB(238, 238, 238,
+                            255), // Background color for the card
                         elevation: 2.0, // Elevation for shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius:
@@ -103,7 +102,7 @@ class CustomAppBar {
                   //   },
                   // ),
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: AppTheme.iconColor),
                     onPressed: () {
                       // Show AddListmasterScreen as a modal
                       _showModal(context: context, screenName: screenName);
@@ -134,7 +133,8 @@ class CustomAppBar {
                         debugPrint('Button clicked');
                       },
                       child: Card(
-                        color: const Color.fromARGB(255, 206, 204, 204), // Background color for the card
+                        color: const Color.fromARGB(255, 206, 204,
+                            204), // Background color for the card
                         elevation: 2.0, // Elevation for shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius:
@@ -144,7 +144,9 @@ class CustomAppBar {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),
                           child: Text(
-                            formatTitle(buttonTitle.isNotEmpty ? buttonTitle : 'Dashboard'), // Apply formatting
+                            formatTitle(buttonTitle.isNotEmpty
+                                ? buttonTitle
+                                : 'Dashboard'), // Apply formatting
                             style: const TextStyle(
                               fontWeight: FontWeight.bold, // Make the text bold
                               color:
@@ -158,27 +160,45 @@ class CustomAppBar {
                 ),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.person_outline_rounded),
+                    icon: const Icon(
+                      Icons.person_outline_rounded,
+                      color: AppTheme.iconColor,
+                    ),
                     onPressed: () {
                       debugPrint('Profile clicked');
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.scanner_outlined),
+                    icon: const Icon(
+                      Icons.scanner_outlined,
+                      color: AppTheme.iconColor,
+                    ),
                     tooltip: 'Scan',
                     onPressed: () {
-                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => const LetterIndex()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const LetterIndex()));
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.note_add_outlined),
+                    icon: const Icon(
+                      Icons.note_add_outlined,
+                      color: AppTheme.iconColor,
+                    ),
                     tooltip: 'Ejob',
                     onPressed: () {
-                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => const EjobScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const EjobScreen()));
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.logout),
+                    icon: const Icon(
+                      Icons.logout,
+                      color: AppTheme.iconColor,
+                    ),
                     onPressed: () async {
                       // Access AuthNotifier using context
                       final authNotifier = ProviderScope.containerOf(context)

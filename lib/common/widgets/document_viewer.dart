@@ -247,18 +247,22 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       ),
                       const SizedBox(height: 2),
                       IconButton(
-                        color: ColorPicker.formIconColor,
                         iconSize: 28, // Bigger icon size
-                        icon: const Icon(Icons.arrow_back),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: ColorPicker.formIconColor,
+                        ),
                         onPressed: validCurrentPage > 0
                             ? () => _changePage(validCurrentPage - 1)
                             : null,
                       ),
                       const SizedBox(height: 2),
                       IconButton(
-                        color: ColorPicker.formIconColor,
                         iconSize: 28, // Bigger icon size
-                        icon: const Icon(Icons.arrow_forward),
+                        icon: const Icon(
+                          Icons.arrow_forward,
+                          color: ColorPicker.formIconColor,
+                        ),
                         onPressed:
                             validCurrentPage < widget.imagePaths.length - 1
                                 ? () => _changePage(validCurrentPage + 1)
