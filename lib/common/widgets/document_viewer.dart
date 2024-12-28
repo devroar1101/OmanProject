@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';
 
@@ -138,7 +139,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
         children: [
           Card(
             elevation: 8, // Increase elevation for clickable feel
-            color: Colors.grey[200],
+            color: AppTheme.cardColor,
             child: SizedBox(
               width: 50,
               child: Row(
