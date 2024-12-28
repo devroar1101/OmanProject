@@ -87,7 +87,7 @@ class AppTheme {
       ),
       iconButtonTheme: const IconButtonThemeData(
         style: ButtonStyle(
-          iconColor: WidgetStatePropertyAll(iconColor),
+          iconColor: WidgetStatePropertyAll(textColor),
         ),
       ),
 

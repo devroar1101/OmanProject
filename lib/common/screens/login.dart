@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -139,6 +140,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         suffixIcon: IconButton(
           icon: Icon(
+            color: ColorPicker.formIconColor,
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
           ),
           onPressed: () {

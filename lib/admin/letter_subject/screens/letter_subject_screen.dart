@@ -78,6 +78,7 @@ class _LetterSubjectMasterScreenState
   Widget build(BuildContext context) {
     final letterSubjects = ref.watch(LetterSubjectMasterRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(letterSubjects);
+    print('subject : $letterSubjects');
 
     final iconButtons = [
       {
