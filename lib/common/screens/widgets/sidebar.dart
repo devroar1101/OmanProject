@@ -52,7 +52,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.mail,
         'navigate': const LetterSummary('121212')
       },
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
+      {'title': getTranslation('Ejob'), 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
         'title': getTranslation('DocumentSearch'),
         'icon': Icons.search,
@@ -137,8 +137,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(200, 236, 234, 234)
-            .withOpacity(0.8), // Lighter background
+        // Lighter background
+        gradient: const LinearGradient(colors: [
+          Color.fromARGB(255, 10, 31, 61),
+          Color.fromARGB(52, 10, 31, 61)
+        ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
@@ -167,7 +170,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       child: ListTile(
                         iconColor: Theme.of(context).iconTheme.color,
                         leading: const Icon(Icons.swap_horiz),
-                        title: _isMinimized ? null : Text(toggleCategory),
+                        title: _isMinimized
+                            ? null
+                            : Text(
+                                toggleCategory,
+                                style: const TextStyle(color: AppTheme.iconColor),
+                              ),
                         onTap: () {
                           _changeCategory(toggleCategory);
                         },
@@ -181,21 +189,21 @@ class _CustomSidebarState extends State<CustomSidebar> {
                     child: ListTile(
                       leading: Icon(
                         item['icon'],
-                        color:
-                            isActive ? Colors.blueAccent : AppTheme.iconColor,
+                        color: isActive
+                            ? AppTheme.activeColor
+                            : AppTheme.iconColor,
                       ),
                       title: _isMinimized
                           ? null
                           : Text(
                               item['title'],
                               style: TextStyle(
-                                fontWeight: isActive
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                color: isActive
-                                    ? Colors.blueAccent
-                                    : Colors.black87,
-                              ),
+                                  fontWeight: isActive
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isActive
+                                      ? AppTheme.activeColor
+                                      : AppTheme.iconColor),
                             ),
                       tileColor: isActive ? Colors.blue.withOpacity(0.1) : null,
                       shape: RoundedRectangleBorder(

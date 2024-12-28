@@ -92,7 +92,7 @@ class _ExternalLocationScreenState
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(width: 8.0),
+         const SizedBox(height: 8.0),
           Row(
             children: [
               Expanded(

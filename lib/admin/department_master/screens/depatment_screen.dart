@@ -92,7 +92,7 @@ class _DepartmentMasterScreenState
 
     final iconButtons = [
       {
-        "button": Icons.edit,
+        "button": (Icons.edit,),
         "function": (int id) {
           final Department currentDepartment =
               departments.firstWhere((department) => department.id == id);
@@ -187,8 +187,8 @@ class _DepartmentMasterScreenState
                   ], // Headers for columns
                   data: const [
                     'code',
-                    'departmentNameArabic',
-                    'departmentNameEnglish',
+                    'nameArabic',
+                    'nameEnglish',
                     'dgNameEnglish',
                   ], // Keys to extract data
                   details: Department.listToMap(

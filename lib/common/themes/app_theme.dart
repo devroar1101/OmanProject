@@ -1,58 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Define your color palette
-  static const Color primaryColor = Color(0xFFD4B492);
-  static const Color secondaryColor = Color(0xFF03DAC5); // Secondary color
-  static const Color backgroundColor =
-      Color.fromARGB(0, 212, 123, 49); // Light background color
-  static const Color darkBackgroundColor =
-      Color.fromARGB(255, 250, 249, 249); // Dark background color
-  static const Color activeColor =
-      Color.fromARGB(255, 6, 163, 129); // Active color for focus and selection
-  static const Color buttonColor = Color(0xFFD4B492); // Button color
-  static const Color buttonTextColor = Color(0xFF222F47); // Button text color
-  static const Color textColor = Colors.black; // Set to black
-  static const Color appBarColor = Color(0xFFFFFFFF); // AppBar color
-  static const Color cardColor = Color.fromARGB(255, 163, 100, 100);
-  static const Color iconColor = Color(0xFF0A1E3D); // Overall icon color
-  static const Color borderColor = Color(0xFF95B3A1); // Field border color
+  // Define your color palette based on the eTendering website
+  static const Color primaryColor = Color(0xFF004F95); // Blue
+  static const Color secondaryColor = Color(0xFF004F95); // Same as primary
+  static const Color backgroundColor = Color(0xFFF5F5F5); // Light gray
+  static const Color darkBackgroundColor = Color(0xFF2C3E50); // Dark blue-gray
+  static const Color activeColor = Color.fromARGB(255, 252, 174, 30); // Green
+  static const Color buttonColor =
+      Color.fromARGB(255, 212, 180, 146); // Bright button color
+  static const Color buttonTextColor =
+      Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
+  static const Color textColor =
+      Color.fromARGB(255, 33, 37, 41); // Black text color
+  static const Color appBarColor = Color(0xFF004F95); // Matches primary color
+  static const Color cardColor = Color(0xFFFFFFFF); // White for cards
+  static const Color iconColor =
+      Color.fromARGB(255, 237, 240, 241); // Consistent icon color
+  static const Color borderColor = Color(0xFFCCCCCC); // Light gray for borders
   static const Color displayHeaderColor =
-      Color(0xFF8EAE9B); // Display detail header color
-
-  // Common elevated button theme
-  static final elevatedButtonTheme = ElevatedButtonThemeData(
-    style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.pressed)) {
-          return activeColor; // Active color when pressed
-        }
-        return buttonColor; // Default button color
-      }),
-      foregroundColor: WidgetStateProperty.all(textColor),
-      shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+      Color.fromARGB(255, 142, 174, 155); // Same as primary
+  static const Color dialogColor = Color.fromARGB(255, 237, 238, 240);
+  // Common text theme using GoogleFonts for Kufam
+  static TextTheme _textTheme = TextTheme(
+    headlineLarge: GoogleFonts.kufam(
+      textStyle: TextStyle(
+        fontSize: 32.0,
+        fontWeight: FontWeight.bold,
+        color: textColor,
       ),
-      padding: WidgetStateProperty.all(
-        const EdgeInsets.symmetric(vertical: 12),
+    ),
+    bodyLarge: GoogleFonts.kufam(
+      textStyle: TextStyle(
+        fontSize: 16.0,
+        color: textColor,
+      ),
+    ),
+    labelLarge: GoogleFonts.kufam(
+      textStyle: TextStyle(
+        fontSize: 14.0,
+        color: buttonTextColor,
+        fontWeight: FontWeight.bold,
       ),
     ),
   );
 
-  // Common text theme
-  static const TextTheme _textTheme = TextTheme(
-    headlineLarge: TextStyle(
-        fontSize: 32.0, fontWeight: FontWeight.bold, color: textColor),
-    bodyLarge: TextStyle(fontSize: 16.0, color: textColor),
-    labelLarge: TextStyle(
-        fontSize: 14.0, color: buttonTextColor, fontWeight: FontWeight.bold),
-  );
-
-//static const Color iconColor = Color(0xFF0A1E3D); // Overall icon color
-
-// Global IconTheme Data for the entire project
+  // Global IconTheme Data for the entire project
   static const iconTheme = IconThemeData(
     color: iconColor, // Set the global icon color
   );
@@ -61,24 +55,23 @@ class AppTheme {
   static ThemeData getTheme({required bool isDarkMode}) {
     return ThemeData(
       primaryColor: primaryColor,
-      scaffoldBackgroundColor:
-          isDarkMode ? const Color.fromARGB(255, 178, 180, 180) : backgroundColor,
+      scaffoldBackgroundColor: const Color(0xf8f9fa),
       colorScheme: ColorScheme(
         primary: primaryColor,
         secondary: secondaryColor,
         surface: isDarkMode ? darkBackgroundColor : backgroundColor,
         error: Colors.red,
-        onPrimary: textColor,
+        onPrimary: buttonTextColor,
         onSecondary: buttonTextColor,
         onSurface: textColor,
-        onError: const Color.fromARGB(255, 180, 81, 81),
+        onBackground: textColor,
+        onError: Colors.white,
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
       ),
       iconTheme: iconTheme,
-      elevatedButtonTheme: elevatedButtonTheme, // Use the updated button theme
-      textTheme: _textTheme,
+      textTheme: _textTheme, // Apply text theme with Kufam font
       appBarTheme: const AppBarTheme(
-        color: Color.fromARGB(0, 187, 57, 57),
+        color: appBarColor,
         iconTheme: IconThemeData(color: iconColor),
         titleTextStyle: TextStyle(
           color: buttonTextColor,
@@ -86,7 +79,18 @@ class AppTheme {
           fontWeight: FontWeight.bold,
         ),
       ),
-      cardColor: isDarkMode ? darkBackgroundColor : cardColor,
+      dialogTheme: DialogTheme(
+        backgroundColor: dialogColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      iconButtonTheme: const IconButtonThemeData(
+        style: ButtonStyle(
+          iconColor: WidgetStatePropertyAll(iconColor),
+        ),
+      ),
+
       inputDecorationTheme: const InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: borderColor),
@@ -99,6 +103,26 @@ class AppTheme {
         ),
         labelStyle: TextStyle(color: textColor),
         hintStyle: TextStyle(color: textColor),
+      ),
+      cardTheme: CardTheme(
+        color: isDarkMode
+            ? const Color.fromARGB(238, 238, 238, 255)
+            : cardColor, // Light or dark mode
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor, // Button background color
+          foregroundColor: buttonTextColor, // Button text color
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
       ),
     );
   }

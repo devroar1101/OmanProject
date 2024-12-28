@@ -14,6 +14,7 @@ import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
@@ -284,6 +285,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               width: 90,
               height: 30, // Adjusted width for compact design
               child: DropdownButtonFormField<int>(
+                dropdownColor: AppTheme.backgroundColor,
                 value: selectedYear,
                 decoration: InputDecoration(
                   labelText: 'Year',

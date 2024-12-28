@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 
 // ignore: must_be_immutable
 class SelectField<T> extends StatefulWidget {
@@ -148,6 +149,8 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                                     _removeOverlay();
                                   },
                                   child: ListTile(
+                                    tileColor: AppTheme.dialogColor,
+                                    textColor: AppTheme.textColor,
                                     selected:
                                         option.key == widget.selectedOption,
                                     title: Text(option.displayName),
