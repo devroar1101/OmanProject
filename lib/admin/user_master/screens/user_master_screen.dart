@@ -136,9 +136,9 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
     return Scaffold(
       body: Column(
         children: [
-          UsersSearchForm(
+          /* UsersSearchForm(
             onSearch: onSearch,
-          ),
+          ),*/
           if (users.isNotEmpty)
             Pagination(
               totalItems:

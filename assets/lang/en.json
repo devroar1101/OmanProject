@@ -9,6 +9,7 @@
     "Name" :  "Name",
     "From":  "From",
     "SNO":  "S.No",
+     "ScanAndIndex":"Scan & Index",
     "Ejob" : "Ejob",
     "Subject":  "Subject",
     "Location" :  "Location",

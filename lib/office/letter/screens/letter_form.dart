@@ -15,6 +15,7 @@ import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
@@ -368,6 +369,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                               _selectedDirection == 'Incoming'
                                   ? Icons.arrow_circle_down_outlined
                                   : Icons.arrow_circle_up_outlined,
+                              color: ColorPicker.formIconColor,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -413,10 +415,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              _selectedDirectionType == 'Internal'
-                                  ? Icons.arrow_circle_left_outlined
-                                  : Icons.arrow_circle_right_outlined,
-                            ),
+                                _selectedDirectionType == 'Internal'
+                                    ? Icons.arrow_circle_left_outlined
+                                    : Icons.arrow_circle_right_outlined,
+                                color: ColorPicker.formIconColor),
                             const SizedBox(width: 8),
                             Text(
                               _selectedDirectionType,

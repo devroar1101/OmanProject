@@ -52,14 +52,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.mail,
         'navigate': const LetterSummary('121212')
       },
-      {'title': getTranslation('Ejob'), 'icon': Icons.business, 'navigate': const EjobScreen()},
+      {
+        'title': getTranslation('Ejob'),
+        'icon': Icons.business,
+        'navigate': const EjobScreen()
+      },
       {
         'title': getTranslation('DocumentSearch'),
         'icon': Icons.search,
         'navigate': const DocumentSearchHome(),
       },
       {
-        'title': getTranslation('Circular'),
+        'title': getTranslation('ScanAndIndex'),
         'icon': Icons.circle,
         'navigate': const LetterIndex(),
       },
@@ -140,7 +144,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         // Lighter background
         gradient: const LinearGradient(colors: [
           Color.fromARGB(255, 10, 31, 61),
-          Color.fromARGB(52, 10, 31, 61)
+          Color.fromARGB(133, 10, 31, 61)
         ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
@@ -174,7 +178,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
                             ? null
                             : Text(
                                 toggleCategory,
-                                style: const TextStyle(color: AppTheme.iconColor),
+                                style:
+                                    const TextStyle(color: AppTheme.iconColor),
                               ),
                         onTap: () {
                           _changeCategory(toggleCategory);
@@ -224,8 +229,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
             // Toggle minimize button at the bottom
             IconButton(
               icon: Icon(
-                _isMinimized ? (Icons.arrow_forward) : (Icons.arrow_back),
-              ),
+                  _isMinimized ? (Icons.arrow_forward) : (Icons.arrow_back),
+                  color: AppTheme.iconColor),
               onPressed: _toggleMinimize,
             ),
           ],

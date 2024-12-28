@@ -7,7 +7,9 @@ import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 
 class RoutingHistory extends StatelessWidget {
-  const RoutingHistory({super.key});
+  const RoutingHistory({super.key, required this.isRtl});
+
+  final bool isRtl;
 
   // Method to convert data to CSV and trigger download for web
   Future<void> downloadDataAsCsv(BuildContext context) async {
@@ -202,6 +204,7 @@ class RoutingHistory extends StatelessWidget {
                     // Action Details in a Card
                     Expanded(
                       child: ActionCard(
+                        isRtl: isRtl,
                         action: action,
                         actionType: actionType,
                       ),
@@ -220,8 +223,13 @@ class RoutingHistory extends StatelessWidget {
 class ActionCard extends StatelessWidget {
   final LetterAction action;
   final ActionType actionType;
+  final bool isRtl;
 
-  const ActionCard({super.key, required this.action, required this.actionType});
+  const ActionCard(
+      {super.key,
+      required this.action,
+      required this.actionType,
+      required this.isRtl});
 
   @override
   Widget build(BuildContext context) {
@@ -240,8 +248,8 @@ class ActionCard extends StatelessWidget {
           if (priority != null)
             Positioned(
               top: 2,
-              left: 4,
-              right: null,
+              left: isRtl ? 4 : null,
+              right: isRtl ? null : 4,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment:

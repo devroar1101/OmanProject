@@ -21,7 +21,6 @@ class _DepartmentMasterScreenState
   @override
   void initState() {
     super.initState();
-    ref.read(departmentMasterRepositoryProvider.notifier).fetchDepartments();
   }
 
   String searchNameArabic = '';

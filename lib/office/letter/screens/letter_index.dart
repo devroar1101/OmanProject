@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 
@@ -30,8 +31,8 @@ class _LetterIndexState extends State<LetterIndex> {
                   minHeight: MediaQuery.of(context).size.height,
                 ),
                 child: IntrinsicHeight(
-                  child: Card(
-                    color: Colors.grey[200],
+                  child: Container(
+                    color: AppTheme.cardColor,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: LetterForm(

@@ -30,14 +30,18 @@ class CustomAppBar {
     required String screenName,
     required String buttonTitle,
   }) {
+    bool isRtl = Directionality.of(context) == TextDirection.rtl;
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [
-            Color.fromARGB(255, 10, 31, 61),
-            Color.fromARGB(52, 10, 31, 61)
-          ], begin: Alignment.bottomLeft, end: Alignment.topRight),
+          gradient: LinearGradient(
+              colors: const [
+                Color.fromARGB(255, 10, 31, 61),
+                Color.fromARGB(133, 10, 31, 61)
+              ],
+              begin: isRtl ? Alignment.bottomLeft : Alignment.topRight,
+              end: isRtl ? Alignment.topRight : Alignment.bottomLeft),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5), // Shadow color

@@ -42,7 +42,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
   @override
   Widget build(BuildContext context) {
     final dgOptionAsyncvalue = ref.watch(dgOptionsProvider(false));
-    final dgOptions = dgOptionAsyncvalue.asData?.value;
+    final dgOptions = dgOptionAsyncvalue.asData?.value ?? [];
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -97,7 +97,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
             Expanded(
               child: SelectField<DgMaster>(
                 label: 'DG',
-                options: dgOptions!,
+                options: dgOptions,
                 onChanged: (dg, selectedOption) {
                   setState(() {
                     _selectedDropdownValue = dg.id.toString();
