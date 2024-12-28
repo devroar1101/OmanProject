@@ -24,6 +24,7 @@ class _ScannerAppState extends State<Scanner> {
   String? _selectedScanner;
   List<Uint8List> imagePaths = [];
   int currentPage = 0;
+  bool scanning = false;
 
   // Configuration settings for scanning
   bool ifFeederEnabled = false;
@@ -43,9 +44,10 @@ class _ScannerAppState extends State<Scanner> {
     return Scaffold(
       body: DocumentViewer(
         imagePaths: imagePaths,
-        initialPage: 0,
+
         startScan: _startScan, // Pass the function to start scanning
-        showScannerDialog: showAlertBox, // Pass the function to show the dialog
+        showScannerDialog: showAlertBox,
+        scanning: scanning, // Pass the function to show the dialog
       ),
     );
   }
@@ -255,6 +257,9 @@ class _ScannerAppState extends State<Scanner> {
 
   // Start scanning based on the selected device
   Future<void> _startScan() async {
+    setState(() {
+      scanning = true;
+    });
     final selectedIndex = scannerNames.indexOf(_selectedScanner!);
     if (selectedIndex >= 0) {
       await _scanDocument(selectedIndex);
@@ -273,12 +278,14 @@ class _ScannerAppState extends State<Scanner> {
         'IfDuplexEnabled': ifDuplexEnabled,
       },
     };
+    print(parameters);
 
     try {
       final String jobId =
           await dynamsoftService.scanDocument(host, parameters);
 
       if (jobId != '') {
+        print(jobId);
         // Fetch image streams (Uint8List) from the scanner service
         List<Uint8List> imageStreams =
             await dynamsoftService.getImageStreams(host, jobId);
@@ -288,6 +295,7 @@ class _ScannerAppState extends State<Scanner> {
           imagePaths
               .addAll(imageStreams); // Append raw image streams to the list
           currentPage = imagePaths.length - imageStreams.length;
+          scanning = false;
         });
 
         if (widget.scanDocumnets != null) {

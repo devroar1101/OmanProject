@@ -120,7 +120,9 @@ class _StackWithSliderState extends ConsumerState<DocumentSearchHome> {
             child: Material(
               elevation: 0,
               color: Colors.white,
-              child: LetterForm(),
+              child: LetterForm(
+                screenName: 'DocumentSearch',
+              ),
             ),
           ),
         ],

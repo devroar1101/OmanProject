@@ -118,46 +118,79 @@ class RoutingHistory extends StatelessWidget {
       ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Routing History"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () {
-              downloadDataAsCsv(context); // Trigger CSV download when clicked
-            },
-          ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: letterActions.length,
-        itemBuilder: (context, index) {
-          final action = letterActions[index];
-          final actionType = LetterAction().getActionTypeById(action.actionId!);
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: Priority.values.map((priority) {
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                        right: 8.0), // Add space between items
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Icon Container with background color and rounded corners
+                        Container(
+                          padding: const EdgeInsets.all(
+                              5), // Adds padding around the icon
+                          decoration: BoxDecoration(
+                            color:
+                                priority.color, // Background color for the icon
+                            shape: BoxShape
+                                .circle, // Circular shape for the icon container
+                          ),
+                        ),
+                        const SizedBox(
+                            width: 8), // Space between icon and label
+                        // Label text
+                        Text(
+                          priority.getLabel(context),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
 
-          if (actionType == null) return SizedBox.shrink();
+                            fontSize:
+                                10, // Reduced font size to fit better within the row
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const Spacer(),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: IconButton(
+                icon: const Icon(Icons.file_download),
+                onPressed: () {
+                  downloadDataAsCsv(
+                      context); // Trigger CSV download when clicked
+                },
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: letterActions.length,
+            itemBuilder: (context, index) {
+              final action = letterActions[index];
+              final actionType =
+                  LetterAction().getActionTypeById(action.actionId!);
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+              if (actionType == null) return SizedBox.shrink();
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      actionType.icon,
-                      color: actionType.color,
-                      size: 32,
-                    ),
-                    Text(
-                      actionType.getLabel(context),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: actionType.color,
-                          fontSize: 15),
-                    ),
                     Text(
                         action.timeStamp != null
                             ? DateFormat('MM/dd/yyyy')
@@ -165,21 +198,21 @@ class RoutingHistory extends StatelessWidget {
                             : "No Date",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18)),
+                    const SizedBox(width: 8),
+                    // Action Details in a Card
+                    Expanded(
+                      child: ActionCard(
+                        action: action,
+                        actionType: actionType,
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(width: 8),
-                // Action Details in a Card
-                Expanded(
-                  child: ActionCard(
-                    action: action,
-                    actionType: actionType,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -198,7 +231,7 @@ class ActionCard extends StatelessWidget {
         Classification.byId(action.classificationId!);
 
     return Card(
-      elevation: 4,
+      elevation: 8,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -206,22 +239,64 @@ class ActionCard extends StatelessWidget {
         children: [
           if (priority != null)
             Positioned(
-                top: 0,
-                left: 0,
-                right: null,
-                child: Container(
-                  padding: const EdgeInsets.all(
-                      12), // Adjust padding for a balanced look
-                  decoration: BoxDecoration(
-                    color: priority.color,
-                    shape: BoxShape.circle, // Make the container circular
+              top: 2,
+              left: 4,
+              right: null,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Center content properly
+                children: [
+                  // Add a circular background behind the icon
+                  Container(
+                    padding: EdgeInsets.all(6), // Adds space around the icon
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(35),
+                        border: Border.all(
+                          color: priority
+                              .color, // Set the border color here (e.g., blue)
+                          width:
+                              2, // Set the border width here (you can adjust the value)
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            offset: Offset(2, 2),
+                            blurRadius: 8,
+                          )
+                        ]),
+                    child: Icon(
+                      actionType.icon,
+                      color: priority.color,
+                      size:
+                          32, // Adjust icon size to fit inside the circle without overflow
+                    ),
                   ),
-                  child: Icon(
-                    priority.icon,
-                    color: Colors.white,
-                    size: 18,
+                  const SizedBox(height: 4), // Space between the icon and text
+                  // Text with appropriate font size to fit inside the CircleAvatar
+                  Text(
+                    actionType.getLabel(context),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: priority.color,
+                      fontSize:
+                          12, // Reduced font size to fit better in the circle
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(1, 1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
+                    overflow: TextOverflow
+                        .ellipsis, // Prevent text from overflowing if it's too long
+                    textAlign: TextAlign.center, // Center text
                   ),
-                )), // Classification label
+                ],
+              ),
+            ), // Classification label
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

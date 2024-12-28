@@ -19,6 +19,7 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
   List<Uint8List> images = [];
   bool isFirstImageLoaded = false;
   bool isFetching = false;
+  int totalPage = 0;
 
   @override
   void initState() {
@@ -38,8 +39,9 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
 
       if (attachment == null || attachment.totalPage == null) {
         throw Exception("No attachment or pages found for objectId.");
+      } else {
+        totalPage = attachment.totalPage!;
       }
-
       // Start fetching images asynchronously
       for (int page = 1; page <= attachment.totalPage!; page++) {
         _fetchImage(contentRepo, page, attachment.totalPage!);
@@ -87,7 +89,7 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
 
     return DocumentViewer(
       imagePaths: images,
-      initialPage: 0,
+      totalPage: totalPage,
     );
   }
 }

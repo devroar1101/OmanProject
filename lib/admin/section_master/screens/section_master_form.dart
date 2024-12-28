@@ -117,6 +117,7 @@ class _SectionMasterSearchFormState
             // DG Dropdown Field
             Expanded(
               child: SelectField<DgMaster>(
+                label: 'DG',
                 key: ValueKey('dgKey_$_resetKey'),
                 options: dgOptions,
                 onChanged: (dg, selectedOption) {
@@ -139,6 +140,7 @@ class _SectionMasterSearchFormState
             // Department Dropdown Field
             Expanded(
               child: SelectField<Department>(
+                label: 'Department',
                 options: departmentOptions,
                 key: ValueKey(departmentOptions),
                 onChanged: (department, selectedOption) {

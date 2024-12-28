@@ -6,26 +6,28 @@ import 'package:flutter/widgets.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';
 
+// ignore: must_be_immutable
 class DocumentViewer extends StatefulWidget {
   final List<Uint8List> imagePaths;
-  final int initialPage;
+  final int totalPage;
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
+  bool? scanning;
 
-  const DocumentViewer({
-    super.key,
-    required this.imagePaths,
-    required this.initialPage,
-    this.startScan,
-    this.showScannerDialog,
-  });
+  DocumentViewer(
+      {super.key,
+      required this.imagePaths,
+      this.startScan,
+      this.totalPage = 0,
+      this.showScannerDialog,
+      this.scanning});
 
   @override
   _DocumentViewerState createState() => _DocumentViewerState();
 }
 
 class _DocumentViewerState extends State<DocumentViewer> {
-  late int currentPage;
+  int currentPage = 0;
   late bool isFullScreen;
   late bool isThumbnailsVisible;
   final TextEditingController _pageController = TextEditingController();
@@ -33,11 +35,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
   @override
   void initState() {
     super.initState();
-    currentPage = widget.imagePaths.isEmpty ||
-            widget.initialPage < 0 ||
-            widget.initialPage >= widget.imagePaths.length
-        ? 0
-        : widget.initialPage;
+
     isFullScreen = false;
     isThumbnailsVisible = false;
   }
@@ -138,150 +136,146 @@ class _DocumentViewerState extends State<DocumentViewer> {
     return Scaffold(
       body: Row(
         children: [
-          // Header Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
-            child: Card(
-              elevation: 8, // Increase elevation for clickable feel
-              color: Colors.grey[200],
-              child: SizedBox(
-                width: 50,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          iconSize: 28, // Bigger icon size
-                          icon: Icon(
-                            isThumbnailsVisible
-                                ? Icons.view_compact
-                                : Icons.view_sidebar,
-                            color: ColorPicker.formIconColor,
-                          ),
-                          onPressed: _toggleThumbnails,
+          Card(
+            elevation: 8, // Increase elevation for clickable feel
+            color: Colors.grey[200],
+            child: SizedBox(
+              width: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: Icon(
+                          isThumbnailsVisible
+                              ? Icons.view_compact
+                              : Icons.view_sidebar,
+                          color: ColorPicker.formIconColor,
                         ),
-                        const SizedBox(height: 2),
-                        if (widget.showScannerDialog != null)
-                          IconButton(
-                            iconSize: 28, // Bigger icon size
-                            icon: const Icon(
-                              Icons.settings,
-                              color: ColorPicker.formIconColor,
-                            ),
-                            onPressed: () => widget.showScannerDialog!(context),
-                          ),
-                        const SizedBox(height: 2),
-                        SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: TextField(
-                            controller: _pageController,
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              _goToPage();
-                            },
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 4, horizontal: 4),
-                              border: OutlineInputBorder(),
-                              hintText: '0',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '/ ${widget.imagePaths.length}',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2),
+                        onPressed: _toggleThumbnails,
+                      ),
+                      const SizedBox(height: 2),
+                      if (widget.showScannerDialog != null)
                         IconButton(
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(
-                            Icons.edit,
+                            Icons.settings,
                             color: ColorPicker.formIconColor,
                           ),
-                          onPressed: _editImage,
+                          onPressed: () => widget.showScannerDialog!(context),
                         ),
-                        const SizedBox(height: 2),
-                        IconButton(
-                          iconSize: 28, // Bigger icon size
-                          icon: const Icon(
-                            Icons.delete,
-                            color: ColorPicker.formIconColor,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              widget.imagePaths.removeAt(currentPage);
-                              if (widget.imagePaths.isEmpty) {
-                                currentPage = 0;
-                              } else {
-                                currentPage = currentPage.clamp(
-                                    0, widget.imagePaths.length - 1);
-                              }
-                            });
+                      const SizedBox(height: 2),
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: TextField(
+                          controller: _pageController,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            _goToPage();
                           },
-                        ),
-                        const SizedBox(height: 2),
-                        IconButton(
-                          iconSize: 28, // Bigger icon size
-                          icon: const Icon(
-                            Icons.delete_forever,
-                            color: ColorPicker.formIconColor,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 4),
+                            border: OutlineInputBorder(),
+                            hintText: '0',
                           ),
-                          onPressed: () {
-                            setState(() {
-                              widget.imagePaths.clear();
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '/ ${widget.totalPage != 0 ? widget.totalPage : widget.imagePaths.length}',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.edit,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _editImage,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.delete,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            widget.imagePaths.removeAt(currentPage);
+                            if (widget.imagePaths.isEmpty) {
                               currentPage = 0;
-                            });
-                          },
+                            } else {
+                              currentPage = currentPage.clamp(
+                                  0, widget.imagePaths.length - 1);
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.delete_forever,
+                          color: ColorPicker.formIconColor,
                         ),
-                        const SizedBox(height: 2),
+                        onPressed: () {
+                          setState(() {
+                            widget.imagePaths.clear();
+                            currentPage = 0;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: Icon(
+                          isFullScreen
+                              ? Icons.fullscreen_exit
+                              : Icons.fullscreen,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _toggleFullScreen,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        color: ColorPicker.formIconColor,
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: validCurrentPage > 0
+                            ? () => _changePage(validCurrentPage - 1)
+                            : null,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        color: ColorPicker.formIconColor,
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(Icons.arrow_forward),
+                        onPressed:
+                            validCurrentPage < widget.imagePaths.length - 1
+                                ? () => _changePage(validCurrentPage + 1)
+                                : null,
+                      ),
+                      const SizedBox(height: 2),
+                      if (widget.startScan != null)
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: Icon(
-                            isFullScreen
-                                ? Icons.fullscreen_exit
-                                : Icons.fullscreen,
+                          icon: const Icon(
+                            Icons.scanner,
                             color: ColorPicker.formIconColor,
                           ),
-                          onPressed: _toggleFullScreen,
+                          onPressed: widget.startScan,
                         ),
-                        const SizedBox(height: 2),
-                        IconButton(
-                          color: ColorPicker.formIconColor,
-                          iconSize: 28, // Bigger icon size
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: validCurrentPage > 0
-                              ? () => _changePage(validCurrentPage - 1)
-                              : null,
-                        ),
-                        const SizedBox(height: 2),
-                        IconButton(
-                          color: ColorPicker.formIconColor,
-                          iconSize: 28, // Bigger icon size
-                          icon: const Icon(Icons.arrow_forward),
-                          onPressed:
-                              validCurrentPage < widget.imagePaths.length - 1
-                                  ? () => _changePage(validCurrentPage + 1)
-                                  : null,
-                        ),
-                        const SizedBox(height: 2),
-                        if (widget.startScan != null)
-                          IconButton(
-                            iconSize: 28, // Bigger icon size
-                            icon: const Icon(
-                              Icons.scanner,
-                              color: ColorPicker.formIconColor,
-                            ),
-                            onPressed: widget.startScan,
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -292,20 +286,49 @@ class _DocumentViewerState extends State<DocumentViewer> {
                 // Main Page Image (Zoomable)
                 GestureDetector(
                   onTap: _toggleFullScreen,
-                  child: widget.imagePaths.isNotEmpty
-                      ? InteractiveViewer(
-                          minScale: 1,
-                          maxScale: 4.0,
-                          child: SizedBox.expand(
-                            child: Image.memory(
-                              widget.imagePaths[validCurrentPage],
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.contain,
-                            ),
+                  child: widget.scanning != null && widget.scanning!
+                      ? Center(
+                          child: Image.asset(
+                            'assets/document_scanning.gif',
+                            width: 500, // Adjust dimensions as needed
+                            height: 500,
+                            fit: BoxFit.contain,
                           ),
                         )
-                      : Container(),
+                      : widget.imagePaths.isNotEmpty
+                          ? InteractiveViewer(
+                              minScale: 1,
+                              maxScale: 4.0,
+                              child: SizedBox.expand(
+                                child: Image.memory(
+                                  widget.imagePaths[validCurrentPage],
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.document_scanner_outlined,
+                                    size: 100,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No Document Available',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      color: Colors.grey.shade500,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                 ),
                 // Thumbnails (Vertical Stack)
                 if (isThumbnailsVisible)

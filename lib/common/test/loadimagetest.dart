@@ -96,7 +96,6 @@ class _TestImageViewerScreenState extends State<TestImageViewerScreen> {
           ? const Center(child: CircularProgressIndicator())
           : DocumentViewer(
               imagePaths: _images,
-              initialPage: 0,
             ),
     );
   }

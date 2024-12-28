@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/load_letter_document.dart';
-import 'package:tenderboard/common/widgets/scanner.dart';
-import 'package:tenderboard/office/letter/model/letter.dart';
-import 'package:tenderboard/office/letter/model/letter_action.dart';
-import 'package:tenderboard/office/letter/model/letter_attachment.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
-import 'package:tenderboard/office/letter_summary/screens/widgets/summary_assign.dart';
-import 'package:tenderboard/office/letter_summary/screens/widgets/summary_close.dart';
-import 'package:tenderboard/office/letter_summary/screens/widgets/summary_followUp.dart';
-import 'package:tenderboard/office/letter_summary/screens/widgets/summary_reply.dart';
-import 'package:tenderboard/office/letter_summary/screens/widgets/summary_suspent.dart';
 
 class LetterSummary extends StatefulWidget {
   final String letterObjectId;
@@ -23,98 +14,110 @@ class LetterSummary extends StatefulWidget {
 class _LetterSummaryState extends State<LetterSummary> {
   String _selectedTab = "Details";
 
-  late Letter letter;
-  late LetterAction letterAction;
-  late LetterAttachment letterAttachment;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
+      appBar: AppBar(),
+      body: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Details";
-                    }),
-                    child: const Text("Details"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Routing";
-                    }),
-                    child: const Text("Routing"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Attachment";
-                    }),
-                    child: const Text("Attachment"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Assign Job";
-                    }),
-                    child: const Text("Assign Job"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Follo_UP Job";
-                    }),
-                    child: const Text("Follo_UP Job"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Reply Job";
-                    }),
-                    child: const Text("Reply Job"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Suspent Job";
-                    }),
-                    child: const Text("Suspent Job"),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _selectedTab = "Close Job";
-                    }),
-                    child: const Text("Close Job"),
-                  ),
-                ],
+            // Left Side - Navigation Tabs and Content
+            Flexible(
+              flex: 3,
+              child: Container(
+                color: Colors.grey[200],
+                child: Column(
+                  children: [
+                    // Tabs
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _buildTab("Details"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          _buildTab("Routing"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          _buildTab("Attachment"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          _buildTab("Link Document"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          _buildTab("Additional Info"),
+                        ],
+                      ),
+                    ),
+                    // Content Area
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, bottom: 12),
+                        child: _buildContent(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Right Side - Document Viewer or Additional Content
+            Flexible(
+              flex: 2,
+              child: Container(
+                color: Colors.grey[200],
+                child: Center(
+                    child: Container(
+                  color: Colors.grey[200], // Optional background color
+                  child: LoadLetterDocument(objectId: widget.letterObjectId),
+                )),
               ),
             ),
           ],
         ),
-        automaticallyImplyLeading: false,
       ),
-      body: Row(
-        children: [
-          // Left Side - Conditional Content
-          Expanded(
-            flex: 1,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
-              ),
-              child: Card(elevation: 2, child: _buildContent()),
-            ),
-          ),
+    );
+  }
 
-          // Right Side - Empty Space
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.grey[200], // Optional background color
-              child: LoadLetterDocument(
-                  objectId: widget.letterObjectId), // Your scanner widget here
-            ),
+  Widget _buildTab(String label) {
+    final isSelected = _selectedTab == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTab = label;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey[300],
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
           ),
-        ],
+          boxShadow: isSelected
+              ? [
+                  const BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5,
+                    offset: Offset(2, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+          ),
+        ),
       ),
     );
   }
@@ -123,22 +126,11 @@ class _LetterSummaryState extends State<LetterSummary> {
     switch (_selectedTab) {
       case "Details":
         return LetterForm(
+          screenName: 'LetterSummary',
           letterObjectId: widget.letterObjectId,
         );
       case "Routing":
         return const RoutingHistory();
-      case "Attachment":
-        return const Center(child: Text("Attachment Content Placeholder"));
-      case "Assign Job":
-        return const JobAssignForm();
-      case "Follo_UP Job":
-        return FollowUpJobsForm(); // Display JobAssignForm widget here
-      case "Reply Job":
-        return const ReplyJobForm(); // Display JobAssignForm widget here
-      case "Suspent Job":
-        return const SuspendJobForm(); // Display JobAssignForm widget here
-      case "Close Job":
-        return const CloseJobForm(); // Display JobAssignForm widget here
       default:
         return const Center(child: Text("Invalid Tab"));
     }

@@ -111,9 +111,10 @@ class LetterSummaryResult {
             : map['departmentNameEnglish'],
         sectionName:
             lang == 'ar' ? map['sectionNameArabic'] : map['sectionNameEnglish'],
-        locationName: lang == 'ar'
-            ? map['locationNameArabic']
-            : map['locationNameEnglish']);
+        locationName: (lang == 'ar'
+                ? map['locationNameArabic']
+                : map['locationNameEnglish']) ??
+            'Tender Board');
   }
 
   // Method to convert the object to a map (for serialization)

@@ -7,6 +7,7 @@ class CustomSnackbar {
     required String message,
     required int typeId,
     required int durationInSeconds,
+    String? asset,
   }) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
@@ -37,13 +38,13 @@ class CustomSnackbar {
       backgroundColor: Colors.transparent,
       elevation: 0,
       duration: Duration(seconds: durationInSeconds),
-      margin: EdgeInsetsDirectional.only(
+      margin: const EdgeInsetsDirectional.only(
         bottom: 20,
-        start: isRtl ? 1000.0 : 20.0,
-        end: isRtl ? 20.0 : 1000.0,
+        start: 20.0,
+        end: 1000.0,
       ),
       content: Container(
-        constraints: const BoxConstraints(maxWidth: 280), // Pocket-sized width
+        constraints: const BoxConstraints(maxWidth: 280),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: type["color"],
@@ -58,19 +59,27 @@ class CustomSnackbar {
         ),
         child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+            // Display asset if provided; otherwise, use the type style icon
+            if (asset != null)
+              Image.asset(
+                asset,
+                width: 36,
+                height: 36,
+              )
+            else
+              Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  type["icon"],
+                  color: type["color"],
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                type["icon"],
-                color: type["color"],
-                size: 20,
-              ),
-            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -103,4 +112,41 @@ class CustomSnackbar {
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+}
+
+class ProgressSnackbarController {
+  final BuildContext context;
+
+  ProgressSnackbarController(this.context);
+
+  void update({
+    required String title,
+    required String message,
+    required int typeId,
+    String? asset,
+  }) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    CustomSnackbar.show(
+      context: context,
+      title: title,
+      message: message,
+      typeId: typeId,
+      durationInSeconds: 2,
+    );
+  }
+}
+
+ProgressSnackbarController showProgressSnackbar({
+  required BuildContext context,
+  required String message,
+}) {
+  final controller = ProgressSnackbarController(context);
+  CustomSnackbar.show(
+    context: context,
+    title: "Processing",
+    message: message,
+    typeId: 0,
+    durationInSeconds: 5,
+  );
+  return controller;
 }

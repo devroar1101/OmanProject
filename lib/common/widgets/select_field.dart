@@ -6,7 +6,8 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 class SelectField<T> extends StatefulWidget {
   final List<SelectOption<T>> options;
   final Function(T, SelectOption) onChanged;
-  final String hint;
+  final String? hint;
+  final String label;
   String? selectedOption;
   String? initialValue;
 
@@ -14,7 +15,8 @@ class SelectField<T> extends StatefulWidget {
       {super.key,
       required this.options,
       required this.onChanged,
-      this.hint = 'Search...',
+      required this.label,
+      this.hint,
       this.initialValue,
       this.selectedOption});
 
@@ -181,11 +183,29 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
           child: TextFormField(
             controller: _searchController,
             decoration: InputDecoration(
+              labelText: widget.label,
+              labelStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+              hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+              floatingLabelAlignment: FloatingLabelAlignment.center,
+              floatingLabelStyle: const TextStyle(
+                fontSize: 16,
+                color: Colors.black, // Black color when active
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(
+                    color: Colors.black), // Optional: Black border when active
+              ),
               hintText: widget.hint,
-              border: const OutlineInputBorder(),
               suffixIcon: Icon(
                 isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                color: Colors.black,
               ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
             onTap: _createOrUpdateOverlay,
             onChanged: (value) {

@@ -2,6 +2,10 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/cabinet_repo.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
 import 'package:tenderboard/common/utilities/language_mannager.dart';
 
@@ -31,6 +35,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     await LocalizationManager()
         .changeLanguage(savedLanguage); // Ensure translations are loaded
+    preLoad();
   }
 
   // Save the authentication state in SharedPreferences
@@ -41,6 +46,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (userName != null) {
         await prefs.setString('username', userName);
       }
+      preLoad();
     } else {
       await prefs.setString('selectedLanguage', 'en');
       await prefs.remove('accessToken');
@@ -82,6 +88,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     return List.generate(
         32, (index) => characters[random.nextInt(characters.length)]).join();
+  }
+
+  void preLoad() {
+    if (state.isAuthenticated) {
+      Future.microtask(() => ref.read(dgOptionsProvider(true)));
+      Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
+      Future.microtask(() => ref.read(locationOptionsProvider));
+      Future.microtask(() => ref.read(userOptionsProvider));
+    }
   }
 }
 

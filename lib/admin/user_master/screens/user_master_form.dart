@@ -11,7 +11,7 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 class UsersSearchForm extends ConsumerStatefulWidget {
   const UsersSearchForm({super.key, required this.onSearch});
 
-  final Function(String,String,String,String,String)onSearch;
+  final Function(String, String, String, String, String) onSearch;
 
   @override
   _UsersSearchFormState createState() => _UsersSearchFormState();
@@ -32,7 +32,13 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   void _resetFields() {
     _loginIdController.clear();
     _nameController.clear();
-    widget.onSearch('','','','','',);
+    widget.onSearch(
+      '',
+      '',
+      '',
+      '',
+      '',
+    );
     setState(() {
       _selectedDGValue = '';
       _selectedDepartmentValue = '';
@@ -46,7 +52,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
     String dg = _selectedDGValue!;
     String department = _selectedDepartmentValue!;
     String section = _selectedSectionValue!;
-    widget.onSearch(loginId,name,dg,department,section);
+    widget.onSearch(loginId, name, dg, department, section);
 
     print('Search triggered with:');
     print('Login ID: $loginId');
@@ -106,11 +112,13 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 // DG Select Field
                 Expanded(
                   child: SelectField<DgMaster>(
+                    label: 'DG',
                     options: dgOptions,
                     onChanged: (dg, selectedOption) {
                       setState(() {
-                       departmentOptions = selectedOption.childOptions
-                          ?.cast<SelectOption<Department>>()?? [];
+                        departmentOptions = selectedOption.childOptions
+                                ?.cast<SelectOption<Department>>() ??
+                            [];
                         _selectedDGValue = dg.id.toString();
                         _selectedDepartmentValue = '';
                         _selectedSectionValue = '';
@@ -125,12 +133,14 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 // Department Select Field
                 Expanded(
                   child: SelectField<Department>(
+                    label: 'Department',
                     options: departmentOptions,
                     key: ValueKey(departmentOptions),
                     onChanged: (department, selectedOption) {
                       setState(() {
                         sectionOptions = selectedOption.childOptions
-                          ?.cast<SelectOption<SectionMaster>>()?? [];
+                                ?.cast<SelectOption<SectionMaster>>() ??
+                            [];
                         _selectedDepartmentValue = department.id.toString();
                         _selectedSectionValue = '';
                       });
@@ -144,6 +154,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                 // Section Select Field
                 Expanded(
                   child: SelectField<SectionMaster>(
+                    label: 'Section',
                     options: sectionOptions,
                     key: ValueKey(sectionOptions),
                     onChanged: (section, selectedOption) {

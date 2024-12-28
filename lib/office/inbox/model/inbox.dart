@@ -21,8 +21,8 @@ class LetterInbox {
       referenceNumber: map['referenceNumber'],
       systemName: map['systemName'],
       subject: map['subject'],
-      locationNameArabic: map['locationNameArabic'],
-      locationNameEnglish: map['locationNameEnglish'],
+      locationNameArabic: 'Tender Board',
+      locationNameEnglish: map['locationNameEnglish'] ?? 'Tender Board',
       letterObjectId: map['letterObjectId'],
     );
   }

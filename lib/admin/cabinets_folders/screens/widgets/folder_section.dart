@@ -27,7 +27,8 @@ class FolderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final headers = ['Folder'];
-    final dataKeys = ['cabinetFolderNameArabic'];
+    final dataKeys = ['nameArabic'];
+    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
 
     print('displayfolder${folders[0].nameArabic}${folders[0].id}');
 
@@ -38,9 +39,10 @@ class FolderSection extends StatelessWidget {
         Column(
           children: [
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Search Folders',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: isRtl ? null : const Icon(Icons.search),
+                suffix: isRtl ? const Icon(Icons.search) : null,
               ),
               onChanged: onSearch,
             ),
@@ -69,7 +71,8 @@ class FolderSection extends StatelessWidget {
         onAddFolder != null
             ? Positioned(
                 top: 8,
-                right: 8,
+                right: isRtl ? null : 8,
+                left: isRtl ? 8 : null,
                 child: selectedCabinet != null
                     ? ElevatedButton(
                         onPressed: selectedCabinet!.id == 0

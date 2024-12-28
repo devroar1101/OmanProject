@@ -1,89 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:tenderboard/common/utilities/global_helper.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
-        // Add the styled image carousel at the top
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: CarouselSlider(
-            options: CarouselOptions(
-              height: 250, // Height of the carousel
-              autoPlay: true, // Enable auto-scrolling
-              enlargeCenterPage: true, // Highlight the center image
-              aspectRatio: 16 / 9, // Aspect ratio of the carousel
-              viewportFraction: 0.6, // Show part of the adjacent images
-            ),
-            items: [
-              'assets/image1.jpg',
-              'assets/image2.jpg',
-              'assets/image3.jpg',
-            ].map((imagePath) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 4.0),
-                              decoration: BoxDecoration(
-                                
-                                color: Colors.black54, // Semi-transparent background
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: const Text(
-                                'التنقل بين الصفحاتتسجيل الدخول إلى حسابك',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+        Expanded(
+          child: Column(
+            children: [
+              // Carousel Section
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    height: 250,
+                    autoPlay: true,
+                    enlargeCenterPage: true,
+                    aspectRatio: 16 / 9,
+                    viewportFraction: 0.6,
+                  ),
+                  items: [
+                    'assets/image1.jpg',
+                    'assets/image2.jpg',
+                    'assets/image3.jpg',
+                  ].map((imagePath) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.asset(
+                              imagePath,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              left: 10,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 4.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: const Text(
+                                  'التنقل بين الصفحات تسجيل الدخول إلى حسابك',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ),
-        ),
-        Expanded(
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topCenter, // Position cards to top-center
+                    );
+                  }).toList(),
+                ),
+              ),
+              // Colorful Cards Section
+              Expanded(
                 child: Container(
-                  margin: const EdgeInsets.all(
-                      16.0), // Margin to give space around the cards
+                  margin: const EdgeInsets.all(16.0),
                   child: Wrap(
-                    spacing: 10, // Horizontal space between cards
-                    runSpacing: 10, // Vertical space between cards
+                    spacing: 10,
+                    runSpacing: 10,
                     children: [
-                      _buildColorfulCard(getTranslation('Inbox'), '5'),
-                      _buildColorfulCard(getTranslation('Outbox'), '3'),
-                      _buildColorfulCard(getTranslation('CC'), '10'),
-                      _buildColorfulCard(getTranslation('Circular'), '2'),
-                      _buildColorfulCard(getTranslation('Decision'), '8'),
+                      _buildColorfulCard('Inbox', '5'),
+                      _buildColorfulCard('Outbox', '3'),
+                      _buildColorfulCard('CC', '10'),
+                      _buildColorfulCard('Circular', '2'),
+                      _buildColorfulCard('Decision', '8'),
                     ],
                   ),
                 ),
@@ -91,44 +86,144 @@ class Dashboard extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(
+          width: 10,
+        ),
+        // Sidebar Notifications Section
+        SizedBox(
+          width: 250,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 226, 226, 226),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                Text(
+                  'Notifications',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildStyledListTile(
+                  title: "Tb-20241101121 received",
+                  icon: Icons.notifications_active,
+                ),
+                _buildStyledListTile(
+                  title: "Tb-20241101122 received",
+                  icon: Icons.notifications,
+                ),
+                _buildStyledListTile(
+                  title: "Circular - 202",
+                  icon: Icons.article_outlined,
+                ),
+                _buildStyledListTile(
+                  title: "Tb-20241101122 closed",
+                  icon: Icons.check_circle_outline,
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildColorfulCard(String title, String value) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
-      child: Container(
-        width: 150, // Smaller width for compact cards
-        height: 150, // Smaller height
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 197, 199, 197), // Pastel green background for all cards
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.black87, // Dark text for contrast
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.blueAccent, // Pastel blue for the value
-                  fontSize: 24, // Increased number font size
-                  fontWeight: FontWeight.bold,
-                ),
+    return GestureDetector(
+      onTap: () {
+        // Handle card tap here
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.0),
+        child: Container(
+          width: 150,
+          height: 150,
+          decoration: BoxDecoration(
+            color: Colors.blueAccent.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 8.0,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStyledListTile({required String title, required IconData icon}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 4.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: Colors.blueAccent,
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        trailing: Icon(
+          Icons.remove_red_eye,
+          color: Colors.grey[700],
+        ),
+        onTap: () {
+          // Handle tap action
+        },
       ),
     );
   }
