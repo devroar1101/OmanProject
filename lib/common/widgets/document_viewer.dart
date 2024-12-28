@@ -8,7 +8,7 @@ import 'package:tenderboard/common/widgets/image_editor.dart';
 // ignore: must_be_immutable
 class DocumentViewer extends StatefulWidget {
   final List<Uint8List> imagePaths;
-  final int initialPage;
+  final int totalPage;
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
   bool? scanning;
@@ -16,8 +16,8 @@ class DocumentViewer extends StatefulWidget {
   DocumentViewer(
       {super.key,
       required this.imagePaths,
-      required this.initialPage,
       this.startScan,
+      this.totalPage = 0,
       this.showScannerDialog,
       this.scanning});
 
@@ -26,7 +26,7 @@ class DocumentViewer extends StatefulWidget {
 }
 
 class _DocumentViewerState extends State<DocumentViewer> {
-  late int currentPage;
+  int currentPage = 0;
   late bool isFullScreen;
   late bool isThumbnailsVisible;
   final TextEditingController _pageController = TextEditingController();
@@ -34,11 +34,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
   @override
   void initState() {
     super.initState();
-    currentPage = widget.imagePaths.isEmpty ||
-            widget.initialPage < 0 ||
-            widget.initialPage >= widget.imagePaths.length
-        ? 0
-        : widget.initialPage;
+
     isFullScreen = false;
     isThumbnailsVisible = false;
   }
@@ -184,7 +180,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '/ ${widget.imagePaths.length}',
+                        '/ ${widget.totalPage != 0 ? widget.totalPage : widget.imagePaths.length}',
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),

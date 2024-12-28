@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/load_letter_document.dart';
-
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
 
@@ -38,9 +37,21 @@ class _LetterSummaryState extends State<LetterSummary> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           _buildTab("Details"),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           _buildTab("Routing"),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           _buildTab("Attachment"),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           _buildTab("Link Document"),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           _buildTab("Additional Info"),
                         ],
                       ),

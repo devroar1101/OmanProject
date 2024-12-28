@@ -57,7 +57,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
             children: widget.headers.take(headerColumns).map((header) {
               return Expanded(
                 child: Text(
-                 getTranslation(header),
+                  getTranslation(header),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -89,8 +89,8 @@ class _DisplayDetailsState extends State<DisplayDetails>
                   InkWell(
                     onTap: () {
                       if (widget.onTap != null) {
-                        widget.onTap!(int.tryParse(id) != null ? id : 0,
-                            objectId: id);
+                        widget.onTap!(int.tryParse(id) != null ? id as int : 0,
+                            objectId: id.toString());
                       }
                       setState(() {
                         activeRowIndex = null;
