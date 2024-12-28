@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
+
 class DgMasterSearchForm extends StatefulWidget {
   const DgMasterSearchForm({super.key, required this.onSearch});
 
@@ -32,18 +35,18 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start, 
-      
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
           child: Card(
-            elevation: 2.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-           
+            // elevation: 2.0,
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.circular(12.0),
+            // ),
+
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: Row(
                 children: [
                   // Code Text Field
@@ -86,14 +89,18 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8.0), // Spacing between fields and icons
+                  const SizedBox(
+                      width: 8.0), // Spacing between fields and icons
 
                   // Search Icon Button
                   Card(
-                    color: const Color.fromARGB(255, 238, 240, 241),
+                    // color: const Color.fromARGB(255, 238, 240, 241),
                     shape: const CircleBorder(),
                     child: IconButton(
-                      icon: const Icon(Icons.search),
+                      icon: const Icon(
+                        Icons.search,
+                        color: ColorPicker.formIconColor,
+                      ),
                       onPressed: _handleSearch,
                       tooltip: getTranslation('Search'),
                     ),
@@ -104,7 +111,10 @@ class _DgMasterSearchFormState extends State<DgMasterSearchForm> {
                     color: const Color.fromARGB(255, 240, 234, 235),
                     shape: const CircleBorder(),
                     child: IconButton(
-                      icon: const Icon(Icons.refresh),
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: ColorPicker.formIconColor,
+                      ),
                       onPressed: _resetFields,
                       tooltip: getTranslation('Reset'),
                     ),

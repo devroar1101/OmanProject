@@ -35,7 +35,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    print('name screen$AppscreenName');
     return Scaffold(
       appBar: CustomAppBar.build(
           context: context, side: side, screenName: AppscreenName,buttonTitle: AppscreenName),

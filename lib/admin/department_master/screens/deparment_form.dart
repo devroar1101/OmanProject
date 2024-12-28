@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class DepartmentSearchForm extends ConsumerStatefulWidget {
   const DepartmentSearchForm({super.key, required this.onSearch});
 
-  final Function(String, String, String,String?) onSearch;
+  final Function(String, String, String, String?) onSearch;
 
   @override
   _DepartmentSearchFormState createState() => _DepartmentSearchFormState();
@@ -23,7 +24,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     _nameEnglishController.clear();
     _nameArabicController.clear();
     _codeController.clear();
-    widget.onSearch('', '', '','');
+    widget.onSearch('', '', '', '');
     setState(() {
       _selectedDropdownValue = '';
     });
@@ -35,9 +36,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
     String code = _codeController.text;
     String? dGdropdownValue = _selectedDropdownValue;
 
-    
-
-    widget.onSearch(nameArabic,nameEnglish,code,dGdropdownValue!);
+    widget.onSearch(nameArabic, nameEnglish, code, dGdropdownValue!);
   }
 
   @override
@@ -113,7 +112,10 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(
+                  Icons.search,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -124,7 +126,10 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(
+                  Icons.refresh,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

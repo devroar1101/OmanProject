@@ -9,7 +9,9 @@ import 'package:tenderboard/admin/listmasteritem/screens/add_listmasteritem.dart
 import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
-import 'package:tenderboard/common/utilities/auth_provider.dart'; // Import the screen
+import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
+import 'package:tenderboard/office/letter/screens/letter_index.dart'; // Import the screen
 
 /// Utility function to convert camel case or Pascal case to space-separated words
 String formatTitle(String title) {
@@ -31,7 +33,13 @@ class CustomAppBar {
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(238, 238, 238, 255).withOpacity(0.8),
+          gradient:const LinearGradient(colors: [
+            Color.fromARGB(255,10, 31, 61),
+            Color.fromARGB(52, 10, 31, 61)
+            
+
+        ],begin: Alignment.bottomLeft,end: Alignment.topRight
+        ),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5), // Shadow color
@@ -54,6 +62,7 @@ class CustomAppBar {
                         'assets/gstb_logo.png',
                         height: 40,
                         fit: BoxFit.contain,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(
@@ -64,7 +73,7 @@ class CustomAppBar {
                         debugPrint('Button clicked');
                       },
                       child: Card(
-                        color: const Color.fromARGB(255, 206, 204, 204), // Background color for the card
+                        color: const Color.fromARGB(238,238,238,255), // Background color for the card
                         elevation: 2.0, // Elevation for shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius:
@@ -113,6 +122,7 @@ class CustomAppBar {
                       child: Image.asset(
                         'assets/gstb_logo.png',
                         height: 40,
+                        color: Colors.white,
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -148,33 +158,23 @@ class CustomAppBar {
                 ),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.dashboard),
-                    onPressed: () {
-                      debugPrint('Dashboard clicked');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.inbox),
-                    onPressed: () {
-                      debugPrint('Inbox clicked');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.outbox),
-                    onPressed: () {
-                      debugPrint('Outbox clicked');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      debugPrint('Search clicked');
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person),
+                    icon: const Icon(Icons.person_outline_rounded),
                     onPressed: () {
                       debugPrint('Profile clicked');
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.scanner_outlined),
+                    tooltip: 'Scan',
+                    onPressed: () {
+                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => const LetterIndex()));
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.note_add_outlined),
+                    tooltip: 'Ejob',
+                    onPressed: () {
+                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => const EjobScreen()));
                     },
                   ),
                   IconButton(

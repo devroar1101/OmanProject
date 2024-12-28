@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 
 // ignore: must_be_immutable
@@ -106,7 +107,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                     child: Container(
                       color: widget.isSelected.toString() ==
                               row[widget.detailKey].toString()
-                          ? const Color.fromARGB(255, 185, 241, 190)
+                          ? const Color.fromARGB(123, 142, 174, 155)
                           : rowIndex % 2 == 0
                               ? Colors.grey[100]
                               : Colors.grey[200],
@@ -136,6 +137,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                                 });
                               },
                               child: Icon(
+                                color: AppTheme.textColor,
                                 isSpeedDialExpanded &&
                                         activeRowIndex == rowIndex
                                     ? Icons.close
@@ -158,11 +160,12 @@ class _DisplayDetailsState extends State<DisplayDetails>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ...?widget.iconButtons?.map((iconButton) {
+                          ...?widget.iconButtons?.map((iconButton,) {
                             return Card(
                               color: const Color.fromARGB(255, 238, 240, 241),
                               shape: const CircleBorder(),
                               child: IconButton(
+                                color: ColorPicker.formIconColor,
                                 icon: Icon(iconButton["button"]),
                                 onPressed: () {
                                   iconButton["function"]!(id);

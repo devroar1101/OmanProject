@@ -45,6 +45,7 @@ class Dashboard extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               decoration: BoxDecoration(
+                                
                                 color: Colors.black54, // Semi-transparent background
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
@@ -101,7 +102,7 @@ class Dashboard extends StatelessWidget {
         width: 150, // Smaller width for compact cards
         height: 150, // Smaller height
         decoration: BoxDecoration(
-          color: const Color(0xFFE8F5E9), // Pastel green background for all cards
+          color: const Color.fromARGB(255, 197, 199, 197), // Pastel green background for all cards
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Center(

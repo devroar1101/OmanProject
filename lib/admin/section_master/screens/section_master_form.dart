@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class SectionMasterSearchForm extends ConsumerStatefulWidget {
@@ -156,7 +157,7 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(Icons.search,color: ColorPicker.formIconColor,),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -167,7 +168,7 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh,color: ColorPicker.formIconColor,),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),
