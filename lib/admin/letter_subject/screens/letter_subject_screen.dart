@@ -78,6 +78,7 @@ class _LetterSubjectMasterScreenState
   Widget build(BuildContext context) {
     final letterSubjects = ref.watch(LetterSubjectMasterRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(letterSubjects);
+    print('subject : $letterSubjects');
 
     final iconButtons = [
       {
@@ -118,32 +119,39 @@ class _LetterSubjectMasterScreenState
     return Scaffold(
       body: Column(
         children: [
-          LetterSubjectSearchForm(
-            onSearch: onSearch,
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: LetterSubjectSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? letterSubjects.where((singleSubject) {
+                        final matchesArabic = searchSubject.isEmpty ||
+                            singleSubject.subject
+                                .toLowerCase()
+                                .contains(searchSubject.toLowerCase());
+                        final matchesEnglish = searchTenderNumber.isEmpty ||
+                            singleSubject.tenderNumber
+                                .toLowerCase()
+                                .contains(searchTenderNumber.toLowerCase());
+                        return matchesArabic && matchesEnglish;
+                      }).length
+                    : letterSubjects.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (letterSubjects.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? letterSubjects.where((singleSubject) {
-                      final matchesArabic = searchSubject.isEmpty ||
-                          singleSubject.subject
-                              .toLowerCase()
-                              .contains(searchSubject.toLowerCase());
-                      final matchesEnglish = searchTenderNumber.isEmpty ||
-                          singleSubject.tenderNumber
-                              .toLowerCase()
-                              .contains(searchTenderNumber.toLowerCase());
-                      return matchesArabic && matchesEnglish;
-                    }).length
-                  : letterSubjects.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
           if (letterSubjects.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -151,12 +159,12 @@ class _LetterSubjectMasterScreenState
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
-                  headers: const ['Tender Number', 'Subject'],
+                  headers: const ['TenderNumber', 'Subject'],
                   data: const ['tenderNumber', 'subject'],
                   details: LetterSubjecct.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'subjectId',
                 ),
               ),

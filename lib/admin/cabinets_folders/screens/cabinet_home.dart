@@ -15,7 +15,7 @@ class CabinetHome extends ConsumerStatefulWidget {
 }
 
 class _CabinetHomeState extends ConsumerState<CabinetHome> {
-  int? selectedCabinetId = 0;
+  int? selectedCabinetId = 1;
   String cabinetSearchQuery = '';
   String folderSearchQuery = '';
   int? selectedFolderId;
@@ -33,83 +33,86 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
     final folders = ref.watch(folderRepositoryProvider);
 
     return Scaffold(
-      body: Row(
-        children: [
-          Expanded(
-            child: CabinetSection(
-              cabinets: cabinets
-                  .where((cabinet) => cabinet.nameArabic
-                      .toLowerCase()
-                      .contains(cabinetSearchQuery))
-                  .toList(),
-              selectedCabinetId: selectedCabinetId,
-              onSelectCabinet: (id) {
-                setState(() {
-                  selectedCabinetId = id;
-                  selectedFolderId = null; // Reset selected folder
-                });
-              },
-              onSearch: (query) {
-                setState(() {
-                  cabinetSearchQuery = query.toLowerCase();
-                });
-              },
-              onAddCabinet: (name) {
-                ref
-                    .read(cabinetRepositoryProvider.notifier)
-                    .addCabinet(nameEnglish: name, nameArabic: name);
-              },
-              onEditCabinet: (id, name) {
-                ref
-                    .read(cabinetRepositoryProvider.notifier)
-                    .editCabinet(id: id, nameEnglish: name, nameArabic: name);
-              },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: CabinetSection(
+                cabinets: cabinets
+                    .where((cabinet) => cabinet.nameArabic
+                        .toLowerCase()
+                        .contains(cabinetSearchQuery))
+                    .toList(),
+                selectedCabinetId: selectedCabinetId,
+                onSelectCabinet: (id) {
+                  setState(() {
+                    selectedCabinetId = id;
+                    selectedFolderId = 0; // Reset selected folder
+                  });
+                },
+                onSearch: (query) {
+                  setState(() {
+                    cabinetSearchQuery = query.toLowerCase();
+                  });
+                },
+                onAddCabinet: (name) {
+                  ref
+                      .read(cabinetRepositoryProvider.notifier)
+                      .addCabinet(nameEnglish: name, nameArabic: name);
+                },
+                onEditCabinet: (id, name) {
+                  ref
+                      .read(cabinetRepositoryProvider.notifier)
+                      .editCabinet(id: id, nameEnglish: name, nameArabic: name);
+                },
+              ),
             ),
-          ),
-          const VerticalDivider(),
-          Expanded(
-            child: FolderSection(
-              folders: folders
-                  .where((folder) =>
-                      (folder.cabinetId == selectedCabinetId) &&
-                      folder.nameArabic
-                          .toLowerCase()
-                          .contains(folderSearchQuery))
-                  .toList(),
-              selectedCabinet: cabinets.isEmpty
-                  ? null
-                  : cabinets.firstWhere(
-                      (cabinet) => cabinet.id == selectedCabinetId,
-                      orElse: () => cabinets[0]),
-              selectedFolderId: selectedFolderId,
-              onSearch: (query) {
-                setState(() {
-                  folderSearchQuery = query.toLowerCase();
-                });
-              },
-              onAddFolder: (name) {
-                if (selectedCabinetId != null && selectedCabinetId != 0) {
-                  ref.read(folderRepositoryProvider.notifier).addFolder(
+            const VerticalDivider(),
+            Expanded(
+              child: FolderSection(
+                folders: folders
+                    .where((folder) =>
+                        (folder.cabinetId == selectedCabinetId) &&
+                        folder.nameArabic
+                            .toLowerCase()
+                            .contains(folderSearchQuery))
+                    .toList(),
+                selectedCabinet: cabinets.isEmpty
+                    ? null
+                    : cabinets.firstWhere(
+                        (cabinet) => cabinet.id == selectedCabinetId,
+                        orElse: () => cabinets[0]),
+                selectedFolderId: selectedFolderId,
+                onSearch: (query) {
+                  setState(() {
+                    folderSearchQuery = query.toLowerCase();
+                  });
+                },
+                onAddFolder: (name) {
+                  if (selectedCabinetId != null && selectedCabinetId != 0) {
+                    ref.read(folderRepositoryProvider.notifier).addFolder(
+                        nameEnglish: name,
+                        nameArabic: name,
+                        cabinetId: selectedCabinetId!);
+                  }
+                },
+                onEditFolder: (id, name) {
+                  ref.read(folderRepositoryProvider.notifier).editFolder(
+                      id: id,
                       nameEnglish: name,
                       nameArabic: name,
                       cabinetId: selectedCabinetId!);
-                }
-              },
-              onEditFolder: (id, name) {
-                ref.read(folderRepositoryProvider.notifier).editFolder(
-                    id: id,
-                    nameEnglish: name,
-                    nameArabic: name,
-                    cabinetId: selectedCabinetId!);
-              },
-              onSelectFolder: (id) {
-                setState(() {
-                  selectedFolderId = id;
-                });
-              },
+                },
+                onSelectFolder: (id) {
+                  setState(() {
+                    selectedFolderId = id;
+                  });
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

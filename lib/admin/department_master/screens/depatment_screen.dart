@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/department_master/screens/add_department.dart';
 import 'package:tenderboard/admin/department_master/screens/deparment_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
@@ -20,7 +21,6 @@ class _DepartmentMasterScreenState
   @override
   void initState() {
     super.initState();
-    ref.read(departmentMasterRepositoryProvider.notifier).fetchDepartments();
   }
 
   String searchNameArabic = '';
@@ -91,7 +91,7 @@ class _DepartmentMasterScreenState
 
     final iconButtons = [
       {
-        "button": Icons.edit,
+        "button": (Icons.edit,),
         "function": (int id) {
           final Department currentDepartment =
               departments.firstWhere((department) => department.id == id);
@@ -112,7 +112,7 @@ class _DepartmentMasterScreenState
             context: context,
             builder: (context) => ConfirmationAlertBox(
               messageType: 3,
-              message: 'Are you sure you want to delete this department?',
+              message: getTranslation('Areyousureyouwanttodeletethisdg?'),
               onConfirm: () {
                 onDelete(id);
               },
@@ -128,41 +128,49 @@ class _DepartmentMasterScreenState
     return Scaffold(
       body: Column(
         children: [
-          DepartmentSearchForm(
-            onSearch: onSearch,
-          ),
-          if (departments.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? departments.where((department) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          department.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          department.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      final matchesCode = searchCode.isEmpty ||
-                          department.code
-                              .toLowerCase()
-                              .contains(searchCode.toLowerCase());
-                      final matchesDg = searchDG.isEmpty ||
-                          department.dgId.toString() == searchDG;
-                      return matchesArabic &&
-                          matchesEnglish &&
-                          matchesCode &&
-                          matchesDg; //&& matchesDg;
-                    }).length
-                  : departments.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ), // Search form widget
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: DepartmentSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? departments.where((department) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            department.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            department.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        final matchesCode = searchCode.isEmpty ||
+                            department.code
+                                .toLowerCase()
+                                .contains(searchCode.toLowerCase());
+                        final matchesDg = searchDG.isEmpty ||
+                            department.dgId.toString() == searchDG;
+                        return matchesArabic &&
+                            matchesEnglish &&
+                            matchesCode &&
+                            matchesDg; //&& matchesDg;
+                      }).length
+                    : departments.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
+          ), // Search form widget
+
           if (departments.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -172,21 +180,21 @@ class _DepartmentMasterScreenState
                 child: DisplayDetails(
                   headers: const [
                     'Code',
-                    'Name Arabic',
-                    'Name English',
-                    'DG Name',
+                    'NameArabic',
+                    'NameEnglish',
+                    'DG',
                   ], // Headers for columns
                   data: const [
                     'code',
-                    'departmentNameArabic',
-                    'departmentNameEnglish',
+                    'nameArabic',
+                    'nameEnglish',
                     'dgNameEnglish',
                   ], // Keys to extract data
                   details: Department.listToMap(
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true, // Expandable table rows
                   iconButtons: iconButtons,
-                  onTap: (int index) {},
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'id', // Unique key for row selection
                 ),
               ),

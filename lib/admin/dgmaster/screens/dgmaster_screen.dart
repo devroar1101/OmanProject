@@ -4,7 +4,9 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -69,9 +71,8 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
 
   void onDelete(int dgId) {
     ref.watch(dgMasterRepositoryProvider.notifier).deleteDgMaster(dgId: dgId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('DG master Deleted successfully!')),
-    );
+
+    CustomSnackbar.show(context: context, title: 'successfully', message: getTranslation('Dgdeletedsuccessfully!'), typeId: 1, durationInSeconds: 3);
     Navigator.pop(context);
   }
 
@@ -105,7 +106,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
                 context: context,
                 builder: (context) => ConfirmationAlertBox(
                   messageType: 3,
-                  message: 'Are you sure you want to delete this DG?',
+                  message: getTranslation('Areyousureyouwanttodeletethisdg?'),
                   onConfirm: () {
                     onDelete(id);
                   },
@@ -121,49 +122,61 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
     return Scaffold(
       body: Column(
         children: [
-          DgMasterSearchForm(
-            onSearch: onSearch,
+          const SizedBox(height: 8.0),
+          // Combine DgMasterSearchForm and Pagination in a single row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: DgMasterSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(
+                  width: 8.0), // Add spacing between form and pagination
+              Pagination(
+                totalItems: search
+                    ? dgMasters.where((dgMaster) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            dgMaster.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            dgMaster.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        final matchesCode = searchCode.isEmpty ||
+                            dgMaster.code
+                                .toLowerCase()
+                                .contains(searchCode.toLowerCase());
+                        return matchesArabic && matchesEnglish && matchesCode;
+                      }).length
+                    : dgMasters.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (dgMasters.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? dgMasters.where((dgMaster) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          dgMaster.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          dgMaster.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      final matchesCode = searchCode.isEmpty ||
-                          dgMaster.code
-                              .toLowerCase()
-                              .contains(searchCode.toLowerCase());
-                      return matchesArabic && matchesEnglish && matchesCode;
-                    }).length
-                  : dgMasters.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
+
           if (dgMasters.isEmpty)
-            const Center(child: Text('No items found'))
+             Center(child: Text(getTranslation('Noitemtodisplay')))
           else
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 10,
+                shadowColor: Colors.grey.withOpacity(0.3),
                 child: DisplayDetails(
-                  headers: const ['Code', 'Name Arabic', 'Name English'],
+                  headers: const ['Code', 'NameArabic', 'NameEnglish'],
                   data: const ['code', 'nameArabic', 'nameEnglish'],
                   details: DgMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id) {},
+                  onTap: (int id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 
 class ListMasterItemSearchForm extends ConsumerStatefulWidget {
   // Optional: Callback to pass search results to parent
@@ -35,9 +36,8 @@ class _ListMasterItemSearchFormState
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      margin: const EdgeInsets.all(16.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         child: Row(
           children: [
             // Name English Text Field
@@ -75,7 +75,10 @@ class _ListMasterItemSearchFormState
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(
+                  Icons.search,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -86,7 +89,10 @@ class _ListMasterItemSearchFormState
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(
+                  Icons.refresh,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

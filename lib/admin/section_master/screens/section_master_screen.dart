@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/admin/section_master/screens/add_section_master.dart';
 import 'package:tenderboard/admin/section_master/screens/section_master_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
@@ -35,6 +36,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
   void onSearch(String nameArabic, String nameEnglish, String code, String? dg,
       String? department) {
     setState(() {
+      print('Search DG DG : $dg');
       searchNameArabic = nameArabic;
       searchNameEnglish = nameEnglish;
       searchCode = code;
@@ -48,7 +50,6 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
     if (sections.isEmpty) {
       return [];
     }
-
     List<SectionMaster> filteredList = sections.where((singlesection) {
       final matchesArabic = searchNameArabic.isEmpty ||
           (singlesection.sectionNameArabic.toLowerCase())
@@ -87,12 +88,10 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
     Navigator.pop(context);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final sections = ref.watch(sectionMasterRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(sections);
-
     final iconButtons = [
       {
         "button": Icons.edit,
@@ -116,7 +115,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
             context: context,
             builder: (context) => ConfirmationAlertBox(
               messageType: 3,
-              message: 'Are you sure you want to delete this section?',
+              message: getTranslation('Areyousureyouwanttodeletethissection?'),
               onConfirm: () {
                 onDelete(id);
               },
@@ -132,45 +131,52 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
     return Scaffold(
       body: Column(
         children: [
-          SectionMasterSearchForm(
-            onSearch: onSearch,
-          ),
-          if (sections.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? sections.where((singlesection) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          singlesection.sectionNameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          singlesection.sectionNameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      final matchesCode = searchCode.isEmpty ||
-                          singlesection.code
-                              .toLowerCase()
-                              .contains(searchCode.toLowerCase());
-                      final matchesDg = searchDG.isEmpty ||
-                          singlesection.dgId.toString() == searchDG;
-                      final matchesDepartment = searchDepatment.isEmpty ||
-                          singlesection.departmentId.toString() ==
-                              searchDepatment;
-                      return matchesArabic &&
-                          matchesEnglish &&
-                          matchesCode &&
-                          matchesDg &&
-                          matchesDepartment; //&& matchesDg;
-                    }).length
-                  : sections.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ), // Search form widget
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: SectionMasterSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? sections.where((singlesection) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            singlesection.sectionNameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            singlesection.sectionNameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        final matchesCode = searchCode.isEmpty ||
+                            singlesection.code
+                                .toLowerCase()
+                                .contains(searchCode.toLowerCase());
+                        final matchesDg = searchDG.isEmpty ||
+                            singlesection.dgId.toString() == searchDG;
+                        final matchesDepartment = searchDepatment.isEmpty ||
+                            singlesection.departmentId.toString() ==
+                                searchDepatment;
+                        return matchesArabic &&
+                            matchesEnglish &&
+                            matchesCode &&
+                            matchesDg &&
+                            matchesDepartment; //&& matchesDg;
+                      }).length
+                    : sections.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
+          ), // Search form widget
           if (sections.isEmpty)
             const Expanded(child: Center(child: Text('No sections found')))
           else
@@ -180,8 +186,8 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                 child: DisplayDetails(
                   headers: const [
                     'Code',
-                    'Name Arabic',
-                    'Name English',
+                    'NameArabic',
+                    'NameEnglish',
                     'Department',
                   ], // Headers for columns
                   data: const [
@@ -190,11 +196,11 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                     'sectionNameEnglish',
                     'departmentId',
                   ], // Keys to extract data
-                  details:
-                      SectionMaster.listToMap(filteredAndPaginatedList), // Convert list to map
-                  expandable: true, 
-                  iconButtons: iconButtons,// Expandable table rows
-                  onTap: (int index) {},
+                  details: SectionMaster.listToMap(
+                      filteredAndPaginatedList), // Convert list to map
+                  expandable: true,
+                  iconButtons: iconButtons, // Expandable table rows
+                  onTap: (int index, {objectId}) {},
                   detailKey: 'sectionId', // Unique key for row selection
                 ),
               ),

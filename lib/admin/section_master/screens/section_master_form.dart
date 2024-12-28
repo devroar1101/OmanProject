@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
-import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class SectionMasterSearchForm extends ConsumerStatefulWidget {
   const SectionMasterSearchForm({super.key, required this.onSearch});
 
-  final Function(String, String, String, String, String) onSearch;
+  final Function(String, String, String, String?, String?) onSearch;
 
   @override
   _SectionMasterSearchFormState createState() =>
@@ -24,6 +24,10 @@ class _SectionMasterSearchFormState
   final TextEditingController _codeController = TextEditingController();
   String? _selectedDGValue = '';
   String? _selectedDepartmentValue = '';
+  int _resetKey = 0; // Counter to reset keys
+
+  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Department>> departmentOptions = [];
 
   void _resetFields() {
     _nameEnglishController.clear();
@@ -33,6 +37,8 @@ class _SectionMasterSearchFormState
     setState(() {
       _selectedDGValue = '';
       _selectedDepartmentValue = '';
+      departmentOptions = []; // Reset department options
+      _resetKey++; // Increment the reset key to rebuild widgets
     });
   }
 
@@ -40,18 +46,17 @@ class _SectionMasterSearchFormState
     String nameEnglish = _nameEnglishController.text;
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
-    String? dropdownValue = _selectedDGValue;
-    String? departmentValue = _selectedDepartmentValue;
+    String? dg = _selectedDGValue;
+    String? department = _selectedDepartmentValue;
 
-    widget.onSearch(
-        nameArabic, nameEnglish, code, departmentValue!, dropdownValue!);
+    widget.onSearch(nameArabic, nameEnglish, code, dg, department);
     // Perform search logic
     print('Search triggered with:');
     print('Name English: $nameEnglish');
     print('Name Arabic: $nameArabic');
     print('Code: $code');
-    print('Selected Section: $dropdownValue');
-    print('Selected Department: $departmentValue');
+    print('Selected dg: $dg');
+    print('Selected Department: $department');
   }
 
   @override
@@ -59,18 +64,12 @@ class _SectionMasterSearchFormState
     final dgOptionAsyncValue = ref.watch(dgOptionsProvider(true));
     final dgOptions = dgOptionAsyncValue.asData?.value ?? [];
 
-    final departmentOptionsAsyncValue = _selectedDGValue != null
-        ? ref.watch(departmentOptionsProvider(_selectedDGValue!))
-        : const AsyncValue<List<SelectOption<Department>>>.data([]);
-
-    final departmentOptions = departmentOptionsAsyncValue.asData?.value ?? [];
-
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      margin: const EdgeInsets.all(16.0),
+      // margin: const EdgeInsets.all(16.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         child: Row(
           children: [
             // Code Text Field
@@ -118,24 +117,32 @@ class _SectionMasterSearchFormState
             // DG Dropdown Field
             Expanded(
               child: SelectField<DgMaster>(
+                label: 'DG',
+                key: ValueKey('dgKey_$_resetKey'),
                 options: dgOptions,
                 onChanged: (dg, selectedOption) {
                   setState(() {
                     _selectedDGValue = dg.id.toString();
+                    departmentOptions = selectedOption.childOptions
+                            ?.cast<SelectOption<Department>>() ??
+                        [];
                     _selectedDepartmentValue =
-                        null; // Reset department when DG changes
+                        ''; // Reset department when DG changes
                   });
                 },
-                hint: 'Select Section',
+                hint: 'Select DG',
                 initialValue: _selectedDGValue,
               ),
             ),
+
             const SizedBox(width: 8.0),
 
             // Department Dropdown Field
             Expanded(
               child: SelectField<Department>(
+                label: 'Department',
                 options: departmentOptions,
+                key: ValueKey(departmentOptions),
                 onChanged: (department, selectedOption) {
                   setState(() {
                     _selectedDepartmentValue = department.id.toString();
@@ -152,7 +159,7 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(Icons.search,color: ColorPicker.formIconColor,),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -163,7 +170,7 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh,color: ColorPicker.formIconColor,),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

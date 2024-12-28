@@ -1,75 +1,40 @@
-import 'package:intl/intl.dart';
+// InboxModel Class
+class LetterInbox {
+  final String? referenceNumber;
+  final String? systemName;
+  final String? subject;
+  final String? locationNameArabic;
+  final String? locationNameEnglish;
+  final String? letterObjectId;
 
-class ListInbox {
-  String subject;
-  String location;
-  String jobReferenceNumber;
-  String jobTypeNameEnglish;
-  String fromUserName;
-  String scanDocumentObjectId;
-  String eJobObjectId;
-  DateTime actionDate;
-
-  ListInbox({
-    required this.subject,
-    required this.location,
-    required this.jobReferenceNumber,
-    required this.jobTypeNameEnglish,
-    required this.fromUserName,
-    required this.scanDocumentObjectId,
-    required this.eJobObjectId,
-    required this.actionDate,
+  LetterInbox({
+    this.referenceNumber,
+    this.systemName,
+    this.subject,
+    this.locationNameArabic,
+    this.locationNameEnglish,
+    this.letterObjectId,
   });
 
-  // Convert a Map to a ListInbox object
-  factory ListInbox.fromMap(Map<String, dynamic> map) {
-    return ListInbox(
-      subject: map['scanDocumentSubjectName'] ?? '',
-      location: map['fromExternalLocationNameEnglish'] ?? '',
-      jobReferenceNumber: map['jobReferenceNumber'] ?? '',
-      jobTypeNameEnglish: map['jobTypeNameEnglish'] ?? '',
-      scanDocumentObjectId: map['scanDocumentObjectId'] ?? '',
-      eJobObjectId: map['eJobObjectId'] ?? '',
-      fromUserName: map['fromUserName'] ?? '',
-      actionDate: parseDate(map['actionDate']),
+  factory LetterInbox.fromMap(Map<String, dynamic> map) {
+    return LetterInbox(
+      referenceNumber: map['referenceNumber'],
+      systemName: map['systemName'],
+      subject: map['subject'],
+      locationNameArabic: 'Tender Board',
+      locationNameEnglish: map['locationNameEnglish'] ?? 'Tender Board',
+      letterObjectId: map['letterObjectId'],
     );
-  }
-
-  // Method to parse date
-  static DateTime parseDate(String? dateStr) {
-    if (dateStr == null) return DateTime.now();
-    try {
-      return DateFormat("MM/dd/yyyy HH:mm:ss").parse(dateStr);
-    } catch (e) {
-      return DateTime.now();
-    }
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'referenceNumber': referenceNumber,
+      'systemName': systemName,
       'subject': subject,
-      'location': location,
-      'jobReferenceNumber': jobReferenceNumber,
-      'jobTypeNameEnglish': jobTypeNameEnglish,
-      'fromUserName': fromUserName,
-      'actionDate': actionDate.toIso8601String(),
+      'locationNameArabic': locationNameArabic,
+      'locationNameEnglish': locationNameEnglish,
+      'objectId': letterObjectId,
     };
   }
-
-
-// Convert a list of ListInbox objects to a list of maps, adding 'sno' field
-  static List<Map<String, dynamic>> listToMap(List<ListInbox> items) {
-    return List<Map<String, dynamic>>.generate(items.length, (index) {
-      Map<String, dynamic> itemMap = items[index].toMap();
-      itemMap['sno'] = (index + 1).toString(); // Add serial number (sno) field
-      return itemMap;
-    });
-  }
-
 }
-
-
-
-
-
-  

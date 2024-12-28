@@ -87,32 +87,39 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
     return Scaffold(
       body: Column(
         children: [
-          ListMasterSearchForm(
-            onSearch: onSearch,
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                child: ListMasterSearchForm(
+                  onSearch: onSearch,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Pagination(
+                totalItems: search
+                    ? listMasters.where((listMaster) {
+                        final matchesArabic = searchNameArabic.isEmpty ||
+                            listMaster.nameArabic
+                                .toLowerCase()
+                                .contains(searchNameArabic.toLowerCase());
+                        final matchesEnglish = searchNameEnglish.isEmpty ||
+                            listMaster.nameEnglish
+                                .toLowerCase()
+                                .contains(searchNameEnglish.toLowerCase());
+                        return matchesArabic && matchesEnglish;
+                      }).length
+                    : listMasters.length,
+                initialPageSize: pageSize,
+                onPageChange: (pageNo, newPageSize) {
+                  setState(() {
+                    pageNumber = pageNo;
+                    pageSize = newPageSize;
+                  });
+                },
+              ),
+            ],
           ),
-          if (listMasters.isNotEmpty)
-            Pagination(
-              totalItems: search
-                  ? listMasters.where((listMaster) {
-                      final matchesArabic = searchNameArabic.isEmpty ||
-                          listMaster.nameArabic
-                              .toLowerCase()
-                              .contains(searchNameArabic.toLowerCase());
-                      final matchesEnglish = searchNameEnglish.isEmpty ||
-                          listMaster.nameEnglish
-                              .toLowerCase()
-                              .contains(searchNameEnglish.toLowerCase());
-                      return matchesArabic && matchesEnglish;
-                    }).length
-                  : listMasters.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ),
           if (listMasters.isEmpty)
             const Center(child: Text('No items found'))
           else
@@ -120,13 +127,13 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DisplayDetails(
-                  headers: const ['Code', 'Name Arabic', 'Name English'],
+                  headers: const ['Code', 'NameArabic', 'NameEnglish'],
                   data: const ['id', 'nameArabic', 'nameEnglish'],
                   selected: '1',
                   details: ListMaster.listToMap(filteredAndPaginatedList),
                   iconButtons: iconButtons,
                   expandable: true,
-                  onTap: (int id) {
+                  onTap: (int id, {objectId}) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(

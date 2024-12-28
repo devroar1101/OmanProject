@@ -176,7 +176,7 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
         initialValue: initialValue,
         selectedOption: selectOption,
         onChanged: onChanged,
-        hint: label,
+        label: label,
       ),
     );
   }

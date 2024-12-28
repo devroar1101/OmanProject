@@ -4,6 +4,7 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 
 import 'package:tenderboard/common/widgets/select_field.dart';
 
@@ -92,6 +93,7 @@ class AddDepartmentMaster extends ConsumerWidget {
                 SizedBox(
                   width: 450.0,
                   child: SelectField<DgMaster>(
+                    label: 'DG',
                     options: dgOptions!,
                     initialValue: currentDepartment != null
                         ? dgOptions
@@ -155,9 +157,12 @@ class AddDepartmentMaster extends ConsumerWidget {
               dgId: int.parse(_selectedDG!),
             );
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Department master saved successfully!')),
+      CustomSnackbar.show(
+        context: context,
+        title: 'successfully',
+        durationInSeconds: 3,
+        message: 'Department master saved successfully!',
+        typeId: 1,
       );
       Navigator.pop(context);
     } catch (e) {

@@ -13,9 +13,16 @@ enum Priority {
 
   const Priority(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
+  }
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+  // Static method to get a Priority by id
+  static Priority? byId(int id) {
+    return Priority.values.firstWhere((priority) => priority.id == id);
+  }
 }
 
 enum Classification {
@@ -33,8 +40,16 @@ enum Classification {
   const Classification(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
+  }
+
+  static Classification? byId(int id) {
+    return Classification.values
+        .firstWhere((classification) => classification.id == id);
+  }
 }
 
 enum ActionType {
@@ -65,6 +80,9 @@ enum ActionType {
   const ActionType(
       this.id, this.labelEnglish, this.labelArabic, this.color, this.icon);
 
-  String getLabel(String language) =>
-      language == 'ar' ? labelArabic : labelEnglish;
+  String getLabel(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl
+        ? labelArabic
+        : labelEnglish;
+  }
 }

@@ -29,6 +29,7 @@ class _PaginationState extends State<Pagination> {
     currentPage = widget.initialPage;
     pageSize = widget.initialPageSize;
     totalItem = widget.totalItems;
+    print('total count :$totalItem');
   }
 
   int get totalPages => (widget.totalItems / pageSize).ceil();
@@ -39,7 +40,6 @@ class _PaginationState extends State<Pagination> {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -64,14 +64,18 @@ class _PaginationState extends State<Pagination> {
         ),
 
         // Page Size Dropdown
-        const SizedBox(width: 16),
+        const SizedBox(width: 10),
         DropdownButton<int>(
           value: pageSize,
-          icon: const Icon(Icons.arrow_drop_down),
-          style: const TextStyle(color: Colors.blue, fontSize: 14),
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.blue),
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          dropdownColor: Colors.white,
           underline: Container(
-            height: 2,
-            color: Colors.blueAccent,
+            height: 0, // Remove default underline
           ),
           onChanged: (int? newPageSize) {
             if (newPageSize != null) {
@@ -85,7 +89,24 @@ class _PaginationState extends State<Pagination> {
           items: [15, 30, 50, 100].map<DropdownMenuItem<int>>((int size) {
             return DropdownMenuItem<int>(
               value: size,
-              child: Text('$size'),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: size == pageSize
+                      ? Colors.blue.withOpacity(0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$size',
+                  style: TextStyle(
+                    color: size == pageSize ? Colors.blue : Colors.black,
+                    fontWeight:
+                        size == pageSize ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
             );
           }).toList(),
         ),

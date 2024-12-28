@@ -30,6 +30,8 @@ class CabinetSection extends StatelessWidget {
       {"button": Icons.delete, "function": (int id) => print("Delete $id")},
     ];
 
+    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+
     // Convert ListMasterItem list to map list with sno
     final details = Cabinet.listToMap(cabinets);
 
@@ -38,9 +40,10 @@ class CabinetSection extends StatelessWidget {
         Column(
           children: [
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Search Cabinets',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: isRtl ? null : const Icon(Icons.search),
+                suffixIcon: isRtl ? const Icon(Icons.search) : null,
               ),
               onChanged: onSearch,
             ),
@@ -53,7 +56,7 @@ class CabinetSection extends StatelessWidget {
                 expandable: true,
                 selected: selectedCabinetId.toString(),
                 detailKey: 'id',
-                onTap: (index) {
+                onTap: (index, {objectId}) {
                   onSelectCabinet(index);
                 },
               ),
@@ -63,7 +66,8 @@ class CabinetSection extends StatelessWidget {
         onAddCabinet != null
             ? Positioned(
                 top: 8,
-                right: 8,
+                right: isRtl ? null : 8,
+                left: isRtl ? 8 : null,
                 child: ElevatedButton(
                   onPressed: () => showAddDialog(
                     context,

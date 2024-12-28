@@ -11,6 +11,11 @@ class UserMaster {
   String email;
   String roleName;
   String objectId;
+  int dgId;
+  int departmentId;
+  int sectionId;
+  String loginId;
+
   
 
   UserMaster({
@@ -26,6 +31,10 @@ class UserMaster {
     required this.email,
     required this.roleName,
     required this.objectId,
+    required this.dgId,
+    required this.departmentId,
+    required this.sectionId,
+    required this.loginId,
    
   });
 
@@ -44,6 +53,10 @@ class UserMaster {
       email: map['email'] ?? '',
       roleName: map['roleName'] ?? '',
       objectId: map['objectId'] ?? '',
+      dgId: map['dgId'] ?? 0,
+      departmentId: map['departmentId'] ?? 0,
+      sectionId: map['sectionId'] ?? 0,
+      loginId: map['loginId'] ?? '',
     
       
     );
@@ -64,6 +77,9 @@ class UserMaster {
       'email': email,
       'roleName': roleName,
       'objectId': objectId,
+      'dgId' : dgId,
+      'departmentId' : departmentId,
+      'sectionId' : sectionId,
       
     };
   }

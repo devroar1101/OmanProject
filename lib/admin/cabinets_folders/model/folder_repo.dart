@@ -57,8 +57,8 @@ class FolderRepository extends StateNotifier<List<Folder>> {
 
     try {
       if (state.isEmpty) {
-        final response = await dio.post('/Master/SearchAndListCabinetFolder',
-            data: requestBody);
+        final response =
+            await dio.post('/Master/SearchAndListFolder', data: requestBody);
 
         if (response.statusCode == 200) {
           final List<dynamic> data = response.data as List;

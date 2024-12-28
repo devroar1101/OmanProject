@@ -1,49 +1,43 @@
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/office/inbox/model/inbox.dart';
 
-class ListInboxRepository {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://eofficetbdevdal.cloutics.net/api/JobWorkflowQueries',
-    headers: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json-patch+json',
-    },
-  ));
+final inboxRepositoryProvider =
+    StateNotifierProvider<InboxRepository, List<LetterInbox>>((ref) {
+  return InboxRepository(ref);
+});
 
-  Future<List<ListInbox>> fetchListInboxItems({
-    String? toUserObjectId,
-    String? screenName,
-    int pageSize = 15,
-    int pageNumber = 1,
-  }) async {
+class InboxRepository extends StateNotifier<List<LetterInbox>> {
+  InboxRepository(this.ref) : super([]);
+  final Ref ref;
+
+  // Fetch Inbox Items
+  Future<List<LetterInbox>> fetchInbox(
+      {required int userId, int pageSize = 30, int pageNumber = 1}) async {
+    final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'screenName': screenName,
-      "toUserObjectId": toUserObjectId,
+      // 'userId': userId,
       'paginationDetail': {
         'pageSize': pageSize,
         'pageNumber': pageNumber,
       }
     };
+
     try {
-      final response = await _dio.post(
-        '/SearchAndListLatestJobAction',
-        data: requestBody,
-      );
-      print('Response status code: ${response.statusCode}');
+      final response =
+          await dio.post('/JobFlow/LetterInbox', data: requestBody);
 
-      // Check if the response is successful
       if (response.statusCode == 200) {
-        List data = response.data as List;
-        List<ListInbox> listInboxItems =
-            data.map((item) => ListInbox.fromMap(item)).toList();
-
-        return listInboxItems;
+        final List<dynamic> data = response.data as List;
+        state = data
+            .map((item) => LetterInbox.fromMap(item as Map<String, dynamic>))
+            .toList();
       } else {
-        throw Exception('Failed to load ListInboxItems');
+        throw Exception('Failed to load inbox items');
       }
     } catch (e) {
-      // Handle any errors during the request
-      throw Exception('Error occurred while fetching ListInboxItems: $e');
+      throw Exception('Error occurred while fetching inbox items: $e');
     }
+    return state;
   }
 }

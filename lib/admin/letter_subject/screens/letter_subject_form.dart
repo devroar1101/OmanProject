@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 
 class LetterSubjectSearchForm extends StatefulWidget {
   const LetterSubjectSearchForm({super.key, required this.onSearch});
@@ -34,9 +35,9 @@ class _LetterSubjectSearchFormState extends State<LetterSubjectSearchForm> {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      margin: const EdgeInsets.all(16.0),
+
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         child: Row(
           children: [
             // Tender Number Text Field
@@ -72,7 +73,7 @@ class _LetterSubjectSearchFormState extends State<LetterSubjectSearchForm> {
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(Icons.search,color: ColorPicker.formIconColor,),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -83,7 +84,7 @@ class _LetterSubjectSearchFormState extends State<LetterSubjectSearchForm> {
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh,color: ColorPicker.formIconColor,),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

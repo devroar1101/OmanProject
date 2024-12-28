@@ -2,28 +2,33 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+import 'package:tenderboard/common/themes/app_theme.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';
 
+// ignore: must_be_immutable
 class DocumentViewer extends StatefulWidget {
   final List<Uint8List> imagePaths;
-  final int initialPage;
+  final int totalPage;
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
+  bool? scanning;
 
-  const DocumentViewer({
-    super.key,
-    required this.imagePaths,
-    required this.initialPage,
-    this.startScan,
-    this.showScannerDialog,
-  });
+  DocumentViewer(
+      {super.key,
+      required this.imagePaths,
+      this.startScan,
+      this.totalPage = 0,
+      this.showScannerDialog,
+      this.scanning});
 
   @override
   _DocumentViewerState createState() => _DocumentViewerState();
 }
 
 class _DocumentViewerState extends State<DocumentViewer> {
-  late int currentPage;
+  int currentPage = 0;
   late bool isFullScreen;
   late bool isThumbnailsVisible;
   final TextEditingController _pageController = TextEditingController();
@@ -31,11 +36,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
   @override
   void initState() {
     super.initState();
-    currentPage = widget.imagePaths.isEmpty ||
-            widget.initialPage < 0 ||
-            widget.initialPage >= widget.imagePaths.length
-        ? 0
-        : widget.initialPage;
+
     isFullScreen = false;
     isThumbnailsVisible = false;
   }
@@ -72,30 +73,20 @@ class _DocumentViewerState extends State<DocumentViewer> {
     try {
       final dio = Dio();
 
-      // Configure timeouts (especially useful for large files)
-      dio.options.connectTimeout =
-          const Duration(seconds: 30); // 30 seconds to connect
-      dio.options.receiveTimeout =
-          const Duration(seconds: 30); // 30 seconds to receive data
+      dio.options.connectTimeout = const Duration(seconds: 30);
+      dio.options.receiveTimeout = const Duration(seconds: 30);
 
-      // Convert the image data to a base64 string
       String base64Image = base64Encode(imageData);
 
-      // Create the payload as a proper JSON object
       final payload = {
-        'content':
-            base64Image, // Replace 'fileData' with the expected key by the API
+        'content': base64Image,
       };
 
-      print('before post ');
-      // Send the POST request with base64 encoded image data
       final response = await dio.post(
         apiUrl,
         data: payload,
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
-
-      print(response);
 
       if (response.data['statusCode'] == '200' ||
           response.data["IsSuccess"] == true) {
@@ -128,7 +119,6 @@ class _DocumentViewerState extends State<DocumentViewer> {
 
     if (editedImage != null && editedImage is Uint8List) {
       setState(() {
-        // Update the current image with the edited image
         widget.imagePaths[currentPage] = editedImage;
       });
     }
@@ -136,6 +126,8 @@ class _DocumentViewerState extends State<DocumentViewer> {
 
   @override
   Widget build(BuildContext context) {
+    bool isRtl = Directionality.of(context) == TextDirection.rtl;
+
     int validCurrentPage = 0;
     if (widget.imagePaths.isNotEmpty) {
       validCurrentPage = currentPage.clamp(0, widget.imagePaths.length - 1);
@@ -143,154 +135,211 @@ class _DocumentViewerState extends State<DocumentViewer> {
     }
 
     return Scaffold(
-      body: Column(
+      body: Row(
         children: [
-          // Header Row
-          Container(
-            color: Colors.grey[200],
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    if (widget.startScan != null)
+          Card(
+            elevation: 8, // Increase elevation for clickable feel
+            color: AppTheme.cardColor,
+            child: SizedBox(
+              width: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       IconButton(
-                        icon: const Icon(Icons.scanner),
-                        onPressed: widget.startScan,
+                        iconSize: 28, // Bigger icon size
+                        icon: Icon(
+                          isThumbnailsVisible
+                              ? Icons.view_compact
+                              : Icons.view_sidebar,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _toggleThumbnails,
                       ),
-                    if (widget.showScannerDialog != null)
-                      IconButton(
-                        icon: const Icon(Icons.settings),
-                        onPressed: () => widget.showScannerDialog!(context),
-                      ),
-                    IconButton(
-                      icon: Icon(isThumbnailsVisible
-                          ? Icons.view_compact
-                          : Icons.view_sidebar),
-                      onPressed: _toggleThumbnails,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          widget.imagePaths.removeAt(currentPage);
-                          if (widget.imagePaths.isEmpty) {
-                            currentPage = 0;
-                          } else {
-                            currentPage = currentPage.clamp(
-                                0, widget.imagePaths.length - 1);
-                          }
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_forever),
-                      onPressed: () {
-                        setState(() {
-                          widget.imagePaths.clear();
-                          currentPage = 0;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                // Page Indicator and Search
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: TextField(
-                        controller: _pageController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                          border: OutlineInputBorder(),
-                          hintText: 'Page',
+                      const SizedBox(height: 2),
+                      if (widget.showScannerDialog != null)
+                        IconButton(
+                          iconSize: 28, // Bigger icon size
+                          icon: const Icon(
+                            Icons.settings,
+                            color: ColorPicker.formIconColor,
+                          ),
+                          onPressed: () => widget.showScannerDialog!(context),
+                        ),
+                      const SizedBox(height: 2),
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: TextField(
+                          controller: _pageController,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            _goToPage();
+                          },
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 4),
+                            border: OutlineInputBorder(),
+                            hintText: '0',
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      'of ${widget.imagePaths.length}',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(36, 36),
-                        padding: EdgeInsets.zero,
+                      const SizedBox(height: 2),
+                      Text(
+                        '/ ${widget.totalPage != 0 ? widget.totalPage : widget.imagePaths.length}',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      onPressed: _goToPage,
-                      child: const Icon(Icons.search, size: 20),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.save),
-                      onPressed: widget.imagePaths.isNotEmpty
-                          ? () => _saveImage(
-                              widget.imagePaths[validCurrentPage], context)
-                          : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit), // Change to edit icon
-                      onPressed: _editImage, // Open edit image screen
-                    ),
-                    IconButton(
-                      icon: Icon(isFullScreen
-                          ? Icons.fullscreen_exit
-                          : Icons.fullscreen),
-                      onPressed: _toggleFullScreen,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: validCurrentPage > 0
-                          ? () => _changePage(validCurrentPage - 1)
-                          : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_forward),
-                      onPressed: validCurrentPage < widget.imagePaths.length - 1
-                          ? () => _changePage(validCurrentPage + 1)
-                          : null,
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.edit,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _editImage,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.delete,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            widget.imagePaths.removeAt(currentPage);
+                            if (widget.imagePaths.isEmpty) {
+                              currentPage = 0;
+                            } else {
+                              currentPage = currentPage.clamp(
+                                  0, widget.imagePaths.length - 1);
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.delete_forever,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            widget.imagePaths.clear();
+                            currentPage = 0;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: Icon(
+                          isFullScreen
+                              ? Icons.fullscreen_exit
+                              : Icons.fullscreen,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _toggleFullScreen,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: validCurrentPage > 0
+                            ? () => _changePage(validCurrentPage - 1)
+                            : null,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28, // Bigger icon size
+                        icon: const Icon(
+                          Icons.arrow_forward,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed:
+                            validCurrentPage < widget.imagePaths.length - 1
+                                ? () => _changePage(validCurrentPage + 1)
+                                : null,
+                      ),
+                      const SizedBox(height: 2),
+                      if (widget.startScan != null)
+                        IconButton(
+                          iconSize: 28, // Bigger icon size
+                          icon: const Icon(
+                            Icons.scanner,
+                            color: ColorPicker.formIconColor,
+                          ),
+                          onPressed: widget.startScan,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           // Main Viewer Area
           Expanded(
             child: Stack(
               children: [
-                // Main Page Image
-                Center(
-                  child: GestureDetector(
-                    onTap: _toggleFullScreen,
-                    child: widget.imagePaths.isNotEmpty
-                        ? Image.memory(
-                            widget.imagePaths[validCurrentPage],
-                            width: isFullScreen
-                                ? MediaQuery.of(context).size.width
-                                : MediaQuery.of(context).size.width * 0.9,
-                            height: isFullScreen
-                                ? MediaQuery.of(context).size.height
-                                : MediaQuery.of(context).size.height * 0.8,
+                // Main Page Image (Zoomable)
+                GestureDetector(
+                  onTap: _toggleFullScreen,
+                  child: widget.scanning != null && widget.scanning!
+                      ? Center(
+                          child: Image.asset(
+                            'assets/document_scanning.gif',
+                            width: 500, // Adjust dimensions as needed
+                            height: 500,
                             fit: BoxFit.contain,
-                          )
-                        : Container(),
-                  ),
+                          ),
+                        )
+                      : widget.imagePaths.isNotEmpty
+                          ? InteractiveViewer(
+                              minScale: 1,
+                              maxScale: 4.0,
+                              child: SizedBox.expand(
+                                child: Image.memory(
+                                  widget.imagePaths[validCurrentPage],
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.document_scanner_outlined,
+                                    size: 100,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No Document Available',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      color: Colors.grey.shade500,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                 ),
                 // Thumbnails (Vertical Stack)
                 if (isThumbnailsVisible)
                   Positioned(
-                    left: 0,
+                    left: isRtl ? null : 0,
+                    right: isRtl ? 0 : null,
                     top: 0,
                     bottom: 0,
                     child: Container(

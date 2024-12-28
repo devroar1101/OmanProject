@@ -4,32 +4,29 @@ class DocumentSearch {
   String subject;
   String location;
   String jobReferenceNumber;
-  DateTime recievedDate;
-  String tenderNumber;
-  DateTime dateOntheLetter;
+  String letterNumber;
+  String direction;
   String objectId;
 
   DocumentSearch({
     required this.subject,
     required this.location,
     required this.jobReferenceNumber,
-    required this.recievedDate,
-    required this.tenderNumber,
-    required this.dateOntheLetter,
-    required this.objectId
+    required this.letterNumber,
+    required this.direction,
+    required this.objectId,
   });
 
 
   // Convert a Map to a ListInbox object
   factory DocumentSearch.fromMap(Map<String, dynamic>map) {
     return DocumentSearch(
-      subject: map['scanDocumentLetterSubject'] ?? '',
-      location: map['fromExternalLocationName'] ?? '',
-      jobReferenceNumber: map['referenceNumber'] ?? '',
-      recievedDate: parseDate(map['recievedDate']),
-      tenderNumber: map['tenderNumber'] ?? '',
-      dateOntheLetter: parseDate(map['dateOntheLetter']),
-      objectId: map['scanTypeObjectId'] ?? '',
+      subject: map['subject'] ?? '',
+      location: map['externallocation'] ?? '',
+      jobReferenceNumber: map['referenecNumber'] ?? '',
+      letterNumber: map['letterNumber'] ?? '',
+      direction: map['direction'] ?? '',
+      objectId: map['objectId'] ?? '',
     );
   }
 
@@ -48,9 +45,8 @@ class DocumentSearch {
       'subject': subject,
       'location': location,
       'jobReferenceNumber': jobReferenceNumber,
-      'recievedDate': recievedDate.toIso8601String(),
-      'tenderNumber': tenderNumber,
-      'dateOntheLetter': dateOntheLetter.toIso8601String(),
+      'letterNumber' : letterNumber,
+      'direction' : direction,
       'objectId': objectId,
     };
   }
