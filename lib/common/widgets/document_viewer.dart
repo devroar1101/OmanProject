@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';
 
 class DocumentViewer extends StatefulWidget {
@@ -153,16 +154,22 @@ class _DocumentViewerState extends State<DocumentViewer> {
                       children: [
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: Icon(isThumbnailsVisible
-                              ? Icons.view_compact
-                              : Icons.view_sidebar),
+                          icon: Icon(
+                            isThumbnailsVisible
+                                ? Icons.view_compact
+                                : Icons.view_sidebar,
+                            color: ColorPicker.formIconColor,
+                          ),
                           onPressed: _toggleThumbnails,
                         ),
                         const SizedBox(height: 2),
                         if (widget.showScannerDialog != null)
                           IconButton(
                             iconSize: 28, // Bigger icon size
-                            icon: const Icon(Icons.settings),
+                            icon: const Icon(
+                              Icons.settings,
+                              color: ColorPicker.formIconColor,
+                            ),
                             onPressed: () => widget.showScannerDialog!(context),
                           ),
                         const SizedBox(height: 2),
@@ -192,13 +199,19 @@ class _DocumentViewerState extends State<DocumentViewer> {
                         const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: const Icon(Icons.edit),
+                          icon: const Icon(
+                            Icons.edit,
+                            color: ColorPicker.formIconColor,
+                          ),
                           onPressed: _editImage,
                         ),
                         const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(
+                            Icons.delete,
+                            color: ColorPicker.formIconColor,
+                          ),
                           onPressed: () {
                             setState(() {
                               widget.imagePaths.removeAt(currentPage);
@@ -214,7 +227,10 @@ class _DocumentViewerState extends State<DocumentViewer> {
                         const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: const Icon(Icons.delete_forever),
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: ColorPicker.formIconColor,
+                          ),
                           onPressed: () {
                             setState(() {
                               widget.imagePaths.clear();
@@ -225,13 +241,17 @@ class _DocumentViewerState extends State<DocumentViewer> {
                         const SizedBox(height: 2),
                         IconButton(
                           iconSize: 28, // Bigger icon size
-                          icon: Icon(isFullScreen
-                              ? Icons.fullscreen_exit
-                              : Icons.fullscreen),
+                          icon: Icon(
+                            isFullScreen
+                                ? Icons.fullscreen_exit
+                                : Icons.fullscreen,
+                            color: ColorPicker.formIconColor,
+                          ),
                           onPressed: _toggleFullScreen,
                         ),
                         const SizedBox(height: 2),
                         IconButton(
+                          color: ColorPicker.formIconColor,
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.arrow_back),
                           onPressed: validCurrentPage > 0
@@ -240,6 +260,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
                         ),
                         const SizedBox(height: 2),
                         IconButton(
+                          color: ColorPicker.formIconColor,
                           iconSize: 28, // Bigger icon size
                           icon: const Icon(Icons.arrow_forward),
                           onPressed:
@@ -251,7 +272,10 @@ class _DocumentViewerState extends State<DocumentViewer> {
                         if (widget.startScan != null)
                           IconButton(
                             iconSize: 28, // Bigger icon size
-                            icon: const Icon(Icons.scanner),
+                            icon: const Icon(
+                              Icons.scanner,
+                              color: ColorPicker.formIconColor,
+                            ),
                             onPressed: widget.startScan,
                           ),
                       ],

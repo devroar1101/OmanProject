@@ -52,7 +52,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.mail,
         'navigate': const LetterSummary('121212')
       },
-      {'title': 'eJob', 'icon': Icons.business, 'navigate': const EjobScreen()},
+      {'title': getTranslation('Ejob'), 'icon': Icons.business, 'navigate': const EjobScreen()},
       {
         'title': getTranslation('DocumentSearch'),
         'icon': Icons.search,

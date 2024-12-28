@@ -8,14 +8,19 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFFF5F5F5); // Light gray
   static const Color darkBackgroundColor = Color(0xFF2C3E50); // Dark blue-gray
   static const Color activeColor = Color.fromARGB(255, 252, 174, 30); // Green
-  static const Color buttonColor = Color.fromARGB(255, 212, 180, 146); // Bright button color
-  static const Color buttonTextColor = Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
-  static const Color textColor = Color.fromARGB(255, 33, 37, 41); // Black text color
+  static const Color buttonColor =
+      Color.fromARGB(255, 212, 180, 146); // Bright button color
+  static const Color buttonTextColor =
+      Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
+  static const Color textColor =
+      Color.fromARGB(255, 33, 37, 41); // Black text color
   static const Color appBarColor = Color(0xFF004F95); // Matches primary color
   static const Color cardColor = Color(0xFFFFFFFF); // White for cards
-  static const Color iconColor = Color.fromARGB(255, 237, 240, 241); // Consistent icon color
+  static const Color iconColor =
+      Color.fromARGB(255, 237, 240, 241); // Consistent icon color
   static const Color borderColor = Color(0xFFCCCCCC); // Light gray for borders
-  static const Color displayHeaderColor = Color.fromARGB(255, 142, 174, 155); // Same as primary
+  static const Color displayHeaderColor =
+      Color.fromARGB(255, 142, 174, 155); // Same as primary
   static const Color dialogColor = Color.fromARGB(255, 237, 238, 240);
   // Common text theme using GoogleFonts for Kufam
   static TextTheme _textTheme = TextTheme(
@@ -76,11 +81,16 @@ class AppTheme {
       ),
       dialogTheme: DialogTheme(
         backgroundColor: dialogColor,
-        
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
       ),
+      iconButtonTheme: const IconButtonThemeData(
+        style: ButtonStyle(
+          iconColor: WidgetStatePropertyAll(iconColor),
+        ),
       ),
+
       inputDecorationTheme: const InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: borderColor),
@@ -96,7 +106,7 @@ class AppTheme {
       ),
       cardTheme: CardTheme(
         color: isDarkMode
-            ? const Color.fromARGB(238,238,238,255)
+            ? const Color.fromARGB(238, 238, 238, 255)
             : cardColor, // Light or dark mode
         elevation: 2.0,
         shape: RoundedRectangleBorder(
