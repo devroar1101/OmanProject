@@ -21,23 +21,22 @@ class FolderRepository extends StateNotifier<List<Folder>> {
       required int cabinetId}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'cabinetFolderNameEnglish': nameEnglish,
-      'cabinetFolderNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
       'cabinetId': cabinetId
     };
 
     try {
-      await dio.post('/CabinetFolder/Create', data: requestBody);
+      final response = await dio.post('/Folder/Create', data: requestBody);
 
-      // After adding a Folder, we update the state to trigger a rebuild
       state = [
         Folder(
-            nameEnglish: nameEnglish,
-            nameArabic: nameArabic,
-            cabinetId: cabinetId,
-            id: 0,
-            code: 0,
-            objectId: '1111'),
+            nameEnglish: response.data['data']['nameEnglish'] ?? '',
+            nameArabic: response.data['data']['nameArabic'] ?? '',
+            cabinetId: response.data['data']['cabinetId'],
+            id: response.data['data']['id'],
+            code: response.data['data']['id'],
+            objectId: response.data['data']['objectId']),
         ...state
       ];
     } catch (e) {
@@ -76,37 +75,23 @@ class FolderRepository extends StateNotifier<List<Folder>> {
   }
 
   //Edit
-  Future<void> editFolder(
-      {required int id,
-      required String nameEnglish,
-      required String nameArabic,
-      required int cabinetId}) async {
+  Future<void> editFolder({required Folder folder}) async {
     final dio = ref.watch(dioProvider);
-    Map<String, dynamic> requestBody = {
-      'nameEnglish': nameEnglish,
-      'nameArabic': nameArabic,
-    };
+    Map<String, dynamic> requestBody = folder.toMap();
 
     try {
       // Make a PUT or PATCH request to edit the existing Folder
-      await dio.put(
-        '/CabinetFolder/Update', // Assuming you're using a RESTful API where you pass the ID in the URL
+      final response = await dio.put(
+        '/Folder/Update', // Assuming you're using a RESTful API where you pass the ID in the URL
         data: requestBody,
       );
 
-      final updatedFolder = Folder(
-        id: id,
-        cabinetId: cabinetId,
-        nameEnglish: nameEnglish,
-        nameArabic: nameArabic,
-        code: id,
-        objectId: 'UpdatedObjectId',
-      );
+      final updatedFolder = Folder.fromMap(response.data['data']);
 
       // Update the state to reflect the edited Folder
       state = [
         for (var folder in state)
-          if (folder.id == id) updatedFolder else folder
+          if (folder.id == updatedFolder.id) updatedFolder else folder
       ];
     } catch (e) {
       throw Exception('Error occurred while editing Folder: $e');

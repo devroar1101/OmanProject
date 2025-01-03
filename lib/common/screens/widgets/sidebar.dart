@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_home.dart';
 import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
@@ -98,6 +99,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'title': getTranslation('Cabinet'),
         'icon': Icons.storage,
         'navigate': const CabinetHome()
+      },
+      {
+        'title': getTranslation('Cabinet1'),
+        'icon': Icons.storage,
+        'navigate': const FolderPermissionHome(),
       },
       {
         'title': getTranslation('SubjectMaster'),

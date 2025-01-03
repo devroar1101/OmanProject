@@ -194,7 +194,7 @@ class _DepartmentMasterScreenState
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true, // Expandable table rows
                   iconButtons: iconButtons,
-                  onTap: (int index, {objectId}) {},
+                  onTap: (index, {objectId}) {},
                   detailKey: 'id', // Unique key for row selection
                 ),
               ),

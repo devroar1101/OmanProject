@@ -72,7 +72,12 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
   void onDelete(int dgId) {
     ref.watch(dgMasterRepositoryProvider.notifier).deleteDgMaster(dgId: dgId);
 
-    CustomSnackbar.show(context: context, title: 'successfully', message: getTranslation('Dgdeletedsuccessfully!'), typeId: 1, durationInSeconds: 3);
+    CustomSnackbar.show(
+        context: context,
+        title: 'successfully',
+        message: getTranslation('Dgdeletedsuccessfully!'),
+        typeId: 1,
+        durationInSeconds: 3);
     Navigator.pop(context);
   }
 
@@ -164,7 +169,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
           ),
 
           if (dgMasters.isEmpty)
-             Center(child: Text(getTranslation('Noitemtodisplay')))
+            Center(child: Text(getTranslation('Noitemtodisplay')))
           else
             Expanded(
               child: Card(
@@ -176,7 +181,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
                   details: DgMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id, {objectId}) {},
+                  onTap: (id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

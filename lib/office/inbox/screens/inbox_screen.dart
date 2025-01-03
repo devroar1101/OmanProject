@@ -55,12 +55,11 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                       return inboxItem.toMap();
                     }).toList(),
                     expandable: true,
-                    onTap: (index, {objectId}) {
-                      print(objectId);
+                    onTap: (id) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LetterSummary(objectId!),
+                          builder: (context) => LetterSummary(id!),
                         ),
                       );
                     },

@@ -177,7 +177,7 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
                   details: UserMaster.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id, {objectId}) {},
+                  onTap: (id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

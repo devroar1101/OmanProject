@@ -3,15 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
 
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder_permission_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 import '../model/folder_permission.dart';
 
 class BulkFolderWisePermission extends ConsumerStatefulWidget {
   const BulkFolderWisePermission(
-      {super.key, required this.cabinets, required this.folders});
+      {super.key,
+      required this.cabinets,
+      required this.folders,
+      required this.users,
+      required this.folderPermission});
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
+  final List<UserMaster> users;
+  final List<FolderPermission> folderPermission;
   @override
   _BulkFolderWisePermissionState createState() =>
       _BulkFolderWisePermissionState();
@@ -23,12 +31,7 @@ class _BulkFolderWisePermissionState
 
   List<Folder> folders = [];
 
-  final List<User> users = [
-    User(id: 1, name: 'User 1'),
-    User(id: 2, name: 'User 2'),
-    User(id: 3, name: 'User 3'),
-    User(id: 4, name: 'User 4'),
-  ];
+  List<UserMaster> users = [];
 
   final List<int> selectedFolderIds = [];
   final List<int> selectedUserIds = [];
@@ -42,6 +45,9 @@ class _BulkFolderWisePermissionState
     super.initState();
     cabinets = widget.cabinets;
     folders = widget.folders;
+    cabinets = widget.cabinets;
+    folders = widget.folders;
+    users = widget.users;
   }
 
   void addPermissions() {
@@ -50,12 +56,18 @@ class _BulkFolderWisePermissionState
         const SnackBar(
             content: Text('Select at least one folder and one user')),
       );
-      return;
-    }
 
-    // Logic for adding permissions
-    print('Adding permissions for folders: $selectedFolderIds');
-    print('Adding permissions for users: $selectedUserIds');
+      return;
+    } else {
+      for (int userId in selectedUserIds) {
+        for (int folderId in selectedFolderIds) {
+          ref
+              .read(folderPermissionRepositoryProvider.notifier)
+              .addFolderPermission(folderId: folderId, userId: userId);
+        }
+      }
+      ref.refresh(folderPermissionRepositoryProvider);
+    }
   }
 
   @override

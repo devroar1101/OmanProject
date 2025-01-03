@@ -10,7 +10,7 @@ class FolderSection extends StatelessWidget {
   final int? selectedFolderId;
   final Function(String) onSearch;
   final Function(String)? onAddFolder;
-  final Function(int, String)? onEditFolder;
+  final Function(int)? onEditFolder;
   final Function(int) onSelectFolder;
 
   const FolderSection({
@@ -29,11 +29,14 @@ class FolderSection extends StatelessWidget {
     final headers = ['Folder'];
     final dataKeys = ['nameArabic'];
     final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+    List<Map<String, dynamic>> details = [];
+    final iconButtons = [
+      {"button": Icons.edit, "function": (int id) => onEditFolder!(id)},
+    ];
 
-    print('displayfolder${folders[0].nameArabic}${folders[0].id}');
-
-    // Convert ListMasterItem list to map list with sno
-    final details = Folder.listToMap(folders);
+    if (folders.isNotEmpty) {
+      details = Folder.listToMap(folders);
+    }
     return Stack(
       children: [
         Column(
@@ -55,11 +58,12 @@ class FolderSection extends StatelessWidget {
               ),
             Expanded(
               child: DisplayDetails(
+                iconButtons: iconButtons,
                 headers: headers,
                 data: dataKeys,
                 details: details,
+                detailKey: 'id',
                 selected: selectedFolderId.toString(),
-                detailKey: 'cabinetFolderId',
                 onTap: (index, {objectId}) {
                   onSelectFolder(index);
                 },
@@ -77,7 +81,7 @@ class FolderSection extends StatelessWidget {
                     ? ElevatedButton(
                         onPressed: selectedCabinet!.id == 0
                             ? null
-                            : () => showAddDialog(
+                            : () => showAddEditDialog(
                                   context,
                                   title: 'Add Folder',
                                   onSave: onAddFolder!,
