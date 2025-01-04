@@ -78,12 +78,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('DG'),
         'icon': Icons.account_balance,
-        'navigate': const DgMasterScreen()
+        'navigate': const DgScreen()
       },
       {
         'title': getTranslation('Department'),
         'icon': Icons.business,
-        'navigate': const DepartmentMasterScreen()
+        'navigate': const DepartmentScreen()
       },
       {
         'title': getTranslation('Section'),
@@ -118,7 +118,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('Users'),
         'icon': Icons.person,
-        'navigate': const UserMasterScreen()
+        'navigate': const UserScreen()
       },
     ]
   };

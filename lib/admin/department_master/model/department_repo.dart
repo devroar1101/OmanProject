@@ -1,28 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final departmentMasterRepositoryProvider =
-    StateNotifierProvider<DepartmentMasterRepository, List<Department>>((ref) {
-  return DepartmentMasterRepository(ref);
+final departmentRepositoryProvider =
+    StateNotifierProvider<DepartmentRepository, List<Department>>((ref) {
+  return DepartmentRepository(ref);
 });
 
-class DepartmentMasterRepository extends StateNotifier<List<Department>> {
-  DepartmentMasterRepository(this.ref) : super([]);
+class DepartmentRepository extends StateNotifier<List<Department>> {
+  DepartmentRepository(this.ref) : super([]);
   final Ref ref;
 
   //Add
-  Future<void> addDepartmentMaster(
+  Future<void> addDepartment(
       {required String nameEnglish,
       required String nameArabic,
       required String dgId}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'dgId': dgId,
-      'departmentNameEnglish': nameEnglish,
-      'departmentNameArabic': nameArabic,
+      'nameArabic': nameEnglish,
+      'nameEnglish': nameArabic,
     };
 
     try {
@@ -40,12 +41,12 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
         ...state
       ];
     } catch (e) {
-      throw Exception('Error occurred while adding DepartmentMaster: $e');
+      throw Exception('Error occurred while adding Department: $e');
     }
   }
 
   //Edit
-  Future<void> editDepartmentMaster({
+  Future<void> editDepartment({
     required int currentDepartmentId,
     required String nameArabic,
     required String nameEnglish,
@@ -72,7 +73,7 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
             id: currentDepartmentId,
             dgId: dgId);
 
-        // Update the state with the edited DgMaster
+        // Update the state with the edited Dg
         state = [
           for (var Department in state)
             if (Department.id == currentDepartmentId)
@@ -82,10 +83,10 @@ class DepartmentMasterRepository extends StateNotifier<List<Department>> {
         ];
       } else {
         throw Exception(
-            'Failed to update DepartmentMaster. Status code: ${response.statusCode}');
+            'Failed to update Department. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error occurred while editing DepartmentMaster: $e');
+      throw Exception('Error occurred while editing Department: $e');
     }
   }
 
@@ -194,6 +195,6 @@ final departmentOptionsProvider =
         (ref, dgId) async {
   final authState = ref.watch(authProvider);
   return ref
-      .read(departmentMasterRepositoryProvider.notifier)
+      .read(departmentRepositoryProvider.notifier)
       .getDepartMentOptions(dgId, authState.selectedLanguage);
 });

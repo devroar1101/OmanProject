@@ -20,7 +20,7 @@ class FolderWisePermission extends ConsumerStatefulWidget {
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
-  final List<UserMaster> users;
+  final List<User> users;
   final List<FolderPermission> folderPermission;
   @override
   _FolderWisePermissionState createState() => _FolderWisePermissionState();
@@ -28,13 +28,13 @@ class FolderWisePermission extends ConsumerStatefulWidget {
 
 class _FolderWisePermissionState extends ConsumerState<FolderWisePermission> {
   // Sample data
-  List<Cabinet> cabinets = [];
+  late List<Cabinet> cabinets;
 
-  List<Folder> folders = [];
+  late List<Folder> folders;
 
-  List<UserMaster> users = [];
+  late List<User> users;
 
-  List<FolderPermission> permissions = [];
+  late List<FolderPermission> permissions;
 
   int? selectedCabinetId = 1;
   int? selectedFolderId = 1;

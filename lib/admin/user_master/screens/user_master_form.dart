@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
+import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
+
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
-import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 
 class UsersSearchForm extends ConsumerStatefulWidget {
   const UsersSearchForm({super.key, required this.onSearch});
@@ -21,9 +22,9 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Dg>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
-  List<SelectOption<SectionMaster>> sectionOptions = [];
+  List<SelectOption<Section>> sectionOptions = [];
 
   String? _selectedDGValue = '';
   String? _selectedDepartmentValue = '';
@@ -111,7 +112,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
               children: [
                 // DG Select Field
                 Expanded(
-                  child: SelectField<DgMaster>(
+                  child: SelectField<Dg>(
                     label: 'DG',
                     options: dgOptions,
                     onChanged: (dg, selectedOption) {
@@ -139,7 +140,7 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                     onChanged: (department, selectedOption) {
                       setState(() {
                         sectionOptions = selectedOption.childOptions
-                                ?.cast<SelectOption<SectionMaster>>() ??
+                                ?.cast<SelectOption<Section>>() ??
                             [];
                         _selectedDepartmentValue = department.id.toString();
                         _selectedSectionValue = '';
@@ -153,13 +154,13 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
 
                 // Section Select Field
                 Expanded(
-                  child: SelectField<SectionMaster>(
+                  child: SelectField<Section>(
                     label: 'Section',
                     options: sectionOptions,
                     key: ValueKey(sectionOptions),
                     onChanged: (section, selectedOption) {
                       setState(() {
-                        _selectedSectionValue = section.sectionId.toString();
+                        _selectedSectionValue = section.id.toString();
                       });
                     },
                     hint: 'Select Section',
@@ -179,7 +180,10 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                   color: const Color.fromARGB(255, 238, 240, 241),
                   shape: const CircleBorder(),
                   child: IconButton(
-                    icon: const Icon(Icons.search,color: ColorPicker.formIconColor,),
+                    icon: const Icon(
+                      Icons.search,
+                      color: ColorPicker.formIconColor,
+                    ),
                     onPressed: _handleSearch,
                     tooltip: 'Search',
                   ),
@@ -191,7 +195,10 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
                   color: const Color.fromARGB(255, 240, 234, 235),
                   shape: const CircleBorder(),
                   child: IconButton(
-                    icon: const Icon(Icons.refresh,color: ColorPicker.formIconColor,),
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: ColorPicker.formIconColor,
+                    ),
                     onPressed: _resetFields,
                     tooltip: 'Reset',
                   ),

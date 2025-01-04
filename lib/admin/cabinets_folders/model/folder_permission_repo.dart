@@ -32,7 +32,6 @@ class FolderPermissionRepository extends StateNotifier<List<FolderPermission>> {
         FolderPermission.fromMap(response.data['data']),
         ...state,
       ];
-      print(state.length);
     } catch (e) {
       throw Exception('Error occurred while adding Folder Permission: $e');
     }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/themes/app_theme.dart';
+
 import 'package:tenderboard/common/widgets/load_letter_document.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
@@ -123,6 +123,10 @@ class _LetterSummaryState extends State<LetterSummary> {
                             width: 5,
                           ),
                           _buildTab("Additional Info"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          _buildTab("Action"),
                         ],
                       ),
                     ),
@@ -142,13 +146,22 @@ class _LetterSummaryState extends State<LetterSummary> {
             // Right Side - Document Viewer or Additional Content
             Flexible(
               flex: 2,
-              child: Container(
-                color: Colors.grey[200],
-                child: Center(
-                    child: Container(
-                  color: Colors.grey[200], // Optional background color
-                  child: LoadLetterDocument(objectId: widget.letterObjectId),
-                )),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+                child: _selectedTab == "Action"
+                    ? Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: Container(
+                            color:
+                                Colors.grey[200], // Optional background color
+                            child: LoadLetterDocument(
+                                objectId: widget.letterObjectId),
+                          ),
+                        ),
+                      )
+                    : _buildContent(
+                        Directionality.of(context) == TextDirection.rtl),
               ),
             ),
           ],
@@ -204,6 +217,9 @@ class _LetterSummaryState extends State<LetterSummary> {
         return RoutingHistory(
           isRtl: isRtl,
         );
+
+      case "Letter":
+        return LoadLetterDocument(objectId: widget.letterObjectId);
       default:
         return const Center(child: Text("Invalid Tab"));
     }

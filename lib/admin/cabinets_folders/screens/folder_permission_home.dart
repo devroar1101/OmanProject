@@ -24,7 +24,7 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
   late TabController _tabController;
   late List<Cabinet> cabinets = [];
   late List<Folder> folders = [];
-  late List<UserMaster> users = [];
+  late List<User> users = [];
   late List<FolderPermission> folderPermission = [];
 
   @override
@@ -38,7 +38,7 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
   Future<void> initialize() async {
     try {
       final results = await Future.wait([
-        ref.read(UserMasterRepositoryProvider.notifier).fetchUsers(),
+        ref.read(UserRepositoryProvider.notifier).fetchUsers(),
         ref
             .read(folderPermissionRepositoryProvider.notifier)
             .fetchFolderPermissions(),
@@ -59,7 +59,7 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
     folderPermission = ref.watch(folderPermissionRepositoryProvider);
     cabinets = ref.watch(cabinetRepositoryProvider);
     folders = ref.watch(folderRepositoryProvider);
-    users = ref.watch(UserMasterRepositoryProvider);
+    users = ref.watch(UserRepositoryProvider);
 
     return Scaffold(
       body: Column(
@@ -76,8 +76,8 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
               tabs: const [
                 Tab(text: 'Folder Wise'),
-                Tab(text: 'Bulk Folder Wise'),
                 Tab(text: 'User Wise'),
+                Tab(text: 'Bulk Folder Wise'),
               ],
             ),
           ),
@@ -87,18 +87,20 @@ class _FolderPermissionHomeState extends ConsumerState<FolderPermissionHome>
               controller: _tabController,
               children: [
                 FolderWisePermission(
-                  cabinets: cabinets,
-                  folders: folders,
-                  users: users,
-                  folderPermission: folderPermission,
-                ),
-                BulkFolderWisePermission(
+                  key: ValueKey('Fw${folderPermission.length}'),
                   cabinets: cabinets,
                   folders: folders,
                   users: users,
                   folderPermission: folderPermission,
                 ),
                 UserWisePermission(
+                  cabinets: cabinets,
+                  folders: folders,
+                  users: users,
+                  folderPermission: folderPermission,
+                ),
+                BulkFolderWisePermission(
+                  key: ValueKey('Bfw${folderPermission.length}'),
                   cabinets: cabinets,
                   folders: folders,
                   users: users,

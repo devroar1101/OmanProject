@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/dgmaster/screens/add_dgmaster.dart';
@@ -10,18 +11,18 @@ import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class DgMasterScreen extends ConsumerStatefulWidget {
-  const DgMasterScreen({super.key});
+class DgScreen extends ConsumerStatefulWidget {
+  const DgScreen({super.key});
 
   @override
-  _DgMasterScreenState createState() => _DgMasterScreenState();
+  _DgScreenState createState() => _DgScreenState();
 }
 
-class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
+class _DgScreenState extends ConsumerState<DgScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(dgMasterRepositoryProvider.notifier).fetchDgMasters();
+    ref.read(dgRepositoryProvider.notifier).fetchDgs();
   }
 
   String searchNameArabic = '';
@@ -42,22 +43,21 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
     });
   }
 
-  List<DgMaster> _applyFiltersAndPagination(List<DgMaster> dgMasters) {
-    if (dgMasters.isEmpty) {
+  List<Dg> _applyFiltersAndPagination(List<Dg> dgs) {
+    if (dgs.isEmpty) {
       return [];
     }
 
     // Apply search filters
-    List<DgMaster> filteredList = dgMasters.where((dgMaster) {
+    List<Dg> filteredList = dgs.where((dg) {
       final matchesArabic = searchNameArabic.isEmpty ||
-          (dgMaster.nameArabic.toLowerCase() ?? '')
+          (dg.nameArabic.toLowerCase() ?? '')
               .contains(searchNameArabic.toLowerCase());
       final matchesEnglish = searchNameEnglish.isEmpty ||
-          (dgMaster.nameEnglish.toLowerCase() ?? '')
+          (dg.nameEnglish.toLowerCase() ?? '')
               .contains(searchNameEnglish.toLowerCase());
       final matchesCode = searchCode.isEmpty ||
-          (dgMaster.code.toLowerCase() ?? '')
-              .contains(searchCode.toLowerCase());
+          (dg.code.toLowerCase() ?? '').contains(searchCode.toLowerCase());
       return matchesArabic && matchesEnglish && matchesCode;
     }).toList();
 
@@ -70,7 +70,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
   }
 
   void onDelete(int dgId) {
-    ref.watch(dgMasterRepositoryProvider.notifier).deleteDgMaster(dgId: dgId);
+    ref.watch(dgRepositoryProvider.notifier).deleteDg(dgId: dgId);
 
     CustomSnackbar.show(
         context: context,
@@ -83,22 +83,21 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dgMasters = ref.watch(dgMasterRepositoryProvider);
-    final filteredAndPaginatedList = _applyFiltersAndPagination(dgMasters);
+    final dgs = ref.watch(dgRepositoryProvider);
+    final filteredAndPaginatedList = _applyFiltersAndPagination(dgs);
 
     final iconButtons = [
       {
         "button": Icons.edit,
         "function": (int id) {
-          final DgMaster currentDgMaster =
-              dgMasters.firstWhere((dgMaster) => dgMaster.id == id);
+          final Dg currentDg = dgs.firstWhere((dg) => dg.id == id);
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AddDGmasterScreen(
-                currentDGId: currentDgMaster.id,
-                editNameArabic: currentDgMaster.nameArabic,
-                editNameEnglish: currentDgMaster.nameEnglish,
+              return AddDGScreen(
+                currentDGId: currentDg.id,
+                editNameArabic: currentDg.nameArabic,
+                editNameEnglish: currentDg.nameEnglish,
               );
             },
           );
@@ -128,7 +127,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
       body: Column(
         children: [
           const SizedBox(height: 8.0),
-          // Combine DgMasterSearchForm and Pagination in a single row
+          // Combine DgSearchForm and Pagination in a single row
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -141,22 +140,22 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
                   width: 8.0), // Add spacing between form and pagination
               Pagination(
                 totalItems: search
-                    ? dgMasters.where((dgMaster) {
+                    ? dgs.where((dg) {
                         final matchesArabic = searchNameArabic.isEmpty ||
-                            dgMaster.nameArabic
+                            dg.nameArabic
                                 .toLowerCase()
                                 .contains(searchNameArabic.toLowerCase());
                         final matchesEnglish = searchNameEnglish.isEmpty ||
-                            dgMaster.nameEnglish
+                            dg.nameEnglish
                                 .toLowerCase()
                                 .contains(searchNameEnglish.toLowerCase());
                         final matchesCode = searchCode.isEmpty ||
-                            dgMaster.code
+                            dg.code
                                 .toLowerCase()
                                 .contains(searchCode.toLowerCase());
                         return matchesArabic && matchesEnglish && matchesCode;
                       }).length
-                    : dgMasters.length,
+                    : dgs.length,
                 initialPageSize: pageSize,
                 onPageChange: (pageNo, newPageSize) {
                   setState(() {
@@ -168,7 +167,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
             ],
           ),
 
-          if (dgMasters.isEmpty)
+          if (dgs.isEmpty)
             Center(child: Text(getTranslation('Noitemtodisplay')))
           else
             Expanded(
@@ -178,7 +177,7 @@ class _DgMasterScreenState extends ConsumerState<DgMasterScreen> {
                 child: DisplayDetails(
                   headers: const ['Code', 'NameArabic', 'NameEnglish'],
                   data: const ['code', 'nameArabic', 'nameEnglish'],
-                  details: DgMaster.listToMap(filteredAndPaginatedList),
+                  details: Dg.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
                   onTap: (id, {objectId}) {},

@@ -6,6 +6,8 @@ import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder_permission_repo.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
+import 'package:tenderboard/common/themes/app_theme.dart';
+
 import '../model/folder_permission.dart';
 
 class BulkFolderWisePermission extends ConsumerStatefulWidget {
@@ -18,7 +20,7 @@ class BulkFolderWisePermission extends ConsumerStatefulWidget {
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
-  final List<UserMaster> users;
+  final List<User> users;
   final List<FolderPermission> folderPermission;
   @override
   _BulkFolderWisePermissionState createState() =>
@@ -27,11 +29,11 @@ class BulkFolderWisePermission extends ConsumerStatefulWidget {
 
 class _BulkFolderWisePermissionState
     extends ConsumerState<BulkFolderWisePermission> {
-  List<Cabinet> cabinets = [];
+  late List<Cabinet> cabinets;
 
-  List<Folder> folders = [];
+  late List<Folder> folders;
 
-  List<UserMaster> users = [];
+  late List<User> users;
 
   final List<int> selectedFolderIds = [];
   final List<int> selectedUserIds = [];
@@ -195,6 +197,7 @@ class _BulkFolderWisePermissionState
         ],
       ),
       bottomNavigationBar: BottomAppBar(
+        color: AppTheme.cardColor,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

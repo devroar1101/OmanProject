@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
+
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 
-class AddDGmasterScreen extends ConsumerWidget {
-  AddDGmasterScreen(
+class AddDGScreen extends ConsumerWidget {
+  AddDGScreen(
       {super.key, this.editNameArabic, this.editNameEnglish, this.currentDGId});
   final String? editNameArabic;
   final String? editNameEnglish;
@@ -15,28 +16,35 @@ class AddDGmasterScreen extends ConsumerWidget {
   String? _dgNameArabic;
   String? _dgNameEnglish;
 
-  Future<void> _saveForm(BuildContext context, WidgetRef ref,) async {
+  Future<void> _saveForm(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
         currentDGId == null
-            ? await ref.read(dgMasterRepositoryProvider.notifier).addDgMaster(
+            ? await ref.read(dgRepositoryProvider.notifier).addDg(
                   nameArabic: _dgNameArabic!,
                   nameEnglish: _dgNameEnglish!,
                 )
-            : await ref.read(dgMasterRepositoryProvider.notifier).editDGMaster(
+            : await ref.read(dgRepositoryProvider.notifier).editDG(
                   currentDGId: currentDGId!,
                   editNameArabic: _dgNameArabic!,
                   editNameEnglish: _dgNameEnglish!,
                 );
         // Navigate or display a success message
-        CustomSnackbar.show(context: context, title: 'successfully', message: getTranslation(
-          'Dgaddedsuccessfully!'
-        ), typeId: 1, durationInSeconds: 3);
+        CustomSnackbar.show(
+            context: context,
+            title: 'successfully',
+            message: getTranslation('Dgaddedsuccessfully!'),
+            typeId: 1,
+            durationInSeconds: 3);
         Navigator.pop(context); // Close the modal after saving
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add DGmaster: $e $currentDGId -currentDGID')),
+          SnackBar(
+              content: Text('Failed to add DG: $e $currentDGId -currentDGID')),
         );
       }
     }
@@ -58,9 +66,10 @@ class AddDGmasterScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min, // Makes the dialog height dynamic
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text( currentDGId != null?
-                  'Edit DGmaster' : 'Add DGmaster',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  currentDGId != null ? 'Edit DG' : 'Add DG',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(

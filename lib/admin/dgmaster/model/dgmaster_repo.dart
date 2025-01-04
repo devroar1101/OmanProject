@@ -5,20 +5,21 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/admin/section_master/model/section_master_repo.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final dgMasterRepositoryProvider =
-    StateNotifierProvider<DgMasterRepository, List<DgMaster>>((ref) {
-  return DgMasterRepository(ref);
+final dgRepositoryProvider =
+    StateNotifierProvider<DgRepository, List<Dg>>((ref) {
+  return DgRepository(ref);
 });
 
-class DgMasterRepository extends StateNotifier<List<DgMaster>> {
-  DgMasterRepository(this.ref) : super([]);
+class DgRepository extends StateNotifier<List<Dg>> {
+  DgRepository(this.ref) : super([]);
   final Ref ref;
 
 //Add
-  Future<void> addDgMaster(
+  Future<void> addDg(
       {required String nameEnglish, required String nameArabic}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
@@ -30,7 +31,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       final Response = await dio.post('/DG/Create', data: requestBody);
 
       state = [
-        DgMaster(
+        Dg(
           id: Response.data['data']['dgId'],
           nameArabic: nameArabic,
           nameEnglish: nameEnglish,
@@ -39,12 +40,12 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
         ...state
       ];
     } catch (e) {
-      throw Exception('Error occurred while adding DGMaster: $e');
+      throw Exception('Error occurred while adding DG: $e');
     }
   }
 
-  ///  Onload  // Fetch DgMasters from the API
-  Future<List<DgMaster>> fetchDgMasters({
+  ///  Onload  // Fetch Dgs from the API
+  Future<List<Dg>> fetchDgs({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
@@ -64,20 +65,20 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List;
         state = data
-            .map((item) => DgMaster.fromMap(item as Map<String, dynamic>))
+            .map((item) => Dg.fromMap(item as Map<String, dynamic>))
             .toList();
       } else {
-        throw Exception('Failed to load DgMasters');
+        throw Exception('Failed to load Dgs');
       }
     } catch (e) {
       // Handle any errors during the request
-      throw Exception('Error occurred while fetching DgMasters: $e');
+      throw Exception('Error occurred while fetching Dgs: $e');
     }
     return state;
   }
 
   //Edit
-  Future<void> editDGMaster({
+  Future<void> editDG({
     required String editNameEnglish,
     required String editNameArabic,
     required int currentDGId,
@@ -94,32 +95,32 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       final response = await dio.put('/DG/Update', data: requestBody);
 
       if (response.statusCode == 200) {
-        // Create the updated DgMaster object
-        final updatedDgMaster = DgMaster(
+        // Create the updated Dg object
+        final updatedDg = Dg(
           id: currentDGId,
           nameArabic: editNameArabic,
           nameEnglish: editNameEnglish,
           code: '0', // Update this as needed
         );
 
-        // Update the state with the edited DgMaster
+        // Update the state with the edited Dg
         state = [
-          for (var dgMaster in state)
-            if (dgMaster.id == currentDGId) updatedDgMaster else dgMaster
+          for (var dg in state)
+            if (dg.id == currentDGId) updatedDg else dg
         ];
       } else {
         throw Exception(
-            'Failed to update DGMaster. Status code: ${response.statusCode}');
+            'Failed to update DG. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error occurred while editing DGMaster: $e');
+      throw Exception('Error occurred while editing DG: $e');
     }
   }
 
   //Delete
 
-  // Add this method in the DgMasterRepository class
-  Future<void> deleteDgMaster({required int dgId}) async {
+  // Add this method in the DgRepository class
+  Future<void> deleteDg({required int dgId}) async {
     final dio = ref.watch(dioProvider);
 
     try {
@@ -130,27 +131,27 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
       );
 
       if (response.statusCode == 200) {
-        // Update the state by removing the deleted DgMaster
-        state = state.where((dgMaster) => dgMaster.id != dgId).toList();
+        // Update the state by removing the deleted Dg
+        state = state.where((dg) => dg.id != dgId).toList();
       } else {
         throw Exception(
-            'Failed to delete DGMaster. Status code: ${response.statusCode}');
+            'Failed to delete DG. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any errors during the request
-      throw Exception('Error occurred while deleting DGMaster: $e');
+      throw Exception('Error occurred while deleting DG: $e');
     }
   }
 
-  /// Search and filter method for DgMaster based on optional nameArabic and nameEnglish
-  Future<List<DgMaster>> searchAndFilter(List<DgMaster> dgMasters,
+  /// Search and filter method for Dg based on optional nameArabic and nameEnglish
+  Future<List<Dg>> searchAndFilter(List<Dg> dgs,
       {String? nameArabic, String? nameEnglish}) async {
     // Filter the list based on the provided nameArabic and nameEnglish filters
-    var filteredList = dgMasters.where((dgMaster) {
+    var filteredList = dgs.where((dg) {
       bool matchesArabic =
-          nameArabic == null || dgMaster.nameArabic.contains(nameArabic);
+          nameArabic == null || dg.nameArabic.contains(nameArabic);
       bool matchesEnglish =
-          nameEnglish == null || dgMaster.nameEnglish.contains(nameEnglish);
+          nameEnglish == null || dg.nameEnglish.contains(nameEnglish);
 
       return matchesArabic && matchesEnglish;
     }).toList();
@@ -158,28 +159,27 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
     return filteredList;
   }
 
-  Future<List<SelectOption<DgMaster>>> getDGOptions(
+  Future<List<SelectOption<Dg>>> getDGOptions(
       String currentLanguage, bool includeChildOptions) async {
-    List<DgMaster> dgList = state;
+    List<Dg> dgList = state;
     List<Department> departments = [];
-    List<SectionMaster> sections = [];
+    List<Section> sections = [];
 
     // Fetch DGList if not already available
     if (dgList.isEmpty) {
-      dgList = await fetchDgMasters();
+      dgList = await fetchDgs();
     }
 
     if (includeChildOptions) {
       departments = await ref
-          .read(departmentMasterRepositoryProvider.notifier)
+          .read(departmentRepositoryProvider.notifier)
           .fetchDepartments();
-      sections = await ref
-          .read(sectionMasterRepositoryProvider.notifier)
-          .fetchSections();
+      sections =
+          await ref.read(sectionRepositoryProvider.notifier).fetchSections();
     }
 
     // Build DG Options with or without child options
-    final List<SelectOption<DgMaster>> options = await Future.wait(
+    final List<SelectOption<Dg>> options = await Future.wait(
       dgList.map((dg) async {
         List<SelectOption<Department>>? childOptions;
 
@@ -190,19 +190,19 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
               .toList();
 
           childOptions = filteredDepartment.map((department) {
-            List<SelectOption<SectionMaster>>? subchildOptions;
+            List<SelectOption<Section>>? subchildOptions;
 
-            final List<SectionMaster> filteredSection = sections
+            final List<Section> filteredSection = sections
                 .where((section) => section.departmentId == department.id)
                 .toList();
-           
+
             subchildOptions = filteredSection.map((section) {
-                 print('${department.id}--${section.sectionId}');
-              return SelectOption<SectionMaster>(
+              print('${department.id}--${section.id}');
+              return SelectOption<Section>(
                 displayName: currentLanguage == 'en'
-                    ? section.sectionNameArabic
-                    : section.sectionNameEnglish,
-                key: section.sectionId.toString(),
+                    ? section.nameArabic
+                    : section.nameEnglish,
+                key: section.id.toString(),
                 value: section,
               );
             }).toList();
@@ -217,7 +217,7 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
           }).toList();
         }
 
-        return SelectOption<DgMaster>(
+        return SelectOption<Dg>(
           displayName: currentLanguage == 'en' ? dg.nameEnglish : dg.nameArabic,
           key: dg.id.toString(),
           value: dg,
@@ -230,13 +230,12 @@ class DgMasterRepository extends StateNotifier<List<DgMaster>> {
   }
 }
 
-final dgOptionsProvider =
-    FutureProvider.family<List<SelectOption<DgMaster>>, bool?>(
-        (ref, bool? child) async {
+final dgOptionsProvider = FutureProvider.family<List<SelectOption<Dg>>, bool?>(
+    (ref, bool? child) async {
   final authState = ref.watch(authProvider);
   final isChild = child ?? false;
 
   return ref
-      .read(dgMasterRepositoryProvider.notifier)
+      .read(dgRepositoryProvider.notifier)
       .getDGOptions(authState.selectedLanguage, isChild);
 });

@@ -21,7 +21,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
   void initState() {
     super.initState();
     // Fetch initial sections when the screen initializes
-    ref.read(sectionMasterRepositoryProvider.notifier).fetchSections();
+    ref.read(sectionRepositoryProvider.notifier).fetchSections();
   }
 
   String searchNameArabic = '';
@@ -46,16 +46,16 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
     });
   }
 
-  List<SectionMaster> _applyFiltersAndPagination(List<SectionMaster> sections) {
+  List<Section> _applyFiltersAndPagination(List<Section> sections) {
     if (sections.isEmpty) {
       return [];
     }
-    List<SectionMaster> filteredList = sections.where((singlesection) {
+    List<Section> filteredList = sections.where((singlesection) {
       final matchesArabic = searchNameArabic.isEmpty ||
-          (singlesection.sectionNameArabic.toLowerCase())
+          (singlesection.nameArabic.toLowerCase())
               .contains(searchNameArabic.toLowerCase());
       final matchesEnglish = searchNameEnglish.isEmpty ||
-          (singlesection.sectionNameEnglish.toLowerCase())
+          (singlesection.nameEnglish.toLowerCase())
               .contains(searchNameEnglish.toLowerCase());
       final matchesCode = searchCode.isEmpty ||
           (singlesection.code.toLowerCase()).contains(searchCode.toLowerCase());
@@ -79,9 +79,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
   }
 
   void onDelete(int sectionId) {
-    ref
-        .watch(sectionMasterRepositoryProvider.notifier)
-        .deleteSection(sectionId: sectionId);
+    ref.watch(sectionRepositoryProvider.notifier).deleteSection(id: sectionId);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Section Deleted successfully!')),
     );
@@ -90,14 +88,14 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sections = ref.watch(sectionMasterRepositoryProvider);
+    final sections = ref.watch(sectionRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(sections);
     final iconButtons = [
       {
         "button": Icons.edit,
         "function": (int id) {
-          final SectionMaster currentSection =
-              sections.firstWhere((section) => section.sectionId == id);
+          final Section currentSection =
+              sections.firstWhere((section) => section.id == id);
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -144,11 +142,11 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                 totalItems: search
                     ? sections.where((singlesection) {
                         final matchesArabic = searchNameArabic.isEmpty ||
-                            singlesection.sectionNameArabic
+                            singlesection.nameArabic
                                 .toLowerCase()
                                 .contains(searchNameArabic.toLowerCase());
                         final matchesEnglish = searchNameEnglish.isEmpty ||
-                            singlesection.sectionNameEnglish
+                            singlesection.nameEnglish
                                 .toLowerCase()
                                 .contains(searchNameEnglish.toLowerCase());
                         final matchesCode = searchCode.isEmpty ||
@@ -192,11 +190,11 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                   ], // Headers for columns
                   data: const [
                     'code',
-                    'sectionNameArabic',
-                    'sectionNameEnglish',
+                    'nameArabic',
+                    'nameEnglish',
                     'departmentId',
                   ], // Keys to extract data
-                  details: SectionMaster.listToMap(
+                  details: Section.listToMap(
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true,
                   iconButtons: iconButtons, // Expandable table rows

@@ -3,18 +3,18 @@ import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final sectionMasterRepositoryProvider =
-    StateNotifierProvider<SectionMasterRepository, List<SectionMaster>>((ref) {
-  return SectionMasterRepository(ref);
+final sectionRepositoryProvider =
+    StateNotifierProvider<SectionRepository, List<Section>>((ref) {
+  return SectionRepository(ref);
 });
 
-class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
-  SectionMasterRepository(this.ref) : super([]);
+class SectionRepository extends StateNotifier<List<Section>> {
+  SectionRepository(this.ref) : super([]);
 
   final Ref ref;
 
   //Add
-  Future<void> addSectionMaster(
+  Future<void> addSection(
       {required String nameEnglish,
       required String nameArabic,
       required int departmentId,
@@ -30,26 +30,26 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
     try {
       final response = await dio.post('/Section/Create', data: requestBody);
       state = [
-        SectionMaster(
-            sectionId: response.data['data']['sectionId'],
+        Section(
+            id: response.data['data']['id'],
             departmentId: departmentId,
             dgId: dgId,
             code: response.data['data']['code'],
-            sectionNameArabic: nameArabic,
-            sectionNameEnglish: nameEnglish,
+            nameArabic: nameArabic,
+            nameEnglish: nameEnglish,
             objectId: response.data['data']['objectId']),
         //timeStamp: response.data['data']['timeStamp'],
         ...state
       ];
     } catch (e) {
-      throw Exception('Error occurred while adding SectionMaster: $e');
+      throw Exception('Error occurred while adding Section: $e');
     }
   }
 
 //Edit
   Future<void> editSeactionMaster({
     required int currentDepartmentId,
-    required int currentsectionId,
+    required int currentid,
     required String nameArabic,
     required String nameEnglish,
     required int currentDgId,
@@ -57,7 +57,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'departmentId': currentDepartmentId,
-      'sectionId': currentsectionId,
+      'id': currentid,
       'dgId': currentDgId,
       'sectionNameEnglish': nameEnglish,
       'sectionNameArabic': nameArabic,
@@ -67,45 +67,41 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
       final response = await dio.put('/Section/Update', data: requestBody);
 
       if (response.statusCode == 200) {
-        final updatedDepartment = SectionMaster(
-          code: response.data['data']['sectionId'],
-          sectionNameArabic: nameArabic,
-          sectionNameEnglish: nameEnglish,
+        final updatedDepartment = Section(
+          code: response.data['data']['id'],
+          nameArabic: nameArabic,
+          nameEnglish: nameEnglish,
           objectId: response.data['data']['objectId'],
           departmentId: currentDepartmentId,
           dgId: currentDgId,
-          sectionId: currentsectionId,
+          id: currentid,
         );
 
         // Update the state with the edited DgMaster
         state = [
-          for (var sectionMaster in state)
-            if (sectionMaster.sectionId == currentsectionId)
-              updatedDepartment
-            else
-              sectionMaster
+          for (var Section in state)
+            if (Section.id == currentid) updatedDepartment else Section
         ];
       } else {
         throw Exception(
-            'Failed to update SectionMaster.Status code: ${response.statusCode}');
+            'Failed to update Section.Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error occurred while editing SectionMaster: $e');
+      throw Exception('Error occurred while editing Section: $e');
     }
   }
 
-  Future<void> deleteSection({required int sectionId}) async {
+  Future<void> deleteSection({required int id}) async {
     final dio = ref.watch(dioProvider);
 
     try {
       final response = await dio.delete(
         '/Section/Delete',
-        queryParameters: {'SectionId': sectionId},
+        queryParameters: {'id': id},
       );
 
       if (response.statusCode == 200) {
-        state =
-            state.where((section) => section.sectionId != sectionId).toList();
+        state = state.where((section) => section.id != id).toList();
       } else {
         throw Exception(
             'Failed to delete section. Status code: ${response.statusCode}');
@@ -117,7 +113,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
   }
 
   /// Fetch Sections from the API
-  Future<List<SectionMaster>> fetchSections({
+  Future<List<Section>> fetchSections({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
@@ -137,7 +133,7 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List;
         state = data
-            .map((item) => SectionMaster.fromMap(item as Map<String, dynamic>))
+            .map((item) => Section.fromMap(item as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to load Sections');
@@ -150,14 +146,14 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
   }
 
   /// Search and filter method for Sections based on optional nameArabic and nameEnglish
-  Future<List<SectionMaster>> searchAndFilter(List<SectionMaster> sections,
+  Future<List<Section>> searchAndFilter(List<Section> sections,
       {String? nameArabic, String? nameEnglish}) async {
     // Filter the list based on the provided nameArabic and nameEnglish filters
     var filteredList = sections.where((section) {
       bool matchesArabic =
-          nameArabic == null || section.sectionNameArabic.contains(nameArabic);
-      bool matchesEnglish = nameEnglish == null ||
-          section.sectionNameEnglish.contains(nameEnglish);
+          nameArabic == null || section.nameArabic.contains(nameArabic);
+      bool matchesEnglish =
+          nameEnglish == null || section.nameEnglish.contains(nameEnglish);
 
       return matchesArabic && matchesEnglish;
     }).toList();
@@ -165,15 +161,14 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
     return filteredList;
   }
 
-  Future<List<SelectOption<SectionMaster>>> getSectionOptions(
+  Future<List<SelectOption<Section>>> getSectionOptions(
     String? currentDepartmentId,
   ) async {
-    List<SectionMaster> sectionList = state;
+    List<Section> sectionList = state;
 
     if (sectionList.isEmpty) {
-      sectionList = await ref
-          .read(sectionMasterRepositoryProvider.notifier)
-          .fetchSections();
+      sectionList =
+          await ref.read(sectionRepositoryProvider.notifier).fetchSections();
     }
     if (currentDepartmentId != null) {
       sectionList = sectionList
@@ -181,10 +176,10 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
               section.departmentId.toString() == currentDepartmentId)
           .toList();
     }
-    List<SelectOption<SectionMaster>> options = sectionList
-        .map((section) => SelectOption<SectionMaster>(
-              displayName: section.sectionNameEnglish,
-              key: section.sectionId.toString(),
+    List<SelectOption<Section>> options = sectionList
+        .map((section) => SelectOption<Section>(
+              displayName: section.nameEnglish,
+              key: section.id.toString(),
               value: section,
             ))
         .toList();
@@ -194,9 +189,9 @@ class SectionMasterRepository extends StateNotifier<List<SectionMaster>> {
 }
 
 final sectionOptionsProvider =
-    FutureProvider.family<List<SelectOption<SectionMaster>>, String?>(
+    FutureProvider.family<List<SelectOption<Section>>, String?>(
         (ref, currentdepatmentId) async {
   return ref
-      .read(sectionMasterRepositoryProvider.notifier)
+      .read(sectionRepositoryProvider.notifier)
       .getSectionOptions(currentdepatmentId);
 });

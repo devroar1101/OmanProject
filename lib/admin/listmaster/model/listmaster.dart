@@ -1,5 +1,3 @@
-
-
 class ListMaster {
   int id;
   String objectId;
@@ -18,11 +16,11 @@ class ListMaster {
   // Convert a Map to a ListMaster object
   factory ListMaster.fromMap(Map<String, dynamic> map) {
     return ListMaster(
-      id: map['listMasterId'] ?? 0,
+      id: map['id'] ?? 0,
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
       listMasterCode: map['code'] ?? '', // Defaulting to empty string if null
-      nameArabic: map['listMasterNameArabic'] ?? '',
-      nameEnglish: map['listMasterNameEnglish'] ?? '',
+      nameArabic: map['nameEnglish'] ?? '',
+      nameEnglish: map['nameArabic'] ?? '',
       // Assuming that 'items' is a list of maps that needs to be converted to ListMasterItem
     );
   }
@@ -36,7 +34,6 @@ class ListMaster {
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
       // Convert the ListMaster objects back to maps
-      
     };
   }
 

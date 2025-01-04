@@ -22,10 +22,10 @@ class ListMasterItem {
     return ListMasterItem(
       objectId: map['objectId'] ?? '',
       listMasterId: map['listMasterId'] ?? 0,
-      id: map['listMasterItemId'] ?? 0,
+      id: map['id'] ?? 0,
       code: map['code'] ?? '',
-      nameArabic: map['listMasterItemNameArabic'] ?? '',
-      nameEnglish: map['listMasterItemNameEnglish'] ?? '',
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
       //systemField: map['systemField'] ?? 'false',
     );
   }

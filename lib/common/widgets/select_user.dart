@@ -1,17 +1,5 @@
 import 'package:flutter/material.dart';
-
-// User Model
-class User {
-  final String id;
-  final String nameArabic;
-  final String nameEnglish;
-
-  User({
-    required this.id,
-    required this.nameArabic,
-    required this.nameEnglish,
-  });
-}
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 class SelectUserWidget extends StatefulWidget {
   final List<User> userList;
@@ -142,7 +130,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                   final user = users[index];
                   return ListTile(
                     title: Text(
-                      isRtl ? user.nameArabic : user.nameEnglish,
+                      user.systemName,
                       textAlign: isRtl ? TextAlign.right : TextAlign.left,
                     ),
                     onTap: () => onUserTap(user),
@@ -166,13 +154,7 @@ class MyApp2 extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp2> {
-  List<User> userList = [
-    User(id: '1', nameArabic: 'أحمد', nameEnglish: 'Ahmed'),
-    User(id: '2', nameArabic: 'سارة', nameEnglish: 'Sara'),
-    User(id: '3', nameArabic: 'محمد', nameEnglish: 'Mohamed'),
-    User(id: '4', nameArabic: 'فاطمة', nameEnglish: 'Fatima'),
-    User(id: '5', nameArabic: 'علي', nameEnglish: 'Ali'),
-  ];
+  List<User> userList = [];
 
   List<User> selectedUsers = [];
 

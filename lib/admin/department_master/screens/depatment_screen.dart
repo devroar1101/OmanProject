@@ -4,20 +4,20 @@ import 'package:tenderboard/admin/department_master/model/department.dart';
 import 'package:tenderboard/admin/department_master/model/department_repo.dart';
 import 'package:tenderboard/admin/department_master/screens/add_department.dart';
 import 'package:tenderboard/admin/department_master/screens/deparment_form.dart';
+
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class DepartmentMasterScreen extends ConsumerStatefulWidget {
-  const DepartmentMasterScreen({super.key});
+class DepartmentScreen extends ConsumerStatefulWidget {
+  const DepartmentScreen({super.key});
 
   @override
-  _DepartmentMasterScreenState createState() => _DepartmentMasterScreenState();
+  _DepartmentScreenState createState() => _DepartmentScreenState();
 }
 
-class _DepartmentMasterScreenState
-    extends ConsumerState<DepartmentMasterScreen> {
+class _DepartmentScreenState extends ConsumerState<DepartmentScreen> {
   @override
   void initState() {
     super.initState();
@@ -76,7 +76,7 @@ class _DepartmentMasterScreenState
 
   void onDelete(int departmentId) {
     ref
-        .watch(departmentMasterRepositoryProvider.notifier)
+        .watch(departmentRepositoryProvider.notifier)
         .deleteDpartment(DepartmentId: departmentId);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Department Deleted successfully!')),
@@ -86,7 +86,7 @@ class _DepartmentMasterScreenState
 
   @override
   Widget build(BuildContext context) {
-    final departments = ref.watch(departmentMasterRepositoryProvider);
+    final departments = ref.watch(departmentRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(departments);
 
     final iconButtons = [
@@ -98,7 +98,7 @@ class _DepartmentMasterScreenState
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AddDepartmentMaster(
+              return AddDepartment(
                 currentDepartment: currentDepartment,
               );
             },

@@ -6,20 +6,21 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/section_master/model/section_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
+
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'dart:io';
 
-class AddUserMasterScreen extends ConsumerStatefulWidget {
-  const AddUserMasterScreen({super.key, this.currentUser});
+class AddUserScreen extends ConsumerStatefulWidget {
+  const AddUserScreen({super.key, this.currentUser});
 
-  final UserMaster? currentUser;
+  final User? currentUser;
 
   @override
-  _AddUserMasterScreenState createState() => _AddUserMasterScreenState();
+  _AddUserScreenState createState() => _AddUserScreenState();
 }
 
-class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
+class _AddUserScreenState extends ConsumerState<AddUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
   File? _profileImage;
@@ -31,9 +32,9 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
   final _officeNumberController = TextEditingController();
   final _nameController = TextEditingController();
 
-  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Dg>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
-  List<SelectOption<SectionMaster>> sectionOptions = [];
+  List<SelectOption<Section>> sectionOptions = [];
 
   String? _selectedDesignation;
   String? _selectedAuthMode;
@@ -62,7 +63,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       try {
-        await ref.read(UserMasterRepositoryProvider.notifier).addUserMaster(
+        await ref.read(UserRepositoryProvider.notifier).addUser(
               name: _nameController.text,
               displayName: _displayNameController.text,
               dgId: _selectedDG!,
@@ -195,7 +196,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: SelectField<DgMaster>(
+                              child: SelectField<Dg>(
                                 label: 'DG',
                                 options: dgOptions,
                                 onChanged: (dg, selectedOption) {
@@ -224,9 +225,7 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                                 onChanged: (dept, selectedOption) {
                                   setState(() {
                                     sectionOptions = selectedOption.childOptions
-                                            ?.cast<
-                                                SelectOption<
-                                                    SectionMaster>>() ??
+                                            ?.cast<SelectOption<Section>>() ??
                                         [];
                                     _selectedSection = null;
                                     _selectedDepartment = dept.id;
@@ -237,13 +236,13 @@ class _AddUserMasterScreenState extends ConsumerState<AddUserMasterScreen> {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: SelectField<SectionMaster>(
+                              child: SelectField<Section>(
                                 label: 'Section',
                                 options: sectionOptions,
                                 key: ValueKey(sectionOptions),
                                 onChanged: (section, selectedOption) {
                                   setState(() {
-                                    _selectedSection = section.sectionId;
+                                    _selectedSection = section.id;
                                   });
                                 },
                                 hint: 'Select Section',

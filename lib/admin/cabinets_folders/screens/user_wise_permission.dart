@@ -17,20 +17,20 @@ class UserWisePermission extends ConsumerStatefulWidget {
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
-  final List<UserMaster> users;
+  final List<User> users;
   final List<FolderPermission> folderPermission;
   @override
   _UserWisePermissionState createState() => _UserWisePermissionState();
 }
 
 class _UserWisePermissionState extends ConsumerState<UserWisePermission> {
-  List<UserMaster> users = [];
+  late List<User> users;
 
-  List<Cabinet> cabinets = [];
+  late List<Cabinet> cabinets;
 
-  List<Folder> folders = [];
+  late List<Folder> folders;
 
-  List<FolderPermission> permissions = [];
+  late List<FolderPermission> permissions;
 
   int? selectedUserId;
   String userSearchQuery = '';
@@ -121,6 +121,7 @@ class _UserWisePermissionState extends ConsumerState<UserWisePermission> {
           // Second Pane: Cabinets and Folders
           Expanded(
             child: Column(
+              key: ValueKey(permissions.length),
               children: [
                 TextField(
                   decoration: const InputDecoration(

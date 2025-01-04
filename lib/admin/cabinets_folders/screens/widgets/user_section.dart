@@ -3,7 +3,7 @@ import 'package:tenderboard/admin/cabinets_folders/model/folder_permission.dart'
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 class UserPane extends StatelessWidget {
-  final List<UserMaster> users;
+  final List<User> users;
   final List<FolderPermission> permissions;
   final int cabinetId;
   final int folderId;
