@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';

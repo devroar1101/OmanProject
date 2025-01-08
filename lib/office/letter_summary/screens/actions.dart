@@ -1,4 +1,3 @@
-import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:tenderboard/office/letter_summary/screens/widgets/summary_assign.dart';
 import 'package:tenderboard/office/letter_summary/screens/widgets/summary_close.dart';

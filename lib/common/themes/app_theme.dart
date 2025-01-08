@@ -23,22 +23,22 @@ class AppTheme {
       Color.fromARGB(255, 142, 174, 155); // Same as primary
   static const Color dialogColor = Color.fromARGB(255, 237, 238, 240);
   // Common text theme using GoogleFonts for Kufam
-  static TextTheme _textTheme = TextTheme(
+  static final TextTheme _textTheme = TextTheme(
     headlineLarge: GoogleFonts.kufam(
-      textStyle: TextStyle(
+      textStyle: const TextStyle(
         fontSize: 32.0,
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
     ),
     bodyLarge: GoogleFonts.kufam(
-      textStyle: TextStyle(
+      textStyle: const TextStyle(
         fontSize: 16.0,
         color: textColor,
       ),
     ),
     labelLarge: GoogleFonts.kufam(
-      textStyle: TextStyle(
+      textStyle: const TextStyle(
         fontSize: 14.0,
         color: buttonTextColor,
         fontWeight: FontWeight.bold,
@@ -55,7 +55,7 @@ class AppTheme {
   static ThemeData getTheme({required bool isDarkMode}) {
     return ThemeData(
       primaryColor: primaryColor,
-      scaffoldBackgroundColor: const Color(0xf8f9fa),
+      scaffoldBackgroundColor: const Color(0x00f8f9fa),
       colorScheme: ColorScheme(
         primary: primaryColor,
         secondary: secondaryColor,
@@ -64,7 +64,6 @@ class AppTheme {
         onPrimary: buttonTextColor,
         onSecondary: buttonTextColor,
         onSurface: textColor,
-        onBackground: textColor,
         onError: Colors.white,
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
       ),

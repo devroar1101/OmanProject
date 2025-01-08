@@ -44,11 +44,11 @@ class _JobAssignFormState extends ConsumerState<JobAssignForm> {
   int selectedPriority = 1;
   int selectedClassification = 1;
   int? _selectedDG;
-  String _selectedDGName = '';
+  final String _selectedDGName = '';
   int? _selectedDepartment;
-  String _selectedDepartmentName = '';
+  final String _selectedDepartmentName = '';
   int? _selectedSection;
-  String _selectedSectionName = '';
+  final String _selectedSectionName = '';
 
   late List<SelectOption<Dg>> dgOptions = [];
   late List<SelectOption<Department>> departmentOptions = [];

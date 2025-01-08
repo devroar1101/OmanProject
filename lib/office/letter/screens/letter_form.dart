@@ -316,7 +316,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                       value: year,
                       child: Text(
                         year.toString(),
-                        style: TextStyle(fontSize: 14), // Smaller item font
+                        style:
+                            const TextStyle(fontSize: 14), // Smaller item font
                       ),
                     );
                   },
@@ -443,7 +444,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 Clipboard.setData(
                     ClipboardData(text: _referenceController.text));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Reference copied to clipboard')),
+                  const SnackBar(
+                      content: Text('Reference copied to clipboard')),
                 );
               },
               child: Card(

@@ -139,16 +139,16 @@ void showAddEditDialog(BuildContext context,
     {required String title,
     String? currentName,
     required Function(String) onSave}) {
-  TextEditingController _controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
-  _controller.text = currentName ?? '';
+  controller.text = currentName ?? '';
 
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title),
       content: TextField(
-        controller: _controller,
+        controller: controller,
         decoration: const InputDecoration(labelText: 'Name'),
       ),
       actions: [
@@ -158,8 +158,8 @@ void showAddEditDialog(BuildContext context,
         ),
         TextButton(
           onPressed: () {
-            if (_controller.text.isNotEmpty) {
-              onSave(_controller.text);
+            if (controller.text.isNotEmpty) {
+              onSave(controller.text);
               Navigator.pop(context);
             }
           },

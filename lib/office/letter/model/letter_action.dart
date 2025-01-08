@@ -1,5 +1,4 @@
 // LetterAction Class
-import 'package:tenderboard/common/model/global_enum.dart';
 
 class LetterAction {
   final int? letterActionId;

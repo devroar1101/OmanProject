@@ -9,7 +9,7 @@ import 'package:tenderboard/office/letter_summary/model/routing_history_result.d
 import 'package:tenderboard/office/letter_summary/model/routing_repo.dart';
 
 class RoutingHistory extends ConsumerWidget {
-  RoutingHistory({super.key, this.routings, this.objectId});
+  const RoutingHistory({super.key, this.routings, this.objectId});
 
   final List<RoutingHistoryResult>? routings;
   final String? objectId;
@@ -83,7 +83,7 @@ class RoutingHistory extends ConsumerWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Failed to load routing history'));
+          return const Center(child: Text('Failed to load routing history'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('No routing history found'));
         }
@@ -222,7 +222,8 @@ class ActionCard extends StatelessWidget {
                 children: [
                   // Add a circular background behind the icon
                   Container(
-                    padding: EdgeInsets.all(6), // Adds space around the icon
+                    padding:
+                        const EdgeInsets.all(6), // Adds space around the icon
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(35),
@@ -235,7 +236,7 @@ class ActionCard extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
-                            offset: Offset(2, 2),
+                            offset: const Offset(2, 2),
                             blurRadius: 8,
                           )
                         ]),
@@ -258,7 +259,7 @@ class ActionCard extends StatelessWidget {
                       shadows: [
                         Shadow(
                           color: Colors.black.withOpacity(0.2),
-                          offset: Offset(1, 1),
+                          offset: const Offset(1, 1),
                           blurRadius: 2,
                         ),
                       ],

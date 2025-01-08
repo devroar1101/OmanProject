@@ -72,7 +72,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                         textAlign: TextAlign.center,
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -249,7 +249,7 @@ Future<void> exportData(BuildContext context, List<String> headers,
     String csvData = const ListToCsvConverter().convert(rows);
 
     // Add BOM for UTF-8 encoding (important for non-Latin characters like Arabic)
-    String utf8CsvData = "\u{FEFF}" + csvData;
+    String utf8CsvData = "\u{FEFF}$csvData";
 
     // Create a Blob from the CSV data (web-specific)
     final blob = html.Blob([utf8CsvData], 'text/csv');
@@ -267,11 +267,11 @@ Future<void> exportData(BuildContext context, List<String> headers,
     html.Url.revokeObjectUrl(url);
 
     // Optionally, show a snackbar or a message that the file is being downloaded
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('CSV file is being downloaded')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('CSV file is being downloaded')));
   } catch (e) {
     print("Error saving CSV file: $e");
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Failed to generate CSV file')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to generate CSV file')));
   }
 }
