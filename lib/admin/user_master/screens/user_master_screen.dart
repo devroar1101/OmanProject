@@ -100,7 +100,7 @@ class _UserScreenState extends ConsumerState<UserScreen>
           matchesDepartment &&
           matchesName; // && matchesDg;
     }).toList();
-    print('filters count : ${filteredList.length}');
+
     // Apply pagination
     int startIndex = (pageNumber - 1) * pageSize;
     int endIndex = startIndex + pageSize;

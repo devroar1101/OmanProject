@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:tenderboard/common/widgets/load_letter_document.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
+import 'package:tenderboard/office/letter_summary/screens/actions.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
 
 class LetterSummary extends StatefulWidget {
@@ -14,6 +15,8 @@ class LetterSummary extends StatefulWidget {
 
 class _LetterSummaryState extends State<LetterSummary> {
   String _selectedTab = "Details";
+  bool needHelper = false;
+  String _helperTab = "Letter";
 
   @override
   Widget build(BuildContext context) {
@@ -147,22 +150,18 @@ class _LetterSummaryState extends State<LetterSummary> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-                child: _selectedTab == "Action"
-                    ? Container(
-                        color: Colors.grey[200],
-                        child: Center(
-                          child: Container(
-                            color:
-                                Colors.grey[200], // Optional background color
-                            child: LoadLetterDocument(
-                                objectId: widget.letterObjectId),
-                          ),
-                        ),
-                      )
-                    : _buildContent(
-                        Directionality.of(context) == TextDirection.rtl),
-              ),
+                  padding:
+                      const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+                  child: Container(
+                    color: Colors.grey[200],
+                    child: Center(
+                      child: Container(
+                        color: Colors.grey[200], // Optional background color
+                        child: _buildHelperContent(
+                            Directionality.of(context) == TextDirection.rtl),
+                      ),
+                    ),
+                  )),
             ),
           ],
         ),
@@ -174,14 +173,30 @@ class _LetterSummaryState extends State<LetterSummary> {
     final isSelected = _selectedTab == label;
     return GestureDetector(
       onTap: () {
-        setState(() {
+        if (!needHelper) {
           _selectedTab = label;
+        } else {
+          _helperTab = label == 'Action' ? 'Letter' : label;
+        }
+
+        setState(() {
+          if (label == 'Action') {
+            if (needHelper) {
+              _helperTab = 'Letter';
+              _selectedTab = 'Details';
+            }
+            needHelper = !needHelper;
+          }
         });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey[300],
+          color: isSelected
+              ? _selectedTab == 'Action'
+                  ? Colors.amberAccent
+                  : Colors.blue
+              : Colors.grey[300],
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(15),
             bottomRight: Radius.circular(15),
@@ -197,10 +212,14 @@ class _LetterSummaryState extends State<LetterSummary> {
               : null,
         ),
         child: Text(
-          label,
+          _selectedTab == 'Action' && label == 'Action' ? 'Cancel' : label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-          ),
+              color: isSelected
+                  ? _selectedTab == 'Action'
+                      ? Colors.black
+                      : Colors.white
+                  : Colors.black,
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -214,9 +233,28 @@ class _LetterSummaryState extends State<LetterSummary> {
           letterObjectId: widget.letterObjectId,
         );
       case "Routing":
-        return RoutingHistory(
-          isRtl: isRtl,
+        return RoutingHistory();
+      case "Action":
+        return ActionScreen(
+          currentuser: 1,
+          objectId: widget.letterObjectId,
+          type: 'Letter',
         );
+
+      default:
+        return const Center(child: Text("Invalid Tab"));
+    }
+  }
+
+  Widget _buildHelperContent(bool isRtl) {
+    switch (_helperTab) {
+      case "Details":
+        return LetterForm(
+          screenName: 'LetterSummary',
+          letterObjectId: widget.letterObjectId,
+        );
+      case "Routing":
+        return RoutingHistory();
 
       case "Letter":
         return LoadLetterDocument(objectId: widget.letterObjectId);

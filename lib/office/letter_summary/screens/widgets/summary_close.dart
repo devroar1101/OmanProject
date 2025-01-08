@@ -17,41 +17,31 @@ class _CloseJobFormState extends State<CloseJobForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Close Jobs',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16.0),
-              _buildSingleRowField('Suspend Till', _suspendTillController),
-              const SizedBox(height: 16.0),
-              _buildRichTextField('Job Description'),
-              const SizedBox(height: 16.0),
-              _buildAttachmentField(),
-              const SizedBox(height: 16.0),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Form Saved!')),
-                      );
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ),
-            ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSingleRowField('Suspend Till', _suspendTillController),
+          const SizedBox(height: 16.0),
+          _buildRichTextField('Job Description'),
+          const SizedBox(height: 16.0),
+          _buildAttachmentField(),
+          const SizedBox(height: 16.0),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Form Saved!')),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

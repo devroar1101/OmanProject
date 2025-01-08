@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
 
-class SelectUserWidget extends StatefulWidget {
+class SelectUserWidget extends StatelessWidget {
   final List<User> userList;
   final List<User> selectedUsers;
   final Function(List<User>) onSelectionChanged;
@@ -13,51 +14,30 @@ class SelectUserWidget extends StatefulWidget {
     required this.onSelectionChanged,
   });
 
-  @override
-  _SelectUserWidgetState createState() => _SelectUserWidgetState();
-}
-
-class _SelectUserWidgetState extends State<SelectUserWidget> {
-  late List<User> _userList;
-  late List<User> _selectedUsers;
-
-  @override
-  void initState() {
-    super.initState();
-    _userList = List.from(widget.userList);
-    _selectedUsers = List.from(widget.selectedUsers);
-  }
-
   // Handle user selection and removal
   void _toggleUserSelection(User user) {
-    setState(() {
-      if (_selectedUsers.contains(user)) {
-        _selectedUsers.remove(user);
-        _userList.add(user);
-      } else {
-        _userList.remove(user);
-        _selectedUsers.add(user);
-      }
-      widget.onSelectionChanged(_selectedUsers);
-    });
+    if (selectedUsers.contains(user)) {
+      selectedUsers.remove(user);
+      userList.add(user);
+    } else {
+      userList.remove(user);
+      selectedUsers.add(user);
+    }
+    onSelectionChanged(selectedUsers);
   }
 
   // Select all users
   void _selectAll() {
-    setState(() {
-      _selectedUsers.addAll(_userList);
-      _userList.clear();
-      widget.onSelectionChanged(_selectedUsers);
-    });
+    selectedUsers.addAll(userList);
+    userList.clear();
+    onSelectionChanged(selectedUsers);
   }
 
   // Remove all users
   void _removeAll() {
-    setState(() {
-      _userList.addAll(_selectedUsers);
-      _selectedUsers.clear();
-      widget.onSelectionChanged(_selectedUsers);
-    });
+    userList.addAll(selectedUsers);
+    selectedUsers.clear();
+    onSelectionChanged(selectedUsers);
   }
 
   @override
@@ -71,7 +51,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
         // User List Box
         _buildUserBox(
           title: 'User List',
-          users: _userList,
+          users: userList,
           onUserTap: _toggleUserSelection,
           isRtl: isRtl,
         ),
@@ -83,6 +63,9 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
               onPressed: _selectAll,
               child: const Text('Select All'),
             ),
+            const SizedBox(
+              height: 5,
+            ),
             ElevatedButton(
               onPressed: _removeAll,
               child: const Text('Remove All'),
@@ -92,7 +75,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
         // Selected Users Box
         _buildUserBox(
           title: 'Selected Users',
-          users: _selectedUsers,
+          users: selectedUsers,
           onUserTap: _toggleUserSelection,
           isRtl: isRtl,
         ),
@@ -100,7 +83,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
     );
   }
 
-  // Build each user box
+// Build each user box
   Widget _buildUserBox({
     required String title,
     required List<User> users,
@@ -113,7 +96,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         height: 300,
         child: Column(
@@ -128,7 +111,20 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                 itemCount: users.length,
                 itemBuilder: (context, index) {
                   final user = users[index];
+                  String initials = user.name.length >= 2
+                      ? user.systemName.substring(0, 2).toUpperCase()
+                      : user.systemName
+                          .toUpperCase(); // Use first two letters or full name if short
+
                   return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          getRandomColor(), // Random background color
+                      child: Text(
+                        initials,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
                     title: Text(
                       user.systemName,
                       textAlign: isRtl ? TextAlign.right : TextAlign.left,
@@ -141,44 +137,6 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class MyApp2 extends StatefulWidget {
-  const MyApp2({super.key});
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp2> {
-  List<User> userList = [];
-
-  List<User> selectedUsers = [];
-
-  void _onSelectionChanged(List<User> selectedUsers) {
-    setState(() {
-      this.selectedUsers = selectedUsers;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Directionality(
-        textDirection: TextDirection
-            .ltr, // You can switch this to TextDirection.rtl for RTL mode
-        child: Scaffold(
-          appBar: AppBar(title: const Text('User Selection')),
-          body: Center(
-            child: SelectUserWidget(
-              userList: userList,
-              selectedUsers: selectedUsers,
-              onSelectionChanged: _onSelectionChanged,
-            ),
-          ),
         ),
       ),
     );

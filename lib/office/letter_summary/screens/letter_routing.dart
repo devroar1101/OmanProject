@@ -1,17 +1,17 @@
-import 'dart:html' as html; // For file download on web
-import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'dart:html' as html;
+
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 
 class RoutingHistory extends StatelessWidget {
-  const RoutingHistory({super.key, required this.isRtl});
+  RoutingHistory({super.key, this.routings});
 
-  final bool isRtl;
+  List<LetterAction>? routings;
 
-  // Method to convert data to CSV and trigger download for web
   Future<void> downloadDataAsCsv(BuildContext context) async {
     try {
       // Prepare the data to be exported
@@ -86,39 +86,40 @@ class RoutingHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<LetterAction> letterActions = [
-      LetterAction(
-        letterActionId: 1,
-        fromUserId: 101,
-        actionId: 1,
-        toUserId: 102,
-        classificationId: 1,
-        priorityId: 1,
-        timeStamp: DateTime.now(),
-        comments: "Assigned to User 102",
-      ),
-      LetterAction(
-        letterActionId: 2,
-        fromUserId: 103,
-        actionId: 2,
-        toUserId: 104,
-        classificationId: 2,
-        priorityId: 2,
-        timeStamp: DateTime.now().add(Duration(hours: 1)),
-        comments: "Replied to User 104",
-      ),
-      LetterAction(
-        letterActionId: 3,
-        fromUserId: 105,
-        actionId: 3,
-        toUserId: 106,
-        classificationId: 3,
-        priorityId: 3,
-        timeStamp: DateTime.now().add(Duration(hours: 2)),
-        comments:
-            "Effective performance management forms the backbone of a successful organization. A critical element of this process is the provision of feedback during performance reviews, which directly influences an employee's productivity, job satisfaction, and professional growth Specific and personal feedback plays a pivotal role in this scenario. It assists in clearly displaying what an employee is doing well and where they can improve, fostering a culture of continuous learning and development.",
-      ),
-    ];
+    List<LetterAction> letterActions = routings ??
+        [
+          LetterAction(
+            letterActionId: 1,
+            fromUserId: 101,
+            actionId: 1,
+            toUserId: 102,
+            classificationId: 1,
+            priorityId: 1,
+            timeStamp: DateTime.now(),
+            comments: "Assigned to User 102",
+          ),
+          LetterAction(
+            letterActionId: 2,
+            fromUserId: 103,
+            actionId: 2,
+            toUserId: 104,
+            classificationId: 2,
+            priorityId: 2,
+            timeStamp: DateTime.now().add(Duration(hours: 1)),
+            comments: "Replied to User 104",
+          ),
+          LetterAction(
+            letterActionId: 3,
+            fromUserId: 105,
+            actionId: 3,
+            toUserId: 106,
+            classificationId: 3,
+            priorityId: 3,
+            timeStamp: DateTime.now().add(Duration(hours: 2)),
+            comments:
+                "Effective performance management forms the backbone of a successful organization. A critical element of this process is the provision of feedback during performance reviews, which directly influences an employee's productivity, job satisfaction, and professional growth Specific and personal feedback plays a pivotal role in this scenario. It assists in clearly displaying what an employee is doing well and where they can improve, fostering a culture of continuous learning and development.",
+          ),
+        ];
 
     return Column(
       children: [
@@ -195,7 +196,7 @@ class RoutingHistory extends StatelessWidget {
                   children: [
                     Text(
                         action.timeStamp != null
-                            ? DateFormat('MM/dd/yyyy')
+                            ? intl.DateFormat('MM/dd/yyyy')
                                 .format(action.timeStamp!.toLocal())
                             : "No Date",
                         style: const TextStyle(
@@ -204,7 +205,6 @@ class RoutingHistory extends StatelessWidget {
                     // Action Details in a Card
                     Expanded(
                       child: ActionCard(
-                        isRtl: isRtl,
                         action: action,
                         actionType: actionType,
                       ),
@@ -223,21 +223,22 @@ class RoutingHistory extends StatelessWidget {
 class ActionCard extends StatelessWidget {
   final LetterAction action;
   final ActionType actionType;
-  final bool isRtl;
 
-  const ActionCard(
-      {super.key,
-      required this.action,
-      required this.actionType,
-      required this.isRtl});
+  const ActionCard({
+    super.key,
+    required this.action,
+    required this.actionType,
+  });
 
   @override
   Widget build(BuildContext context) {
     // Fetch priority and classification using their IDs
+
     final Priority? priority = Priority.byId(action.priorityId!);
     final Classification? classification =
         Classification.byId(action.classificationId!);
 
+    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
     return Card(
       elevation: 8,
       shape: RoundedRectangleBorder(
