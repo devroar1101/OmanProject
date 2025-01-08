@@ -112,9 +112,4 @@ class LetterAction {
       'objectId': objectId,
     };
   }
-
-  // Helper function to map actionId to ActionType
-  ActionType? getActionTypeById(int id) {
-    return ActionType.values.firstWhere((action) => action.id == id);
-  }
 }

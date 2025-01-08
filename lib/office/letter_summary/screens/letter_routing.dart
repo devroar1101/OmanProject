@@ -1,20 +1,23 @@
 import 'dart:html' as html;
-
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'package:tenderboard/common/model/global_enum.dart';
-import 'package:tenderboard/office/letter/model/letter_action.dart';
+import 'package:tenderboard/office/letter_summary/model/routing_history_result.dart';
+import 'package:tenderboard/office/letter_summary/model/routing_repo.dart';
 
-class RoutingHistory extends StatelessWidget {
-  RoutingHistory({super.key, this.routings});
+class RoutingHistory extends ConsumerWidget {
+  RoutingHistory({super.key, this.routings, this.objectId});
 
-  List<LetterAction>? routings;
+  final List<RoutingHistoryResult>? routings;
+  final String? objectId;
 
-  Future<void> downloadDataAsCsv(BuildContext context) async {
+  Future<void> downloadDataAsCsv(
+      BuildContext context, List<RoutingHistoryResult> actions) async {
     try {
-      // Prepare the data to be exported
+      // Prepare CSV data from the routing list
       List<List<dynamic>> rows = [
         [
           "LetterActionId",
@@ -26,36 +29,16 @@ class RoutingHistory extends StatelessWidget {
           "Timestamp",
           "Comments"
         ],
-        [
-          1,
-          101,
-          1,
-          102,
-          1,
-          1,
-          DateTime.now().toIso8601String(),
-          "Assigned to User 102"
-        ],
-        [
-          2,
-          103,
-          2,
-          104,
-          2,
-          2,
-          DateTime.now().add(Duration(hours: 1)).toIso8601String(),
-          "Replied to User 104"
-        ],
-        [
-          3,
-          105,
-          3,
-          106,
-          3,
-          3,
-          DateTime.now().add(Duration(hours: 2)).toIso8601String(),
-          "Forwarded to User 106"
-        ],
+        ...actions.map((action) => [
+              action.actionId ?? '',
+              action.fromUser ?? '',
+              action.actionId ?? '',
+              action.toUser ?? '',
+              action.classificationId ?? '',
+              action.priorityId ?? '',
+              action.timeStamp ?? '',
+              action.comments ?? ''
+            ]),
       ];
 
       // Convert data to CSV
@@ -69,159 +52,140 @@ class RoutingHistory extends StatelessWidget {
 
       // Create an anchor element and trigger the download
       html.AnchorElement(href: url)
-        ..setAttribute('download', 'letter_actions.csv')
+        ..setAttribute('download', 'routing_history.csv')
         ..click();
+
       // Clean up the URL after the download is triggered
       html.Url.revokeObjectUrl(url);
 
-      // Optionally, show a snackbar or a message that the file is being downloaded
+      // Notify the user about the download
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('CSV file is being downloaded')));
+          const SnackBar(content: Text('CSV file is being downloaded')));
     } catch (e) {
       print("Error saving CSV file: $e");
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to generate CSV file')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to generate CSV file')));
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    List<LetterAction> letterActions = routings ??
-        [
-          LetterAction(
-            letterActionId: 1,
-            fromUserId: 101,
-            actionId: 1,
-            toUserId: 102,
-            classificationId: 1,
-            priorityId: 1,
-            timeStamp: DateTime.now(),
-            comments: "Assigned to User 102",
-          ),
-          LetterAction(
-            letterActionId: 2,
-            fromUserId: 103,
-            actionId: 2,
-            toUserId: 104,
-            classificationId: 2,
-            priorityId: 2,
-            timeStamp: DateTime.now().add(Duration(hours: 1)),
-            comments: "Replied to User 104",
-          ),
-          LetterAction(
-            letterActionId: 3,
-            fromUserId: 105,
-            actionId: 3,
-            toUserId: 106,
-            classificationId: 3,
-            priorityId: 3,
-            timeStamp: DateTime.now().add(Duration(hours: 2)),
-            comments:
-                "Effective performance management forms the backbone of a successful organization. A critical element of this process is the provision of feedback during performance reviews, which directly influences an employee's productivity, job satisfaction, and professional growth Specific and personal feedback plays a pivotal role in this scenario. It assists in clearly displaying what an employee is doing well and where they can improve, fostering a culture of continuous learning and development.",
-          ),
-        ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<List<RoutingHistoryResult>> routingHistoryFuture = routings != null
+        ? Future.value(
+            routings!) // Ensure non-null value if routings is provided
+        : ref
+            .watch(routingHistoryRepositoryProvider)
+            .fetchRoutingHistory(objectId!);
 
+    return FutureBuilder<List<RoutingHistoryResult>>(
+      future: routingHistoryFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Failed to load routing history'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No routing history found'));
+        }
+
+        final actions = snapshot.data!;
+        return buildContent(context, actions);
+      },
+    );
+  }
+
+  Widget buildContent(
+      BuildContext context, List<RoutingHistoryResult> actions) {
     return Column(
       children: [
+        // Toolbar and download button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: Priority.values.map((priority) {
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8.0), // Add space between items
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // Icon Container with background color and rounded corners
-                        Container(
-                          padding: const EdgeInsets.all(
-                              5), // Adds padding around the icon
-                          decoration: BoxDecoration(
-                            color:
-                                priority.color, // Background color for the icon
-                            shape: BoxShape
-                                .circle, // Circular shape for the icon container
-                          ),
-                        ),
-                        const SizedBox(
-                            width: 8), // Space between icon and label
-                        // Label text
-                        Text(
-                          priority.getLabel(context),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-
-                            fontSize:
-                                10, // Reduced font size to fit better within the row
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: IconButton(
-                icon: const Icon(Icons.file_download),
-                onPressed: () {
-                  downloadDataAsCsv(
-                      context); // Trigger CSV download when clicked
-                },
-              ),
+            buildPriorityIcons(context),
+            IconButton(
+              icon: const Icon(Icons.file_download),
+              onPressed: () => downloadDataAsCsv(context, actions),
             ),
           ],
         ),
+        // Actions list
         Expanded(
           child: ListView.builder(
-            itemCount: letterActions.length,
+            itemCount: actions.length,
             itemBuilder: (context, index) {
-              final action = letterActions[index];
-              final actionType =
-                  LetterAction().getActionTypeById(action.actionId!);
+              final action = actions[index];
+              final actionType = ActionType.getActionTypeById(action.actionId!);
+              if (actionType == null) return const SizedBox.shrink();
 
-              if (actionType == null) return SizedBox.shrink();
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                        action.timeStamp != null
-                            ? intl.DateFormat('MM/dd/yyyy')
-                                .format(action.timeStamp!.toLocal())
-                            : "No Date",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    const SizedBox(width: 8),
-                    // Action Details in a Card
-                    Expanded(
-                      child: ActionCard(
-                        action: action,
-                        actionType: actionType,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              return buildActionRow(action, actionType, context);
             },
           ),
         ),
       ],
     );
   }
+
+  Widget buildPriorityIcons(BuildContext context) {
+    return Row(
+      children: Priority.values.map((priority) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: priority.color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                priority.getLabel(context),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget buildActionRow(RoutingHistoryResult action, ActionType actionType,
+      BuildContext context) {
+    final Priority? priority = Priority.byId(action.priorityId!);
+    final Classification? classification =
+        Classification.byId(action.classificationId!);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            action.timeStamp != null
+                ? action.timeStamp ?? DateTime.now().toString()
+                : "No Date",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ActionCard(
+              action: action,
+              actionType: actionType,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class ActionCard extends StatelessWidget {
-  final LetterAction action;
+  final RoutingHistoryResult action;
   final ActionType actionType;
 
   const ActionCard({
@@ -316,9 +280,8 @@ class ActionCard extends StatelessWidget {
                   spacing: 16,
                   runSpacing: 8,
                   children: [
-                    buildLabelValueColumn("From User", 'أمت السلام أمت السلام'),
-                    buildLabelValueColumn("To User",
-                        "أمت السلام أمت السلام أمت السلام أمت السلام"),
+                    buildLabelValueColumn("From User", '${action.fromUser}'),
+                    buildLabelValueColumn("To User", '${action.toUser}'),
                     if (classification != null)
                       buildLabelValueColumn(
                           "Classification", classification.getLabel(context)),

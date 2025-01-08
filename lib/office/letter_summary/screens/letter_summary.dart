@@ -233,7 +233,9 @@ class _LetterSummaryState extends State<LetterSummary> {
           letterObjectId: widget.letterObjectId,
         );
       case "Routing":
-        return RoutingHistory();
+        return RoutingHistory(
+          objectId: widget.letterObjectId,
+        );
       case "Action":
         return ActionScreen(
           currentuser: 1,
@@ -254,7 +256,9 @@ class _LetterSummaryState extends State<LetterSummary> {
           letterObjectId: widget.letterObjectId,
         );
       case "Routing":
-        return RoutingHistory();
+        return RoutingHistory(
+          objectId: widget.letterObjectId,
+        );
 
       case "Letter":
         return LoadLetterDocument(objectId: widget.letterObjectId);

@@ -85,4 +85,9 @@ enum ActionType {
         ? labelArabic
         : labelEnglish;
   }
+
+// Static helper function to map actionId to ActionType
+  static ActionType? getActionTypeById(int id) {
+    return ActionType.values.firstWhere((action) => action.id == id);
+  }
 }

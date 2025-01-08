@@ -14,6 +14,7 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/common/widgets/select_user.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 import 'package:tenderboard/office/letter/model/letter_action_repo.dart';
+import 'package:tenderboard/office/letter_summary/model/routing_history_result.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
 
 // ignore: must_be_immutable
@@ -55,7 +56,7 @@ class _JobAssignFormState extends ConsumerState<JobAssignForm> {
 
   late List<User> userList = [];
   List<User> selectedUsers = [];
-  List<LetterAction> previewActions = [];
+  List<RoutingHistoryResult> previewActions = [];
   bool _commentType = true;
   final _commentTypeScale = ValueNotifier<double>(1.0);
 
@@ -413,17 +414,19 @@ class _JobAssignFormState extends ConsumerState<JobAssignForm> {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
                     previewActions = selectedUsers.map((singleUser) {
-                      return LetterAction(
+                      return RoutingHistoryResult(
                         actionId: 1,
                         classificationId: selectedClassification,
                         comments: _commentController.text,
-                        follwedUpDate: _followUpDate,
-                        fromUserId: 2, // Replace with actual logged-in user ID
-                        isHidden: _commentType,
+                        followedUpDate:
+                            _followUpDate?.toIso8601String().toString(),
+                        fromUser:
+                            'Alwin', // Replace with actual logged-in user ID
+                        //isHidden: _commentType, need to implement while hiddenjob
                         objectId: widget.letterObjectId,
                         priorityId: selectedPriority,
-                        replyDate: _replyDate,
-                        toUserId: singleUser.id,
+                        replyDate: _replyDate?.toIso8601String().toString(),
+                        toUser: singleUser.systemName,
                       );
                     }).toList();
                     isPreview = true;
