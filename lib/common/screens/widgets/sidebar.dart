@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_home.dart';
 import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
@@ -96,12 +97,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('DG'),
         'icon': Icons.account_balance,
-        'navigate': const DgMasterScreen()
+        'navigate': const DgScreen()
       },
       {
         'title': getTranslation('Department'),
         'icon': Icons.business,
-        'navigate': const DepartmentMasterScreen()
+        'navigate': const DepartmentScreen()
       },
       {
         'title': getTranslation('Section'),
@@ -119,6 +120,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const CabinetHome()
       },
       {
+        'title': getTranslation('Cabinet1'),
+        'icon': Icons.storage,
+        'navigate': const FolderPermissionHome(),
+      },
+      {
         'title': getTranslation('SubjectMaster'),
         'icon': Icons.subject,
         'navigate': const LetterSubjectMasterScreen()
@@ -131,7 +137,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('Users'),
         'icon': Icons.person,
-        'navigate': const UserMasterScreen()
+        'navigate': const UserScreen()
       },
     ]
   };

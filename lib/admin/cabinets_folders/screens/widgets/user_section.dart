@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder_permission.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 class UserPane extends StatelessWidget {
   final List<User> users;
@@ -37,7 +38,6 @@ class UserPane extends StatelessWidget {
               final user = users[index];
               final hasPermission = permissions.any(
                 (permission) =>
-                    permission.cabinetId == cabinetId &&
                     permission.folderId == folderId &&
                     permission.userId == user.id,
               );

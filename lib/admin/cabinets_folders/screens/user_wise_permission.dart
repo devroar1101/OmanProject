@@ -1,35 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder_permission_repo.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 import '../model/folder_permission.dart';
 
-class UserWisePermission extends StatefulWidget {
+class UserWisePermission extends ConsumerStatefulWidget {
   const UserWisePermission(
-      {super.key, required this.cabinets, required this.folders});
+      {super.key,
+      required this.cabinets,
+      required this.folders,
+      required this.users,
+      required this.folderPermission});
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
+  final List<User> users;
+  final List<FolderPermission> folderPermission;
   @override
   _UserWisePermissionState createState() => _UserWisePermissionState();
 }
 
-class _UserWisePermissionState extends State<UserWisePermission> {
-  final List<User> users = [
-    User(id: 1, name: 'User 1'),
-    User(id: 2, name: 'User 2'),
-    User(id: 3, name: 'User 3'),
-    User(id: 4, name: 'User 4'),
-  ];
+class _UserWisePermissionState extends ConsumerState<UserWisePermission> {
+  late List<User> users;
 
-  List<Cabinet> cabinets = [];
+  late List<Cabinet> cabinets;
 
-  List<Folder> folders = [];
+  late List<Folder> folders;
 
-  final List<FolderPermission> permissions = [
-    FolderPermission(id: 1, cabinetId: 1, folderId: 1, userId: 1),
-    FolderPermission(id: 2, cabinetId: 1, folderId: 2, userId: 2),
-  ];
+  late List<FolderPermission> permissions;
 
   int? selectedUserId;
   String userSearchQuery = '';
@@ -40,25 +41,25 @@ class _UserWisePermissionState extends State<UserWisePermission> {
     super.initState();
     cabinets = widget.cabinets;
     folders = widget.folders;
+    users = widget.users;
+    permissions = widget.folderPermission;
   }
 
-  void togglePermission(int folderId, int cabinetId) {
-    setState(() {
-      final permissionIndex = permissions.indexWhere((permission) =>
-          permission.userId == selectedUserId &&
-          permission.cabinetId == cabinetId &&
-          permission.folderId == folderId);
+  void togglePermission(int folderId, int userId) {
+    final permissionIndex = permissions.indexWhere((permission) =>
+        permission.userId == selectedUserId && permission.folderId == folderId);
+    print(permissionIndex);
 
-      if (permissionIndex != -1) {
-        permissions.removeAt(permissionIndex);
-      } else {
-        permissions.add(FolderPermission(
-            id: permissions.length + 1,
-            cabinetId: cabinetId,
-            folderId: folderId,
-            userId: selectedUserId!));
-      }
-    });
+    if (permissionIndex != -1) {
+      ref
+          .read(folderPermissionRepositoryProvider.notifier)
+          .deleteFolderPermission(permissionIndex);
+      permissions.removeAt(permissionIndex);
+    } else {
+      ref
+          .read(folderPermissionRepositoryProvider.notifier)
+          .addFolderPermission(folderId: folderId, userId: userId);
+    }
   }
 
   bool hasFolderPermission(int folderId) {
@@ -120,6 +121,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
           // Second Pane: Cabinets and Folders
           Expanded(
             child: Column(
+              key: ValueKey(permissions.length),
               children: [
                 TextField(
                   decoration: const InputDecoration(
@@ -173,7 +175,7 @@ class _UserWisePermissionState extends State<UserWisePermission> {
                               title: Text(folder.nameArabic),
                               value: isFolderSelected,
                               onChanged: (isChecked) {
-                                togglePermission(folder.id, cabinet.id);
+                                togglePermission(folder.id, selectedUserId!);
                               },
                             );
                           }).toList(),

@@ -257,14 +257,14 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AddDGmasterScreen();
+          return AddDGScreen();
         },
       );
     } else if (screenName == 'Department') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AddDepartmentMaster();
+          return AddDepartment();
         },
       );
     } else if (screenName == 'Section') {
@@ -285,7 +285,7 @@ class CustomAppBar {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const AddUserMasterScreen();
+          return const AddUserScreen();
         },
       );
     } else if (screenName == 'ListMasterItem') {

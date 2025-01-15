@@ -21,11 +21,11 @@ class Department {
   factory Department.fromMap(Map<String, dynamic> map) {
     return Department(
       code: map['code'] ?? '',
-      nameArabic: map['departmentNameArabic'] ?? '',
-      nameEnglish: map['departmentNameEnglish'] ?? '',
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
       dgNameEnglish: map['dgNameEnglish'] ?? '',
       objectId: map['departmentObjectId'] ?? '',
-      id: map['departmentId'] ?? 0,
+      id: map['id'] ?? 0,
       dgId: map['dgId'] ?? 0,
     );
   }

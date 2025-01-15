@@ -61,10 +61,18 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
                       .read(cabinetRepositoryProvider.notifier)
                       .addCabinet(nameEnglish: name, nameArabic: name);
                 },
-                onEditCabinet: (id, name) {
-                  ref
-                      .read(cabinetRepositoryProvider.notifier)
-                      .editCabinet(id: id, nameEnglish: name, nameArabic: name);
+                onEditCabinet: (int id) {
+                  final currentCabinet =
+                      cabinets.firstWhere((cabinet) => cabinet.id == id);
+                  showAddEditDialog(
+                    context,
+                    title: 'Edit Cabinet',
+                    currentName: currentCabinet.nameArabic,
+                    onSave: (name) {
+                      ref.read(cabinetRepositoryProvider.notifier).editCabinet(
+                          id: id, nameEnglish: name, nameArabic: name);
+                    },
+                  );
                 },
               ),
             ),
@@ -97,12 +105,21 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
                         cabinetId: selectedCabinetId!);
                   }
                 },
-                onEditFolder: (id, name) {
-                  ref.read(folderRepositoryProvider.notifier).editFolder(
-                      id: id,
-                      nameEnglish: name,
-                      nameArabic: name,
-                      cabinetId: selectedCabinetId!);
+                onEditFolder: (id) {
+                  final currentFolder =
+                      folders.firstWhere((folder) => folder.id == id);
+                  showAddEditDialog(
+                    context,
+                    title: 'Edit Folder',
+                    currentName: currentFolder.nameArabic,
+                    onSave: (name) {
+                      currentFolder.nameArabic = name;
+                      currentFolder.nameEnglish = name;
+                      ref
+                          .read(folderRepositoryProvider.notifier)
+                          .editFolder(folder: currentFolder);
+                    },
+                  );
                 },
                 onSelectFolder: (id) {
                   setState(() {
@@ -118,15 +135,20 @@ class _CabinetHomeState extends ConsumerState<CabinetHome> {
   }
 }
 
-void showAddDialog(BuildContext context,
-    {required String title, required Function(String) onSave}) {
-  String newName = '';
+void showAddEditDialog(BuildContext context,
+    {required String title,
+    String? currentName,
+    required Function(String) onSave}) {
+  TextEditingController controller = TextEditingController();
+
+  controller.text = currentName ?? '';
+
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title),
       content: TextField(
-        onChanged: (value) => newName = value,
+        controller: controller,
         decoration: const InputDecoration(labelText: 'Name'),
       ),
       actions: [
@@ -136,8 +158,8 @@ void showAddDialog(BuildContext context,
         ),
         TextButton(
           onPressed: () {
-            if (newName.isNotEmpty) {
-              onSave(newName);
+            if (controller.text.isNotEmpty) {
+              onSave(controller.text);
               Navigator.pop(context);
             }
           },

@@ -19,51 +19,39 @@ class _ReplyJobFormState extends State<ReplyJobForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey, // Attach the GlobalKey to the Form
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Text(
-                'Follow-Up Jobs',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16.0),
+    return Form(
+      key: _formKey, // Attach the GlobalKey to the Form
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Field: Classification
+          _buildSingleRowField('Classification', _classificationController),
+          const SizedBox(height: 16.0),
 
-              // Field: Classification
-              _buildSingleRowField('Classification', _classificationController),
-              const SizedBox(height: 16.0),
+          // Field: Priority
+          _buildSingleRowField('Priority', _priorityController),
+          const SizedBox(height: 16.0),
 
-              // Field: Priority
-              _buildSingleRowField('Priority', _priorityController),
-              const SizedBox(height: 16.0),
+          // Field: Reply Date
+          _buildSingleRowField('Reply Date', _replyDateController),
+          const SizedBox(height: 16.0),
 
-              // Field: Reply Date
-              _buildSingleRowField('Reply Date', _replyDateController),
-              const SizedBox(height: 16.0),
-
-              // Save Button at the bottom
-              Align(
-                alignment: Alignment.bottomRight,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Handle save action here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Form Saved!')),
-                      );
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ),
-            ],
+          // Save Button at the bottom
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  // Handle save action here
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Form Saved!')),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

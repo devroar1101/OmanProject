@@ -16,10 +16,11 @@ class LoadLetterDocument extends ConsumerStatefulWidget {
 }
 
 class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
-  List<Uint8List> images = [];
+  final List<Uint8List> images = [];
   bool isFirstImageLoaded = false;
   bool isFetching = false;
   int totalPage = 0;
+  bool isDisposed = false;
 
   @override
   void initState() {
@@ -28,6 +29,9 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
   }
 
   Future<void> _fetchAttachmentsAndLoadImages() async {
+    if (isFetching) return;
+    isFetching = true;
+
     final attachmentRepo = ref.read(letterAttachmentRepositoryProvider);
     final contentRepo = ref.read(letterContentRepositoryProvider);
 
@@ -42,22 +46,78 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
       } else {
         totalPage = attachment.totalPage!;
       }
-      // Start fetching images asynchronously
-      for (int page = 1; page <= attachment.totalPage!; page++) {
-        _fetchImage(contentRepo, page, attachment.totalPage!);
+
+      // Fetch the first 10 pages immediately
+      final firstBatchPages = List.generate(
+        (totalPage < 10) ? totalPage : 10,
+        (page) => _fetchImage(contentRepo, page + 1),
+      );
+
+      final firstBatchImages = await Future.wait(firstBatchPages);
+
+      if (!isDisposed) {
+        setState(() {
+          images.addAll(firstBatchImages.whereType<Uint8List>());
+          isFirstImageLoaded = true; // First batch is loaded
+        });
+      }
+
+      // Fetch remaining pages in a microtask
+      if (totalPage > 10) {
+        _fetchRemainingPagesInMicrotask(contentRepo, totalPage);
       }
     } catch (e) {
-      print("Error fetching attachment: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      if (!isDisposed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+    } finally {
+      isFetching = false;
     }
   }
 
-  Future<void> _fetchImage(
+  void _fetchRemainingPagesInMicrotask(
+    LetterContentRepository contentRepo,
+    int totalPages,
+  ) {
+    Future.microtask(() async {
+      final List<Uint8List> remainingImages = [];
+
+      try {
+        for (int page = 11; page <= totalPages; page++) {
+          if (isDisposed) return; // Stop fetching if the widget is disposed
+
+          try {
+            final content = await contentRepo.getContentByObjectId(
+              objectId: widget.objectId,
+              pageNumber: page,
+            );
+
+            if (content != null && content.content != null) {
+              final decodedImage = base64Decode(content.content!);
+              remainingImages.add(decodedImage);
+            }
+          } catch (e) {
+            print("Error fetching image for page $page: $e");
+          }
+        }
+
+        // Update the state with all remaining images at once
+        if (!isDisposed && remainingImages.isNotEmpty) {
+          setState(() {
+            images.addAll(remainingImages);
+          });
+        }
+      } catch (e) {
+        print("Error fetching remaining pages in microtask: $e");
+      }
+    });
+  }
+
+  Future<Uint8List?> _fetchImage(
     LetterContentRepository contentRepo,
     int page,
-    int totalPages,
   ) async {
     try {
       final content = await contentRepo.getContentByObjectId(
@@ -66,19 +126,18 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
       );
 
       if (content != null && content.content != null) {
-        final decodedImage = base64Decode(content.content!);
-        setState(() {
-          images.add(decodedImage);
-
-          // Mark the first image as loaded
-          if (!isFirstImageLoaded) {
-            isFirstImageLoaded = true;
-          }
-        });
+        return base64Decode(content.content!);
       }
     } catch (e) {
       print("Error fetching image for page $page: $e");
     }
+    return null;
+  }
+
+  @override
+  void dispose() {
+    isDisposed = true;
+    super.dispose();
   }
 
   @override
@@ -89,7 +148,7 @@ class _LoadLetterDocumentState extends ConsumerState<LoadLetterDocument> {
 
     return DocumentViewer(
       imagePaths: images,
-      totalPage: totalPage,
+      totalPage: images.length,
     );
   }
 }

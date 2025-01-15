@@ -7,56 +7,45 @@ class FollowUpJobsForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Follow-Up Jobs',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16.0),
-              _buildSingleField('Classification'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Priority'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Reply Date'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Personal Group'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('DG'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Department'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Section'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Comment Type'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Comment'),
-              const SizedBox(height: 8.0),
-              _buildSingleField('Modify Comment'),
-              const SizedBox(height: 16.0),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Perform save logic here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Data Saved Successfully!')),
-                      );
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ),
-            ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSingleField('Classification'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Priority'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Reply Date'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Personal Group'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('DG'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Department'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Section'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Comment Type'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Comment'),
+          const SizedBox(height: 8.0),
+          _buildSingleField('Modify Comment'),
+          const SizedBox(height: 16.0),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  // Perform save logic here
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Data Saved Successfully!')),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

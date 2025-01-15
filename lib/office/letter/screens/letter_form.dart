@@ -82,11 +82,11 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   late List<SelectOption<Cabinet>> cabinetOptions = [];
   late List<SelectOption<Folder>> folderOptions = [];
-  late List<SelectOption<DgMaster>> dgOptions = [];
+  late List<SelectOption<Dg>> dgOptions = [];
   late List<SelectOption<Department>> departmentOptions = [];
   late List<SelectOption<ExternalLocation>> locationOptions = [];
-  late List<SelectOption<UserMaster>> usersOptions = [];
-  late List<SelectOption<UserMaster>> filteredUserOption = [];
+  late List<SelectOption<User>> usersOptions = [];
+  late List<SelectOption<User>> filteredUserOption = [];
 
   final _directionScale = ValueNotifier<double>(1.0);
   final _typeScale = ValueNotifier<double>(1.0);
@@ -316,7 +316,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                       value: year,
                       child: Text(
                         year.toString(),
-                        style: TextStyle(fontSize: 14), // Smaller item font
+                        style:
+                            const TextStyle(fontSize: 14), // Smaller item font
                       ),
                     );
                   },
@@ -443,7 +444,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 Clipboard.setData(
                     ClipboardData(text: _referenceController.text));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Reference copied to clipboard')),
+                  const SnackBar(
+                      content: Text('Reference copied to clipboard')),
                 );
               },
               child: Card(
@@ -902,7 +904,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           Expanded(
             child: SizedBox(
               height: fieldHeight,
-              child: SelectField<DgMaster>(
+              child: SelectField<Dg>(
                 label: 'DG',
                 options: dgOptions,
                 key: ValueKey(dgOptions),
@@ -945,7 +947,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           Expanded(
             child: SizedBox(
               height: fieldHeight,
-              child: SelectField<UserMaster>(
+              child: SelectField<User>(
                 label: 'User',
                 options: filteredUserOption,
                 key: ValueKey(filteredUserOption),

@@ -92,7 +92,7 @@ class _ExternalLocationScreenState
     return Scaffold(
       body: Column(
         children: [
-         const SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Row(
             children: [
               Expanded(
@@ -149,7 +149,7 @@ class _ExternalLocationScreenState
                   details: ExternalLocation.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int index, {objectId}) {},
+                  onTap: (index, {objectId}) {},
                   detailKey: 'objectId',
                 ),
               ),

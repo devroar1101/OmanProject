@@ -15,7 +15,7 @@ class AddSectionMaster extends ConsumerStatefulWidget {
     this.currentSection,
   });
 
-  final SectionMaster? currentSection;
+  final Section? currentSection;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -66,19 +66,17 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
                             // Name fields
                             _buildTextField(
                               label: 'Name (Arabic)',
-                              initialValue:
-                                  widget.currentSection?.sectionNameArabic,
+                              initialValue: widget.currentSection?.nameArabic,
                               onSaved: (value) => _sectionNameArabic = value,
                             ),
                             _buildTextField(
                               label: 'Name (English)',
-                              initialValue:
-                                  widget.currentSection?.sectionNameEnglish,
+                              initialValue: widget.currentSection?.nameEnglish,
                               onSaved: (value) => _sectionNameEnglish = value,
                             ),
                             const SizedBox(height: 16.0),
                             // DG Selection
-                            _buildSearchableDropdown<DgMaster>(
+                            _buildSearchableDropdown<Dg>(
                               label: 'Select DG',
                               options: dgList,
                               selectOption: _selectedDG,
@@ -207,19 +205,15 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     try {
       if (widget.currentSection == null) {
-        await ref
-            .read(sectionMasterRepositoryProvider.notifier)
-            .addSectionMaster(
+        await ref.read(sectionRepositoryProvider.notifier).addSection(
               nameArabic: _sectionNameArabic!,
               nameEnglish: _sectionNameEnglish!,
               dgId: int.parse(_selectedDG!),
               departmentId: int.parse(_selectedDepartment!),
             );
       } else {
-        await ref
-            .read(sectionMasterRepositoryProvider.notifier)
-            .editSeactionMaster(
-              currentsectionId: widget.currentSection!.sectionId,
+        await ref.read(sectionRepositoryProvider.notifier).editSeactionMaster(
+              currentid: widget.currentSection!.id,
               nameArabic: _sectionNameArabic!,
               nameEnglish: _sectionNameEnglish!,
               currentDgId: int.parse(_selectedDG!),

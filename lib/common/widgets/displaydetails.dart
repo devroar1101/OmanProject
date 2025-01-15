@@ -12,7 +12,7 @@ class DisplayDetails extends StatefulWidget {
   final List<Map<String, dynamic>> details;
   final List<Map<String, dynamic>>? iconButtons; // Actions with icons
   final bool expandable;
-  final Function(int, {String? objectId})? onTap;
+  final Function(dynamic)? onTap;
   final Function()? onLongPress;
   String isSelected;
   final String detailKey;
@@ -72,7 +72,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                         textAlign: TextAlign.center,
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -108,8 +108,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
               final id = row[widget.detailKey];
 
               // Check if the row meets the conditions for speed dial
-              bool showSpeedDial =
-                  id != 0 && widget.iconButtons != null && id != null;
+              bool showSpeedDial = widget.iconButtons != null;
 
               return Stack(
                 children: [
@@ -117,8 +116,7 @@ class _DisplayDetailsState extends State<DisplayDetails>
                   InkWell(
                     onTap: () {
                       if (widget.onTap != null) {
-                        widget.onTap!(int.tryParse(id) != null ? id as int : 0,
-                            objectId: id.toString());
+                        widget.onTap!(id);
                       }
                       setState(() {
                         activeRowIndex = null;
@@ -251,7 +249,7 @@ Future<void> exportData(BuildContext context, List<String> headers,
     String csvData = const ListToCsvConverter().convert(rows);
 
     // Add BOM for UTF-8 encoding (important for non-Latin characters like Arabic)
-    String utf8CsvData = "\u{FEFF}" + csvData;
+    String utf8CsvData = "\u{FEFF}$csvData";
 
     // Create a Blob from the CSV data (web-specific)
     final blob = html.Blob([utf8CsvData], 'text/csv');
@@ -269,11 +267,11 @@ Future<void> exportData(BuildContext context, List<String> headers,
     html.Url.revokeObjectUrl(url);
 
     // Optionally, show a snackbar or a message that the file is being downloaded
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('CSV file is being downloaded')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('CSV file is being downloaded')));
   } catch (e) {
     print("Error saving CSV file: $e");
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Failed to generate CSV file')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to generate CSV file')));
   }
 }

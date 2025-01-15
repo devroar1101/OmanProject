@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/utilities/language_mannager.dart';
 
@@ -16,4 +18,11 @@ Future<void> selectDate(BuildContext context, DateTime initialDate,
   if (picked != null && picked != initialDate) {
     onDatePicked(picked);
   }
+}
+
+// Generate a random color for the avatar
+Color getRandomColor() {
+  final random = Random();
+  return Color.fromRGBO(
+      random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
 }

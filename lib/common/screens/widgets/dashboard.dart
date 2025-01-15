@@ -95,7 +95,7 @@ class Dashboard extends StatelessWidget {
           width: 250,
           child: Container(
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 226, 226, 226),
+              color: const Color.fromARGB(255, 226, 226, 226),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -108,9 +108,9 @@ class Dashboard extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
-                Text(
+                const Text(
                   'Notifications',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -151,7 +151,7 @@ class Dashboard extends StatelessWidget {
         height: 150,
         padding: const EdgeInsets.only(top: 10, left: 15),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 10, 31, 61),
+          color: const Color.fromARGB(255, 10, 31, 61),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(32.0),
             bottomRight: Radius.circular(32.0),

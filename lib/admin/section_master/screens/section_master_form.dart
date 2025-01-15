@@ -26,7 +26,7 @@ class _SectionMasterSearchFormState
   String? _selectedDepartmentValue = '';
   int _resetKey = 0; // Counter to reset keys
 
-  List<SelectOption<DgMaster>> dgOptions = [];
+  List<SelectOption<Dg>> dgOptions = [];
   List<SelectOption<Department>> departmentOptions = [];
 
   void _resetFields() {
@@ -116,7 +116,7 @@ class _SectionMasterSearchFormState
 
             // DG Dropdown Field
             Expanded(
-              child: SelectField<DgMaster>(
+              child: SelectField<Dg>(
                 label: 'DG',
                 key: ValueKey('dgKey_$_resetKey'),
                 options: dgOptions,
@@ -159,7 +159,10 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 238, 240, 241),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.search,color: ColorPicker.formIconColor,),
+                icon: const Icon(
+                  Icons.search,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _handleSearch,
                 tooltip: 'Search',
               ),
@@ -170,7 +173,10 @@ class _SectionMasterSearchFormState
               color: const Color.fromARGB(255, 240, 234, 235),
               shape: const CircleBorder(),
               child: IconButton(
-                icon: const Icon(Icons.refresh,color: ColorPicker.formIconColor,),
+                icon: const Icon(
+                  Icons.refresh,
+                  color: ColorPicker.formIconColor,
+                ),
                 onPressed: _resetFields,
                 tooltip: 'Reset',
               ),

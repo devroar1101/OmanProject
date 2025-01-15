@@ -1,20 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
+
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final UserMasterRepositoryProvider =
-    StateNotifierProvider<UserMasterRepository, List<UserMaster>>((ref) {
-  return UserMasterRepository(ref);
+final UserRepositoryProvider =
+    StateNotifierProvider<UserRepository, List<User>>((ref) {
+  return UserRepository(ref);
 });
 
-class UserMasterRepository extends StateNotifier<List<UserMaster>> {
-  UserMasterRepository(this.ref) : super([]);
+class UserRepository extends StateNotifier<List<User>> {
+  UserRepository(this.ref) : super([]);
   final Ref ref;
 
   //Add
 
-  Future<void> addUserMaster({
+  Future<void> addUser({
     required String name,
     required String displayName,
     required int dgId,
@@ -31,16 +32,16 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
       'departmentId': departmentId,
       'sectionId': sectionId,
     };
-      print('Secton ID $sectionId');
-      print('dg ID $dgId');
-      print('depat ID $departmentId');
+    print('Secton ID $sectionId');
+    print('dg ID $dgId');
+    print('depat ID $departmentId');
     try {
       await dio.post('/User/Create', data: requestBody);
 
       state = [
-        UserMaster(
+        User(
             id: 1,
-            eOfficeId: '1',
+            eOfficeNumber: '1',
             name: name,
             systemName: name,
             designationName: '',
@@ -63,7 +64,7 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
   }
 
   /// Fetch Departments from the API
-  Future<List<UserMaster>> fetchUsers({
+  Future<List<User>> fetchUsers({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
@@ -83,7 +84,7 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List;
         state = data
-            .map((item) => UserMaster.fromMap(item as Map<String, dynamic>))
+            .map((item) => User.fromMap(item as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to load Users');
@@ -95,8 +96,8 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
     return state;
   }
 
-  Future<List<SelectOption<UserMaster>>> getUserOptions() async {
-    List<UserMaster> userList = state;
+  Future<List<SelectOption<User>>> getUserOptions() async {
+    List<User> userList = state;
 
     // Fetch userList if not already available
     if (userList.isEmpty) {
@@ -104,9 +105,9 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
     }
 
     // Build User Options with or without child options
-    final List<SelectOption<UserMaster>> options = await Future.wait(
+    final List<SelectOption<User>> options = await Future.wait(
       userList.map((user) async {
-        return SelectOption<UserMaster>(
+        return SelectOption<User>(
           displayName: user.name,
           key: user.id.toString(),
           value: user,
@@ -121,6 +122,6 @@ class UserMasterRepository extends StateNotifier<List<UserMaster>> {
 }
 
 final userOptionsProvider =
-    FutureProvider<List<SelectOption<UserMaster>>>((ref) async {
-  return ref.read(UserMasterRepositoryProvider.notifier).getUserOptions();
+    FutureProvider<List<SelectOption<User>>>((ref) async {
+  return ref.read(UserRepositoryProvider.notifier).getUserOptions();
 });

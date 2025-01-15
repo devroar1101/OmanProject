@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 

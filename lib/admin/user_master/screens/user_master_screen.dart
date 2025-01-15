@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
+
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
-import 'package:tenderboard/admin/user_master/screens/user_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class UserMasterScreen extends ConsumerStatefulWidget {
-  const UserMasterScreen({super.key});
+class UserScreen extends ConsumerStatefulWidget {
+  const UserScreen({super.key});
 
   @override
-  _UserMasterScreenState createState() => _UserMasterScreenState();
+  _UserScreenState createState() => _UserScreenState();
 }
 
-class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
+class _UserScreenState extends ConsumerState<UserScreen>
     with SingleTickerProviderStateMixin {
   bool _isSearchFormVisible = false;
   late AnimationController _animationController;
@@ -34,7 +34,7 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
   @override
   void initState() {
     super.initState();
-    ref.read(UserMasterRepositoryProvider.notifier).fetchUsers();
+    ref.read(UserRepositoryProvider.notifier).fetchUsers();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -78,12 +78,12 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
     });
   }
 
-  List<UserMaster> _applyFiltersAndPagination(List<UserMaster> users) {
+  List<User> _applyFiltersAndPagination(List<User> users) {
     if (users.isEmpty) {
       return [];
     }
 
-    List<UserMaster> filteredList = users.where((singleUser) {
+    List<User> filteredList = users.where((singleUser) {
       // final matchesLoginId = searchLoginId.isEmpty ||
       //     (singleUser.loginId.toLowerCase())
       // .contains(searchNameArabic.toLowerCase());
@@ -100,7 +100,7 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
           matchesDepartment &&
           matchesName; // && matchesDg;
     }).toList();
-    print('filters count : ${filteredList.length}');
+
     // Apply pagination
     int startIndex = (pageNumber - 1) * pageSize;
     int endIndex = startIndex + pageSize;
@@ -111,19 +111,18 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
 
   @override
   Widget build(BuildContext context) {
-    final users = ref.watch(UserMasterRepositoryProvider);
+    final users = ref.watch(UserRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(users);
 
     final iconButtons = [
       {
         "button": Icons.edit,
         "function": (int id) {
-          final UserMaster currentUser =
-              users.firstWhere((user) => user.id == id);
+          final User currentUser = users.firstWhere((user) => user.id == id);
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AddUserMasterScreen(
+              return AddUserScreen(
                 currentUser: currentUser,
               );
             },
@@ -174,10 +173,10 @@ class _UserMasterScreenState extends ConsumerState<UserMasterScreen>
                     'sectionName',
                     //'designationNameEnglish',
                   ],
-                  details: UserMaster.listToMap(filteredAndPaginatedList),
+                  details: User.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (int id, {objectId}) {},
+                  onTap: (id, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

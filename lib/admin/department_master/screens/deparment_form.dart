@@ -95,7 +95,7 @@ class _DepartmentSearchFormState extends ConsumerState<DepartmentSearchForm> {
 
             // Custom Dropdown Field
             Expanded(
-              child: SelectField<DgMaster>(
+              child: SelectField<Dg>(
                 label: 'DG',
                 options: dgOptions,
                 onChanged: (dg, selectedOption) {

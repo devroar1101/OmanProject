@@ -1,42 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/cabinet.dart';
 import 'package:tenderboard/admin/cabinets_folders/model/folder.dart';
+import 'package:tenderboard/admin/cabinets_folders/model/folder_permission_repo.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/widgets/cabinet_section.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/widgets/folder_section.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/widgets/user_section.dart';
+import 'package:tenderboard/admin/user_master/model/user_master.dart';
 
 import '../model/folder_permission.dart';
 
-class FolderWisePermission extends StatefulWidget {
+class FolderWisePermission extends ConsumerStatefulWidget {
   const FolderWisePermission(
-      {super.key, required this.cabinets, required this.folders});
+      {super.key,
+      required this.cabinets,
+      required this.folders,
+      required this.users,
+      required this.folderPermission});
 
   final List<Cabinet> cabinets;
   final List<Folder> folders;
+  final List<User> users;
+  final List<FolderPermission> folderPermission;
   @override
   _FolderWisePermissionState createState() => _FolderWisePermissionState();
 }
 
-class _FolderWisePermissionState extends State<FolderWisePermission> {
+class _FolderWisePermissionState extends ConsumerState<FolderWisePermission> {
   // Sample data
-  List<Cabinet> cabinets = [];
+  late List<Cabinet> cabinets;
 
-  List<Folder> folders = [];
+  late List<Folder> folders;
 
-  final List<User> users = [
-    User(id: 1, name: 'User 1'),
-    User(id: 2, name: 'User 2'),
-    User(id: 3, name: 'User 3'),
-  ];
+  late List<User> users;
 
-  final List<FolderPermission> permissions = [
-    FolderPermission(id: 1, cabinetId: 1, folderId: 1, userId: 1),
-    FolderPermission(id: 2, cabinetId: 1, folderId: 2, userId: 2),
-  ];
+  late List<FolderPermission> permissions;
 
-  int selectedCabinetId = 0;
-  int selectedFolderId = -1;
-  int parentId = 0;
+  int? selectedCabinetId = 1;
+  int? selectedFolderId = 1;
+  int? parentId;
   String cabinetSearchQuery = '';
   String folderSearchQuery = '';
   String userSearchQuery = '';
@@ -46,6 +48,10 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
     super.initState();
     cabinets = widget.cabinets;
     folders = widget.folders;
+    cabinets = widget.cabinets;
+    folders = widget.folders;
+    users = widget.users;
+    permissions = widget.folderPermission;
   }
 
   @override
@@ -115,37 +121,32 @@ class _FolderWisePermissionState extends State<FolderWisePermission> {
                       .contains(userSearchQuery.toLowerCase()))
                   .toList(),
               permissions: permissions,
-              cabinetId: parentId,
-              folderId: selectedFolderId,
+              cabinetId: parentId ?? 0,
+              folderId: selectedFolderId ?? 0,
               onSearch: (query) {
                 setState(() {
                   userSearchQuery = query;
                 });
               },
               onTogglePermission: (userId) {
-                setState(() {
-                  FolderPermission? existingPermission;
+                FolderPermission? existingPermission;
 
-                  try {
-                    existingPermission = permissions.firstWhere(
-                      (permission) =>
-                          permission.cabinetId == parentId &&
-                          permission.folderId == selectedFolderId &&
-                          permission.userId == userId,
-                    );
+                try {
+                  existingPermission = permissions.firstWhere(
+                    (permission) =>
+                        permission.folderId == selectedFolderId &&
+                        permission.userId == userId,
+                  );
 
-                    // Remove permission if it exists
-                    permissions.remove(existingPermission);
-                  } catch (e) {
-                    // Add permission if it doesn't exist
-                    permissions.add(FolderPermission(
-                      id: permissions.length,
-                      cabinetId: parentId,
-                      folderId: selectedFolderId,
-                      userId: userId,
-                    ));
-                  }
-                });
+                  ref
+                      .read(folderPermissionRepositoryProvider.notifier)
+                      .deleteFolderPermission(existingPermission.id);
+                } catch (e) {
+                  ref
+                      .read(folderPermissionRepositoryProvider.notifier)
+                      .addFolderPermission(
+                          folderId: selectedFolderId!, userId: userId);
+                }
               },
             ),
           ),

@@ -155,7 +155,7 @@ class _ListMasterItemHomeState extends ConsumerState<ListMasterItemHome> {
                   expandable: true,
                   selected: '1',
                   iconButtons: iconButtons,
-                  onTap: (int index, {objectId}) {},
+                  onTap: (index, {objectId}) {},
                   detailKey: 'id',
                 ),
               ),

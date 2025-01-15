@@ -9,7 +9,7 @@ class CabinetSection extends StatelessWidget {
   final Function(int) onSelectCabinet;
   final Function(String) onSearch;
   final Function(String)? onAddCabinet;
-  final Function(int, String)? onEditCabinet;
+  final Function(int)? onEditCabinet;
 
   const CabinetSection({
     super.key,
@@ -26,8 +26,7 @@ class CabinetSection extends StatelessWidget {
     final headers = ['Cabinets'];
     final dataKeys = ['nameArabic'];
     final iconButtons = [
-      {"button": Icons.edit, "function": (int id) => print("Edit $id")},
-      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+      {"button": Icons.edit, "function": (int id) => onEditCabinet!(id)},
     ];
 
     final bool isRtl = Directionality.of(context) == TextDirection.rtl;
@@ -69,7 +68,7 @@ class CabinetSection extends StatelessWidget {
                 right: isRtl ? null : 8,
                 left: isRtl ? 8 : null,
                 child: ElevatedButton(
-                  onPressed: () => showAddDialog(
+                  onPressed: () => showAddEditDialog(
                     context,
                     title: 'Add Cabinet',
                     onSave: onAddCabinet!,

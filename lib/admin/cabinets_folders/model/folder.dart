@@ -18,10 +18,10 @@ class Folder {
   // Convert a Map to a Folder object
   factory Folder.fromMap(Map<String, dynamic> map) {
     return Folder(
-      id: map['folderId'],
+      id: map['id'] ?? map['folderId'],
       cabinetId: map['cabinetId'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
-      code: map['folderId'] ?? '', // Defaulting to empty string if null
+      code: map['id'] ?? map['folderId'], // Defaulting to empty string if null
       nameArabic: map['nameEnglish'] ?? '',
       nameEnglish: map['nameArabic'] ?? '',
     );

@@ -16,7 +16,7 @@ class Cabinet {
   // Convert a Map to a Cabinet object
   factory Cabinet.fromMap(Map<String, dynamic> map) {
     return Cabinet(
-      id: map['cabinetId'],
+      id: map['id'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
       code: map['code'] ?? '', // Defaulting to empty string if null
       nameArabic: map['nameEnglish'] ?? '',
