@@ -4,10 +4,10 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:tenderboard/office/List_circular/model/details_repo.dart';
-import 'package:tenderboard/office/List_circular/screens/circular_form.dart';
+import 'package:tenderboard/office/list_decision/screens/decision_form.dart';
 
-class CircularListScreen extends ConsumerStatefulWidget {
-  const CircularListScreen({super.key});
+class DecisionListScreen extends ConsumerStatefulWidget {
+  const DecisionListScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -15,15 +15,14 @@ class CircularListScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _CircularScreen extends ConsumerState<CircularListScreen> {
+class _CircularScreen extends ConsumerState<DecisionListScreen> {
   @override
   void initState() {
     super.initState();
     ref
         .read(circularDecisiondetailsRepositoryProvider.notifier)
-        .fetchListCircularDecisions('1');
+        .fetchListCircularDecisions('2');
   }
-
   String searchSubject = "";
   String searchNumber = '';
   String searchDocumentType = '';
@@ -77,17 +76,15 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final circularDecisionList =
-        ref.watch(circularDecisiondetailsRepositoryProvider);
-    final filteredAndPaginatedList =
+    final circularDecisionList = ref.watch(circularDecisiondetailsRepositoryProvider); 
+     final filteredAndPaginatedList =
         _applyFiltersAndPagination(circularDecisionList);
-    print('11212 $circularDecisionList');
     return Scaffold(
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CircularForm(
+           Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: DecisionForm(
               onSearch: onSearch,
             ),
           ),
@@ -136,7 +133,7 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
               'documentType',
               'createdDate',
             ],
-            details: filteredAndPaginatedList.map((circulatItem) {
+            details: circularDecisionList.map((circulatItem){
               return circulatItem.toMap();
             }).toList(),
             expandable: true,

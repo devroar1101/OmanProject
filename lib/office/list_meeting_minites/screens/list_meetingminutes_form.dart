@@ -2,40 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 
-class CircularForm extends StatefulWidget {
-  const CircularForm({super.key, required this.onSearch});
-  final Function(String, String,  String,) onSearch;
+class MeetingMinutesSearchForm extends StatefulWidget {
+  const MeetingMinutesSearchForm({super.key, required this.onSearch});
+  final Function(String, String, String, String, String) onSearch;
+
   @override
-  _CircularFormState createState() => _CircularFormState();
+  _MeetingMinutesSearchFormState createState() => _MeetingMinutesSearchFormState();
 }
 
-class _CircularFormState extends State<CircularForm> {
-  final TextEditingController _numberController = TextEditingController();
+class _MeetingMinutesSearchFormState extends State<MeetingMinutesSearchForm> {
   final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _meetingNumberController = TextEditingController();
+  final TextEditingController _priorityController = TextEditingController();
+  final TextEditingController _classificationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
-  String? _documentType; // Default to null to avoid mismatch errors
-  String _sortOrder = 'Descending'; // Default to a valid option
-
   void _resetFields() {
-    _numberController.clear();
     _subjectController.clear();
+    _meetingNumberController.clear();
+    _priorityController.clear();
+    _classificationController.clear();
     _dateController.clear();
-    widget.onSearch('', '',  '');
-    setState(() {
-      _documentType = ""; // Reset to null
-      _sortOrder = 'Descending';
-    });
+    widget.onSearch('', '', '', '', '',);
   }
 
   void _handleSearch() {
-    print('tommmmmy');
-    String number = _numberController.text;
     String subject = _subjectController.text;
+    String meetingNumber = _meetingNumberController.text;
+    String priority = _priorityController.text;
+    String classification = _classificationController.text;
     String date = _dateController.text;
-    widget.onSearch(subject, number,  date);
+    widget.onSearch(subject, meetingNumber, priority,classification,date);
     // Implement search logic here
-    //print('Search: Number=$number, Subject=$subject, Date=$date, DocumentType=$_documentType, SortOrder=$_sortOrder');
+    print('Search: Subject=$subject, MeetingNumber=$meetingNumber, Priority=$priority, Classification=$classification, Date=$date');
   }
 
   @override
@@ -49,12 +48,12 @@ class _CircularFormState extends State<CircularForm> {
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: Row(
                 children: [
-                  // Number Field
+                  // Subject Field
                   Expanded(
                     child: TextField(
-                      controller: _numberController,
+                      controller: _subjectController,
                       decoration: InputDecoration(
-                        labelText: getTranslation('Number'),
+                        labelText: getTranslation('Subject'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -63,12 +62,40 @@ class _CircularFormState extends State<CircularForm> {
                   ),
                   const SizedBox(width: 8.0),
 
-                  // Subject Field
+                  // Meeting Number Field
                   Expanded(
                     child: TextField(
-                      controller: _subjectController,
+                      controller: _meetingNumberController,
                       decoration: InputDecoration(
-                        labelText: getTranslation('Subject'),
+                        labelText: getTranslation('MeetingNumber'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+
+                  // Priority Field
+                  Expanded(
+                    child: TextField(
+                      controller: _priorityController,
+                      decoration: InputDecoration(
+                        labelText: getTranslation('Priority'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+
+                  // Classification Field
+                  Expanded(
+                    child: TextField(
+                      controller: _classificationController,
+                      decoration: InputDecoration(
+                        labelText: getTranslation('Classification'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -91,56 +118,6 @@ class _CircularFormState extends State<CircularForm> {
                     ),
                   ),
                   const SizedBox(width: 8.0),
-
-                  // Document Type Dropdown
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _documentType,
-                      decoration: InputDecoration(
-                        labelText: getTranslation('DocumentType'),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      items: ['Type1', 'Type2', 'Type3']
-                          .map((type) => DropdownMenuItem(
-                                value: type,
-                                child: Text(type),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _documentType = value;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-
-                  // // Sort Order Dropdown
-                  // Expanded(
-                  //   child: DropdownButtonFormField<String>(
-                  //     value: _sortOrder,
-                  //     decoration: InputDecoration(
-                  //       labelText: getTranslation('OrderBy'),
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(8.0),
-                  //       ),
-                  //     ),
-                  //     items: ['Ascending', 'Descending']
-                  //         .map((order) => DropdownMenuItem(
-                  //               value: order,
-                  //               child: Text(order),
-                  //             ))
-                  //         .toList(),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         _sortOrder = value ?? 'Descending';
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 8.0),
 
                   // Search Button
                   Card(

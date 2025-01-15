@@ -17,6 +17,7 @@ import 'package:tenderboard/office/document_search/screens/document_search_home.
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
 import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
+import 'package:tenderboard/office/list_decision/screens/decision_screen.dart';
 
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
@@ -78,18 +79,18 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': 'Circular',
         'icon': Icons.crisis_alert_rounded,
-        'navigate': CircularListScreen(),
+        'navigate': const CircularListScreen(),
       },
       {
         'title': getTranslation('Decision'),
         'icon': Icons.check_circle,
-        'navigate': const EjobSummaryScreen(),
+        'navigate': const DecisionListScreen(),
       },
-      {
-        'title': 'MeetingMinutes',
-        'icon': Icons.meeting_room_rounded,
-        'navigate': const CreateMeetingMinutesScreen(),
-      },
+      // {
+      //   'title': 'MeetingMinutes',
+      //   'icon': Icons.meeting_room_rounded,
+      //   'navigate': const CreateMeetingMinutesScreen(),
+      // },
     ],
     'Admin': [
       {

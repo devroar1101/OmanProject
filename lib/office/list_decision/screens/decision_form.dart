@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 
-class CircularForm extends StatefulWidget {
-  const CircularForm({super.key, required this.onSearch});
-  final Function(String, String,  String,) onSearch;
+class DecisionForm extends StatefulWidget {
+  const DecisionForm({super.key, required this.onSearch});
+  final Function (String, String, String, ) onSearch;
+
   @override
-  _CircularFormState createState() => _CircularFormState();
+  _DecisionFormState createState() => _DecisionFormState();
 }
 
-class _CircularFormState extends State<CircularForm> {
+class _DecisionFormState extends State<DecisionForm> {
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -21,21 +22,19 @@ class _CircularFormState extends State<CircularForm> {
     _numberController.clear();
     _subjectController.clear();
     _dateController.clear();
-    widget.onSearch('', '',  '');
     setState(() {
-      _documentType = ""; // Reset to null
+      _documentType = null; // Reset to null
       _sortOrder = 'Descending';
     });
   }
 
   void _handleSearch() {
-    print('tommmmmy');
     String number = _numberController.text;
     String subject = _subjectController.text;
     String date = _dateController.text;
-    widget.onSearch(subject, number,  date);
+
     // Implement search logic here
-    //print('Search: Number=$number, Subject=$subject, Date=$date, DocumentType=$_documentType, SortOrder=$_sortOrder');
+    print('Search: Number=$number, Subject=$subject, Date=$date, DocumentType=$_documentType, SortOrder=$_sortOrder');
   }
 
   @override
@@ -117,30 +116,30 @@ class _CircularFormState extends State<CircularForm> {
                   ),
                   const SizedBox(width: 8.0),
 
-                  // // Sort Order Dropdown
-                  // Expanded(
-                  //   child: DropdownButtonFormField<String>(
-                  //     value: _sortOrder,
-                  //     decoration: InputDecoration(
-                  //       labelText: getTranslation('OrderBy'),
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(8.0),
-                  //       ),
-                  //     ),
-                  //     items: ['Ascending', 'Descending']
-                  //         .map((order) => DropdownMenuItem(
-                  //               value: order,
-                  //               child: Text(order),
-                  //             ))
-                  //         .toList(),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         _sortOrder = value ?? 'Descending';
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 8.0),
+                  // Sort Order Dropdown
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _sortOrder,
+                      decoration: InputDecoration(
+                        labelText: getTranslation('OrderBy'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      items: ['Ascending', 'Descending']
+                          .map((order) => DropdownMenuItem(
+                                value: order,
+                                child: Text(order),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _sortOrder = value ?? 'Descending';
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
 
                   // Search Button
                   Card(

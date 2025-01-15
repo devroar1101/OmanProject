@@ -4,41 +4,43 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:tenderboard/office/List_circular/model/details_repo.dart';
-import 'package:tenderboard/office/List_circular/screens/circular_form.dart';
+import 'package:tenderboard/office/list_meeting_minites/screens/list_meetingminutes_form.dart';
 
-class CircularListScreen extends ConsumerStatefulWidget {
-  const CircularListScreen({super.key});
+class MeetingMinutesScreen extends ConsumerStatefulWidget {
+  const MeetingMinutesScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return _CircularScreen();
+    return _MeetingMinutesScreenState();
   }
 }
 
-class _CircularScreen extends ConsumerState<CircularListScreen> {
+class _MeetingMinutesScreenState extends ConsumerState<MeetingMinutesScreen> {
   @override
   void initState() {
     super.initState();
     ref
         .read(circularDecisiondetailsRepositoryProvider.notifier)
-        .fetchListCircularDecisions('1');
+        .fetchListCircularDecisions('2');
   }
 
   String searchSubject = "";
-  String searchNumber = '';
-  String searchDocumentType = '';
+  String searchMeetingNumber = '';
+  String searchPriority = '';
+  String searchClassification = '';
   String searchDate = '';
   int pageNumber = 1;
   int pageSize = 15;
   bool search = false;
 
   void onSearch(
-      String subject, String? number,  String? date) {
+      String subject, String meetingNumber, String priority, String classification, String date) {
     setState(() {
       searchSubject = subject;
-      searchNumber = number!;
-      // searchDocumentType = documentType!;
-      searchDate = date!;
+      searchMeetingNumber = meetingNumber;
+      searchPriority = priority;
+      searchClassification = classification;
+      searchDate = date;
       pageNumber = 1;
       pageSize = 15;
       search = true;
@@ -46,27 +48,35 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
   }
 
   List<CircularDecisionSearch> _applyFiltersAndPagination(
-      List<CircularDecisionSearch> circularDecisionList) {
-    if (circularDecisionList.isEmpty) {
+      List<CircularDecisionSearch> meetingMinutesList) {
+    if (meetingMinutesList.isEmpty) {
       return [];
     }
 
     List<CircularDecisionSearch> filteredList =
-        circularDecisionList.where((singleValue) {
+        meetingMinutesList.where((singleValue) {
       final matchSubject = searchSubject.isEmpty ||
           (singleValue.subject?.toLowerCase() ?? '')
               .contains(searchSubject.toLowerCase());
-      final matchNumber = searchNumber.isEmpty ||
-          (singleValue.documentNumber?.toLowerCase() ?? '')
-              .contains(searchNumber.toLowerCase());
-      final matchDocumentType = searchDocumentType.isEmpty ||
-          (singleValue.documentType?.toLowerCase() ?? '')
-              .contains(searchDocumentType.toLowerCase());
+      final matchMeetingNumber = searchMeetingNumber.isEmpty ||
+          (singleValue.meetingNumber?.toLowerCase() ?? '')
+              .contains(searchMeetingNumber.toLowerCase());
+      final matchPriority = searchPriority.isEmpty ||
+          (singleValue.priority?.toLowerCase() ?? '')
+              .contains(searchPriority.toLowerCase());
+      final matchClassification = searchClassification.isEmpty ||
+          (singleValue.classificationId?.toLowerCase() ?? '')
+              .contains(searchClassification.toLowerCase());
       final matchDate = searchDate.isEmpty ||
           (singleValue.createdDate?.toLowerCase() ?? '')
               .contains(searchDate.toLowerCase());
-      return matchSubject && matchNumber && matchDocumentType && matchDate;
+      return matchSubject &&
+          matchMeetingNumber &&
+          matchPriority &&
+          matchClassification &&
+          matchDate;
     }).toList();
+
     // Apply pagination
     int startIndex = (pageNumber - 1) * pageSize;
     int endIndex = startIndex + pageSize;
@@ -77,17 +87,15 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final circularDecisionList =
-        ref.watch(circularDecisiondetailsRepositoryProvider);
+    final meetingMinutesList = ref.watch(circularDecisiondetailsRepositoryProvider);
     final filteredAndPaginatedList =
-        _applyFiltersAndPagination(circularDecisionList);
-    print('11212 $circularDecisionList');
+        _applyFiltersAndPagination(meetingMinutesList);
     return Scaffold(
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CircularForm(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: MeetingMinutesSearchForm(
               onSearch: onSearch,
             ),
           ),
@@ -97,18 +105,22 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
                     final matchSubject = searchSubject.isEmpty ||
                         (singleValue.subject?.toLowerCase() ?? '')
                             .contains(searchSubject.toLowerCase());
-                    final matchNumber = searchNumber.isEmpty ||
-                        (singleValue.documentNumber?.toLowerCase() ?? '')
-                            .contains(searchNumber.toLowerCase());
-                    final matchDocumentType = searchDocumentType.isEmpty ||
-                        (singleValue.documentType?.toLowerCase() ?? '')
-                            .contains(searchDocumentType.toLowerCase());
+                    final matchMeetingNumber = searchMeetingNumber.isEmpty ||
+                        (singleValue.meetingNumber?.toLowerCase() ?? '')
+                            .contains(searchMeetingNumber.toLowerCase());
+                    final matchPriority = searchPriority.isEmpty ||
+                        (singleValue.priority?.toLowerCase() ?? '')
+                            .contains(searchPriority.toLowerCase());
+                    final matchClassification = searchClassification.isEmpty ||
+                        (singleValue.classificationId?.toLowerCase() ?? '')
+                            .contains(searchClassification.toLowerCase());
                     final matchDate = searchDate.isEmpty ||
                         (singleValue.createdDate?.toLowerCase() ?? '')
                             .contains(searchDate.toLowerCase());
                     return matchSubject &&
-                        matchNumber &&
-                        matchDocumentType &&
+                        matchMeetingNumber &&
+                        matchPriority &&
+                        matchClassification &&
                         matchDate;
                   }).length
                 : filteredAndPaginatedList.length,
@@ -120,24 +132,25 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
               });
             },
           ),
-          // The empty space
           Expanded(
               child: DisplayDetails(
             headers: const [
               'Subject',
-              'Number',
-              'Document Type',
+              'Meeting Number',
+              'Priority',
+              'Classification',
               'Date',
             ],
             detailKey: 'objectId',
             data: const [
               'subject',
-              'documentNumber',
-              'documentType',
+              'meetingNumber',
+              'priority',
+              'classification',
               'createdDate',
             ],
-            details: filteredAndPaginatedList.map((circulatItem) {
-              return circulatItem.toMap();
+            details: meetingMinutesList.map((meetingItem) {
+              return meetingItem.toMap();
             }).toList(),
             expandable: true,
           )),

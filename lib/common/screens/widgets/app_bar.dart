@@ -11,6 +11,7 @@ import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart'; // Import the screen
 
@@ -219,6 +220,19 @@ class CustomAppBar {
                           builder: (ctx) => const LoginScreen(),
                         ),
                       );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.meeting_room_rounded,
+                      color: AppTheme.iconColor,
+                    ),
+                    tooltip: 'Create Meeting',
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const CreateMeetingMinutesScreen()));
                     },
                   ),
                 ],

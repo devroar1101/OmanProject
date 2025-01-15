@@ -3,9 +3,14 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/widgets/scanner.dart';
 import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_form.dart';
 
-class CreateMeetingMinutesScreen extends StatelessWidget {
+class CreateMeetingMinutesScreen extends StatefulWidget {
   const CreateMeetingMinutesScreen({super.key});
+  @override
+  _MeetingMinutesState createState() => _MeetingMinutesState();
 
+}
+class _MeetingMinutesState extends State<CreateMeetingMinutesScreen>{
+  List<String> scanDocuments = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,9 +27,11 @@ class CreateMeetingMinutesScreen extends StatelessWidget {
                 child: IntrinsicHeight(
                   child: Container(
                     color: AppTheme.cardColor,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child:MeetingMinutesForm(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:MeetingMinutesForm(
+                        scanDocuments: scanDocuments,
+                      ),
                     ),
                   ),
                 ),
@@ -34,8 +41,10 @@ class CreateMeetingMinutesScreen extends StatelessWidget {
           // Right Side - Empty Space (50% width)
           Expanded(
             flex: 1,
-            child: Scanner(
-              
+            child:  Scanner(
+              scanDocumnets: (scanDocuments) => setState(() {
+                this.scanDocuments = scanDocuments;
+              }),
             ),
           ),
         ],
