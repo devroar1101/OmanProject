@@ -40,18 +40,18 @@ dependencies:
   shared_preferences: ^2.3.3
   flutter_riverpod: ^2.6.1
   flutter_localization: ^0.2.2
-  file_picker: ^8.1.4
+  file_picker: ^8.1.7
   html: ^0.15.5
   flutter_twain_scanner: ^1.0.1
   shimmer: ^3.0.0
-  image: ^4.3.1
   flutter_dotenv: ^5.2.1
   uuid: ^4.5.1
   csv: ^6.0.0
   carousel_slider: ^5.0.0
   google_fonts: ^6.2.1
-  pdf: ^3.8.4
-  archive: ^3.4.0
+  pdf: ^3.11.1
+ 
+
 
 
 dev_dependencies:
@@ -91,6 +91,8 @@ flutter:
     - assets/saving.gif
     - assets/success.gif
     - assets/error.gif
+    - assets/fonts/Kufam-Regular.ttf
+    - assets/fonts/Kufam-Bold.ttf
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

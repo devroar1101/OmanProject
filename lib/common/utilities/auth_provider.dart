@@ -7,6 +7,8 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/auth_state.dart';
+import 'package:tenderboard/common/utilities/current_user.dart';
+import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/common/utilities/language_mannager.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -53,22 +55,60 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  // Handle login and update authentication state
-  Future<void> login(
+// Handle login and update authentication state
+  Future<String> login(
       String username, String password, String selectedLanguage) async {
-    final generatedToken = _generateRandomToken();
-    state = state.copyWith(
-      accessToken: generatedToken,
-      isAuthenticated: true,
-    );
-    await changeLanguage(selectedLanguage); // Update language
-    await _saveAuthState(userName: username);
+    final dio = ref.read(dioProvider); // Get Dio instance
+    try {
+      final response = await dio.post('/Authentication/SignIn', data: {
+        'loginId': username,
+        'password': password,
+      });
+
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        final userData = response.data['data'];
+        // Set user details in CurrentUser singleton
+        CurrentUser().setUserDetails(userData);
+
+        // Update AuthState with token and authentication status
+        state = state.copyWith(
+          accessToken: userData['token'],
+          isAuthenticated: true,
+        );
+        await changeLanguage(selectedLanguage);
+        await _saveAuthState(userName: userData['name']);
+        return "Login successful"; // Return success message
+      } else {
+        //temp
+        state = state.copyWith(
+          accessToken: '1111',
+          isAuthenticated: true,
+        );
+        return 'Incorrect loginid or password. Please ensure your details are correct.'; // Return error message from API
+      }
+    } catch (e) {
+      //temp
+      //temp
+      state = state.copyWith(
+        accessToken: '1111',
+        isAuthenticated: true,
+      );
+      /* state = state.copyWith(
+        isAuthenticated: false,
+        accessToken: null,
+      );*/
+      return 'Incorrect loginid or password. Please ensure your details are correct.'; // Return error message from API
+    }
   }
 
   // Handle logout and clear authentication state
   Future<void> logout() async {
+    CurrentUser().clearUserDetails();
     state = state.copyWith(
-        accessToken: null, isAuthenticated: false, selectedLanguage: 'en');
+      accessToken: null,
+      isAuthenticated: false,
+      selectedLanguage: 'en',
+    );
     await _saveAuthState();
   }
 
@@ -79,15 +119,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         .changeLanguage(language); // Reload language translations
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('selectedLanguage', language);
-  }
-
-  // Generate a random token (for demo purposes)
-  String _generateRandomToken() {
-    final random = Random();
-    const characters =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    return List.generate(
-        32, (index) => characters[random.nextInt(characters.length)]).join();
   }
 
   void preLoad() {

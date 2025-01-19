@@ -2,29 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
-import 'package:tenderboard/office/inbox/model/inbox_repo.dart';
-import 'package:tenderboard/office/inbox/screens/inbox_form.dart';
+import 'package:tenderboard/office/search_screens/inbox/model/list_repo.dart';
+import 'package:tenderboard/office/search_screens/inbox/screens/list_page_form.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 
-class InboxScreen extends ConsumerStatefulWidget {
-  const InboxScreen({super.key});
+class ListPage extends ConsumerStatefulWidget {
+  const ListPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return _InboxScreenState();
+    return _ListPageState();
   }
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> {
+class _ListPageState extends ConsumerState<ListPage> {
   @override
   void initState() {
     super.initState();
-    ref.read(inboxRepositoryProvider.notifier).fetchInbox(userId: 1);
+    ref.read(inboxRepositoryProvider.notifier).fetchInbox(screenName: 'Inbox');
   }
 
   @override
   Widget build(BuildContext context) {
-    final inboxProvider = ref.watch(inboxRepositoryProvider);
+    final listResponse = ref.watch(inboxRepositoryProvider);
 
     return Scaffold(
       body: Column(
@@ -32,14 +32,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
         children: [
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: InboxSearchForm(),
+            child: ListSearchForm(),
           ),
           Expanded(
-            child: inboxProvider.isEmpty
+            child: listResponse.data == null || listResponse.data!.isEmpty
                 ? _buildShimmerEffect()
                 : DisplayDetails(
                     headers: const [
-                      'ReferenceNumber',
+                      'Reference Number',
                       'From',
                       'Subject',
                       'Location',
@@ -47,11 +47,11 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                     detailKey: 'objectId',
                     data: const [
                       'referenceNumber',
-                      'systemName',
+                      'from',
                       'subject',
                       'locationNameArabic',
                     ],
-                    details: inboxProvider.map((inboxItem) {
+                    details: listResponse.data!.map((inboxItem) {
                       return inboxItem.toMap();
                     }).toList(),
                     expandable: true,

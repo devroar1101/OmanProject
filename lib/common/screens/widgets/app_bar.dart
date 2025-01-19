@@ -11,6 +11,7 @@ import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
+import 'package:tenderboard/common/utilities/current_user.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart'; // Import the screen
 
@@ -221,6 +222,8 @@ class CustomAppBar {
                       );
                     },
                   ),
+                  Text(CurrentUser().email!,
+                      style: TextStyle(color: Colors.grey[100]))
                 ],
               ),
       ),

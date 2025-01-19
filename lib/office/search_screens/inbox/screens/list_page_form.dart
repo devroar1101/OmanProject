@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
-class InboxSearchForm extends StatefulWidget {
-  const InboxSearchForm({super.key});
+class ListSearchForm extends StatefulWidget {
+  const ListSearchForm({super.key});
 
   @override
-  _InboxSearchFormState createState() => _InboxSearchFormState();
+  _ListSearchFormState createState() => _ListSearchFormState();
 }
 
-class _InboxSearchFormState extends State<InboxSearchForm> {
+class _ListSearchFormState extends State<ListSearchForm> {
   final TextEditingController _filterController = TextEditingController();
   final TextEditingController _searchForController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();

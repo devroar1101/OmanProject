@@ -12,6 +12,7 @@ class DocumentViewer extends StatefulWidget {
   final int totalPage;
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
+  final Future<void> Function()? handlePageUpload;
   bool? scanning;
 
   DocumentViewer(
@@ -20,7 +21,8 @@ class DocumentViewer extends StatefulWidget {
       this.startScan,
       this.totalPage = 0,
       this.showScannerDialog,
-      this.scanning});
+      this.scanning,
+      this.handlePageUpload});
 
   @override
   _DocumentViewerState createState() => _DocumentViewerState();
@@ -108,11 +110,11 @@ class _DocumentViewerState extends State<DocumentViewer> {
   }
 
   void _editImage() async {
-    final selectedImage = widget.imagePaths[currentPage];
+    /*final selectedImage = widget.imagePaths[currentPage];
     final editedImage = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditImageScreen(imageData: selectedImage),
+        builder: (context) =>  EditImageScreen(imageData: selectedImage),
       ),
     );
 
@@ -120,7 +122,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
       setState(() {
         widget.imagePaths[currentPage] = editedImage;
       });
-    }
+    }*/
   }
 
   @override
@@ -277,6 +279,16 @@ class _DocumentViewerState extends State<DocumentViewer> {
                           ),
                           onPressed: widget.startScan,
                         ),
+                      const SizedBox(height: 2),
+                      if (widget.handlePageUpload != null)
+                        IconButton(
+                          iconSize: 28, // Bigger icon size
+                          icon: const Icon(
+                            Icons.upload,
+                            color: ColorPicker.formIconColor,
+                          ),
+                          onPressed: widget.handlePageUpload,
+                        )
                     ],
                   ),
                 ],

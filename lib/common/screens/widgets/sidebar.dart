@@ -3,7 +3,6 @@ import 'package:tenderboard/admin/cabinets_folders/screens/folder_permission_hom
 import 'package:tenderboard/admin/department_master/screens/depatment_screen.dart';
 import 'package:tenderboard/admin/dgmaster/screens/dgmaster_screen.dart';
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_screen.dart';
-
 import 'package:tenderboard/admin/letter_subject/screens/letter_subject_screen.dart';
 import 'package:tenderboard/admin/cabinets_folders/screens/cabinet_home.dart';
 import 'package:tenderboard/admin/listmaster/screens/listmaster_home.dart';
@@ -14,8 +13,7 @@ import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
-import 'package:tenderboard/office/inbox/screens/inbox_screen.dart';
-
+import 'package:tenderboard/office/search_screens/inbox/screens/list_Screen.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
@@ -41,7 +39,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('Inbox'),
         'icon': Icons.inbox,
-        'navigate': const InboxScreen()
+        'navigate': const ListScreen()
       },
       {
         'title': getTranslation('Outbox'),
@@ -155,7 +153,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.shade200,
             blurRadius: 5,
             offset: const Offset(2, 4),
           ),

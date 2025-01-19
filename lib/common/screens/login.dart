@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _loginIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedLanguage = 'ar';
+  String? _errorMessage; // To store validation errors
 
   @override
   void initState() {
@@ -88,6 +90,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildLogo(),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                _errorMessage!,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
             const SizedBox(height: 30),
             _buildLoginIdField(),
             const SizedBox(height: 15),
@@ -205,8 +218,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               final authNotifier = ref.read(authProvider.notifier);
-              await authNotifier.login(_loginIdController.text,
-                  _passwordController.text, _selectedLanguage);
+              final response = await authNotifier.login(
+                _loginIdController.text,
+                _passwordController.text,
+                _selectedLanguage,
+              );
+
+              setState(() {
+                if (response != 'Login successful') {
+                  _errorMessage = response; // Set error message
+                } else {
+                  _errorMessage = null; // Clear error message
+                  Navigator.pushReplacementNamed(context, '/home'); // Navigate
+                }
+              });
             }
           },
           child: const Text(

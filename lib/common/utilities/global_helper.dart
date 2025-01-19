@@ -26,3 +26,12 @@ Color getRandomColor() {
   return Color.fromRGBO(
       random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
 }
+
+// Generate a random token (for demo purposes)
+String _generateRandomToken() {
+  final random = Random();
+  const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return List.generate(
+      32, (index) => characters[random.nextInt(characters.length)]).join();
+}
