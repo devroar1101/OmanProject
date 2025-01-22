@@ -261,7 +261,9 @@ class _LetterSummaryState extends State<LetterSummary> {
         );
 
       case "Letter":
-        return LoadLetterDocument(objectId: widget.letterObjectId);
+        return LoadLetterDocument(
+          objectId: widget.letterObjectId,
+        );
       default:
         return const Center(child: Text("Invalid Tab"));
     }
