@@ -44,7 +44,7 @@ dependencies:
   html: ^0.15.5
   flutter_twain_scanner: ^1.0.1
   shimmer: ^3.0.0
-  image: ^4.3.1
+  image: ^4.3.0
   flutter_dotenv: ^5.2.1
   uuid: ^4.5.1
   csv: ^6.0.0

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
+import 'package:tenderboard/office/ejob/model/create_ejob.dart';
+import 'package:tenderboard/office/ejob/model/ejob_create_repo.dart';
+import 'package:tenderboard/office/letter/model/letter_action.dart';
+import 'package:uuid/uuid.dart';
 
 class EjobForm extends StatefulWidget {
-  const EjobForm({super.key});
+  const EjobForm({Key? key}) : super(key: key);
 
   @override
   _EjobFormState createState() => _EjobFormState();
@@ -15,11 +21,64 @@ class _EjobFormState extends State<EjobForm> {
       TextEditingController();
   final TextEditingController _cabinetFolderController =
       TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+
+  static const Uuid _uuid = Uuid();
 
   // Dropdown and date variables
-  String _selectedPriority = "High";
-  String _selectedClassification = "Confidential";
+  int selectedPriority = 1;
+  int selectedClassification = 1;
   DateTime? _expectedResponseDate;
+
+  Future<void> onSave(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final objectId = _uuid.v4();
+    final ejob = Ejob(
+      classificationId: selectedClassification,
+      priorityId: selectedPriority,
+      subject: _subjectController.text,
+      expectedResponseDate: _expectedResponseDate.toString(),
+      objectId: objectId
+    );
+    final letterAction = LetterAction(
+        actionId: 1,
+        comments: '',
+        classificationId: selectedClassification ?? 0,
+        priorityId: selectedPriority ?? 0,
+        fromUserId: 0,
+        locationId:  0,
+        pageSelected: 'All',
+        sequenceNo: 1,
+        toUserId: 0,
+        objectId: objectId,
+      );
+    final repo = ProviderContainer();
+    try {
+      await Future.wait([
+        repo.read(ejobRepositoryProvider).createEjob(ejob.toMap()),
+      ]);
+      CustomSnackbar.show(
+        context: context,
+        durationInSeconds: 3,
+        message: 'Letter saved successfully',
+        title: 'Successful',
+        typeId: 1,
+        asset: 'assets/saving.gif',
+      );
+    } catch (e) {
+      CustomSnackbar.show(
+        context: context,
+        durationInSeconds: 3,
+        message: 'Failed to save the letter',
+        title: 'Error',
+        typeId: 2,
+        asset: 'assets/error.gif',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,40 +96,42 @@ class _EjobFormState extends State<EjobForm> {
                   "Reference Number : ",
                   controller: _referenceNumberController,
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
 
                 // Cabinet/Folder
                 _buildTextField(
                   "Cabinet/Folder : ",
                   controller: _cabinetFolderController,
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
 
                 // Priority and Classification (Dropdowns)
                 Row(
                   children: [
                     Expanded(
-                      child: _buildDropdownField(
-                        "Priority ",
-                        ["High", "Medium", "Low"],
-                        value: _selectedPriority,
-                        onChanged: (value) =>
-                            setState(() => _selectedPriority = value!),
+                      child: _buildDropdownField<int>(
+                        "Priority",
+                        value: selectedPriority,
+                        items: List.generate(3, (index) => index + 1),
+                        onChanged: (value) {
+                          setState(() => selectedPriority = value!);
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _buildDropdownField(
-                        "Classification ",
-                        ["Confidential", "Internal", "Public"],
-                        value: _selectedClassification,
-                        onChanged: (value) =>
-                            setState(() => _selectedClassification = value!),
+                      child: _buildDropdownField<int>(
+                        "Classification",
+                        value: selectedClassification,
+                        items: List.generate(3, (index) => index + 1),
+                        onChanged: (value) {
+                          setState(() => selectedClassification = value!);
+                        },
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
 
                 // Expected Response Date
                 _buildDateField(
@@ -78,7 +139,7 @@ class _EjobFormState extends State<EjobForm> {
                   _expectedResponseDate,
                   (date) => setState(() => _expectedResponseDate = date),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
 
                 // Subject (Rich Text Field)
                 _buildRichTextField(),
@@ -87,19 +148,15 @@ class _EjobFormState extends State<EjobForm> {
                 // Save Button
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Task saved successfully!")),
-                        );
-                      }
-                    },
+                    onPressed: () => onSave(context),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 20.0),
+                        vertical: 12.0,
+                        horizontal: 20.0,
+                      ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0)),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     child: const Text("Save"),
                   ),
@@ -117,16 +174,7 @@ class _EjobFormState extends State<EjobForm> {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        prefixIcon: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        
+        labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
@@ -144,42 +192,33 @@ class _EjobFormState extends State<EjobForm> {
     );
   }
 
-  Widget _buildDropdownField(String label, List<String> options,
-      {required String value, required Function(String?) onChanged}) {
-    return Wrap(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+  Widget _buildDropdownField<T>(
+    String label, {
+    required T value,
+    required List<T> items,
+    required Function(T?) onChanged,
+  }) {
+    return DropdownButtonFormField<T>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
         ),
-        Expanded(
-          child: DropdownButtonFormField<String>(
-            value: value,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              filled: true,
-              fillColor: Colors.grey[200],
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
-            ),
-            items: options.map((option) {
-              return DropdownMenuItem(
-                value: option,
-                child: Text(option),
-              );
-            }).toList(),
-            onChanged: onChanged,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Please select $label";
-              }
-              return null;
-            },
-          ),
-        ),
-      ],
+      ),
+      items: items.map((item) {
+        return DropdownMenuItem<T>(
+          value: item,
+          child: Text(item.toString()),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) {
+        if (value == null) {
+          return "Please select $label";
+        }
+        return null;
+      },
     );
   }
 
@@ -195,38 +234,21 @@ class _EjobFormState extends State<EjobForm> {
         );
         onDateChanged(selectedDate);
       },
-      child: Wrap(
-        children: [
-          // Label text
-          Text(
-            label,
-            style: const TextStyle( fontWeight: FontWeight.w600),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          const SizedBox(width: 10), // Space between label and date field
-
-          // Date field display
-          Expanded(
-            child: InputDecorator(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0, horizontal: 10.0),
-              ),
-              child: Text(
-                date != null
-                    ? "${date.day}/${date.month}/${date.year}"
-                    : "Select a date",
-                style: TextStyle(
-                  color: date != null ? Colors.black : Colors.grey[600],
-                ),
-              ),
-            ),
+        ),
+        child: Text(
+          date != null
+              ? "${date.day}/${date.month}/${date.year}"
+              : "Select a date",
+          style: TextStyle(
+            color: date != null ? Colors.black : Colors.grey[600],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -248,11 +270,12 @@ class _EjobFormState extends State<EjobForm> {
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(color: Colors.grey),
           ),
-          child: const TextField(
+          child: TextField(
+            controller: _subjectController,
             maxLines: null,
             expands: true,
             keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Enter subject...",
               border: InputBorder.none,
             ),
