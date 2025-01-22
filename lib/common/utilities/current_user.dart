@@ -1,7 +1,7 @@
 class CurrentUser {
   static final CurrentUser _instance = CurrentUser._internal();
 
-  String? userId;
+  int? userId;
   String? userObjectId;
   String? email;
   String? systemName;
@@ -15,7 +15,7 @@ class CurrentUser {
   }
 
   void setUserDetails(Map<String, dynamic> userData) {
-    userId = userData['userId']?.toString() ?? '1';
+    userId = userData['userId'] ?? 1;
     userObjectId = userData['userObjectId'] ?? '1111';
     email = userData['email'];
     systemName = userData['systemName'];

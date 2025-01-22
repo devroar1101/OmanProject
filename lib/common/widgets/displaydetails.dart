@@ -22,7 +22,7 @@ class DisplayDetails extends StatefulWidget {
   final List<Map<String, dynamic>>? iconButtons; // Actions with icons
   final bool expandable;
   final Function(dynamic)? onTap;
-  final Function()? onLongPress;
+  final Function(dynamic)? onLongPress;
   String isSelected;
   final String detailKey;
 
@@ -244,177 +244,175 @@ class _DisplayDetailsState extends State<DisplayDetails>
     bool isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Header Row
-        Stack(
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                color: AppTheme.displayHeaderColor,
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ...widget.headers.take(headerColumns).map((header) {
-                    return Expanded(
-                      child: Text(
-                        getTranslation(header),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 3,
-              left: isRtl ? 4 : null,
-              right: isRtl ? null : 4,
-              child: !isProcessing
-                  ? Row(
-                      children: [
-                        // Export CSV Button
-                        IconButton(
-                          icon: const Icon(
-                            Icons.download_for_offline_outlined,
+        if (widget.details.isNotEmpty)
+          Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppTheme.displayHeaderColor,
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    ...widget.headers.take(headerColumns).map((header) {
+                      return Expanded(
+                        child: Text(
+                          getTranslation(header),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
+                            fontSize: 14,
                           ),
-                          onPressed: isProcessing
-                              ? null
-                              : () {
-                                  exportData(context, widget.headers,
-                                      widget.data, widget.details);
-                                },
-                          tooltip: 'Export as CSV',
+                          textAlign: TextAlign.center,
                         ),
-                        // Export PDF Button
-                        IconButton(
-                          icon: const Icon(
-                            Icons.picture_as_pdf,
-                            color: Colors.white,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 3,
+                left: isRtl ? 4 : null,
+                right: isRtl ? null : 4,
+                child: !isProcessing
+                    ? Row(
+                        children: [
+                          // Export CSV Button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.download_for_offline_outlined,
+                              color: Colors.white,
+                            ),
+                            onPressed: isProcessing
+                                ? null
+                                : () {
+                                    exportData(context, widget.headers,
+                                        widget.data, widget.details);
+                                  },
+                            tooltip: 'Export as CSV',
                           ),
-                          onPressed: isProcessing
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    isProcessing =
-                                        true; // Set the processing flag to true
-                                  });
-                                  await exportPdf(context, widget.headers,
-                                      widget.data, widget.details);
-                                },
-                          tooltip: 'Export as PDF',
-                        ),
-                      ],
-                    )
-                  : const CircularProgressIndicator(),
-            ),
-          ],
-        ),
+                          // Export PDF Button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.picture_as_pdf,
+                              color: Colors.white,
+                            ),
+                            onPressed: isProcessing
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      isProcessing =
+                                          true; // Set the processing flag to true
+                                    });
+                                    await exportPdf(context, widget.headers,
+                                        widget.data, widget.details);
+                                  },
+                            tooltip: 'Export as PDF',
+                          ),
+                        ],
+                      )
+                    : const CircularProgressIndicator(),
+              ),
+            ],
+          ),
         const SizedBox(height: 2),
+        if (widget.details.isNotEmpty)
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.details.length,
+              itemBuilder: (context, int rowIndex) {
+                final row = widget.details[rowIndex];
+                final id = row[widget.detailKey];
 
-        // Data Rows
-        Expanded(
-          child: ListView.builder(
-            itemCount: widget.details.length,
-            itemBuilder: (context, int rowIndex) {
-              final row = widget.details[rowIndex];
-              final id = row[widget.detailKey];
+                // Check if the row meets the conditions for speed dial
+                bool showSpeedDial = widget.iconButtons != null;
 
-              // Check if the row meets the conditions for speed dial
-              bool showSpeedDial = widget.iconButtons != null;
+                return Stack(
+                  children: [
+                    // Main Row
+                    InkWell(
+                      onTap: () {
+                        if (widget.onTap != null) {
+                          widget.onTap!(id);
+                        }
+                        setState(() {
+                          activeRowIndex = null;
+                          isSpeedDialExpanded = false;
+                          widget.isSelected = id.toString();
+                        });
+                      },
+                      onLongPress: () {
+                        if (widget.onLongPress != null) {
+                          widget.onLongPress!(id);
+                        }
+                      },
+                      child: Container(
+                        color: widget.isSelected.toString() ==
+                                row[widget.detailKey].toString()
+                            ? const Color.fromARGB(123, 142, 174, 155)
+                            : rowIndex % 2 == 0
+                                ? Colors.grey[100]
+                                : Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ...widget.data.take(headerColumns).map((key) {
+                                return Expanded(
+                                  child: Text(
+                                    row[key]?.toString() ?? '',
+                                    style: const TextStyle(fontSize: 14),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }),
 
-              return Stack(
-                children: [
-                  // Main Row
-                  InkWell(
-                    onTap: () {
-                      if (widget.onTap != null) {
-                        widget.onTap!(id);
-                      }
-                      setState(() {
-                        activeRowIndex = null;
-                        isSpeedDialExpanded = false;
-                        widget.isSelected = id.toString();
-                      });
-                    },
-                    onLongPress: () {
-                      if (widget.onLongPress != null) {
-                        widget.onLongPress!();
-                      }
-                    },
-                    child: Container(
-                      color: widget.isSelected.toString() ==
-                              row[widget.detailKey].toString()
-                          ? const Color.fromARGB(123, 142, 174, 155)
-                          : rowIndex % 2 == 0
-                              ? Colors.grey[100]
-                              : Colors.grey[200],
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ...widget.data.take(headerColumns).map((key) {
-                              return Expanded(
-                                child: Text(
-                                  row[key]?.toString() ?? '',
-                                  style: const TextStyle(fontSize: 14),
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            }),
-
-                            // Show the vertical speed dial icon
-                            if (showSpeedDial)
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    activeRowIndex = activeRowIndex == rowIndex
-                                        ? null
-                                        : rowIndex;
-                                    isSpeedDialExpanded =
-                                        activeRowIndex != null;
-                                    widget.isSelected = id.toString();
-                                  });
-                                },
-                                child: Icon(
-                                  color: AppTheme.textColor,
-                                  isSpeedDialExpanded &&
+                              // Show the vertical speed dial icon
+                              if (showSpeedDial)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      activeRowIndex =
                                           activeRowIndex == rowIndex
-                                      ? Icons.close
-                                      : Icons.more_vert,
+                                              ? null
+                                              : rowIndex;
+                                      isSpeedDialExpanded =
+                                          activeRowIndex != null;
+                                      widget.isSelected = id.toString();
+                                    });
+                                  },
+                                  child: Icon(
+                                    color: AppTheme.textColor,
+                                    isSpeedDialExpanded &&
+                                            activeRowIndex == rowIndex
+                                        ? Icons.close
+                                        : Icons.more_vert,
+                                  ),
                                 ),
-                              ),
-                          ],
+                              const SizedBox(
+                                width: 4,
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
-                  // Speed Dial Overlay (Icons in Row)
-                  if (isSpeedDialExpanded &&
-                      activeRowIndex == rowIndex &&
-                      widget.isSelected.toString() == id.toString())
-                    Positioned(
-                      right: isRtl ? null : 16,
-                      left: isRtl ? 16 : null,
-                      top: 0,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ...?widget.iconButtons?.map((iconButton) {
-                            return Card(
-                              color: const Color.fromARGB(255, 238, 240, 241),
-                              shape: const CircleBorder(),
-                              child: IconButton(
+                    // Speed Dial Overlay (Icons in Row)
+                    if (isSpeedDialExpanded &&
+                        activeRowIndex == rowIndex &&
+                        widget.isSelected.toString() == id.toString())
+                      Positioned(
+                        right: isRtl ? null : 16,
+                        left: isRtl ? 16 : null,
+                        top: 0,
+                        child: Row(
+                          children: [
+                            ...?widget.iconButtons?.map((iconButton) {
+                              return IconButton(
                                 color: ColorPicker.formIconColor,
                                 icon: Icon(iconButton["button"]),
                                 onPressed: () {
@@ -425,20 +423,39 @@ class _DisplayDetailsState extends State<DisplayDetails>
                                   });
                                 },
                                 tooltip: iconButton["tooltip"],
-                              ),
-                            );
-                          }),
-                          const SizedBox(
-                            width: 18,
-                          )
-                        ],
+                                iconSize: 20,
+                              );
+                            }),
+                          ],
+                        ),
                       ),
-                    ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
+          )
+        else
+          const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 50,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  '"No data available',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

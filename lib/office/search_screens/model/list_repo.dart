@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/current_user.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
-import 'package:tenderboard/office/search_screens/inbox/model/list_response.dart';
+import 'package:tenderboard/office/search_screens/model/list_response.dart';
 
 final inboxRepositoryProvider =
     StateNotifierProvider<InboxRepository, ListResponse>((ref) {
@@ -17,6 +17,7 @@ class InboxRepository extends StateNotifier<ListResponse> {
     int pageSize = 30,
     int pageNumber = 1,
     String? searchFor,
+    int? userId,
     int? status,
     required String screenName,
   }) async {
@@ -27,7 +28,7 @@ class InboxRepository extends StateNotifier<ListResponse> {
       "searchFor": searchFor,
       "status": status,
       "screenName": screenName,
-      "userId": CurrentUser().userId,
+      "userId": userId ?? CurrentUser().userId,
       "paginationDetail": {
         "pageSize": pageSize,
         "pageNumber": pageNumber,

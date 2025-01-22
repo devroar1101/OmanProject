@@ -10,6 +10,7 @@ class SelectField<T> extends StatefulWidget {
   final String label;
   String? selectedOption;
   String? initialValue;
+  bool requiredValidation;
 
   SelectField(
       {super.key,
@@ -17,6 +18,7 @@ class SelectField<T> extends StatefulWidget {
       required this.onChanged,
       required this.label,
       this.hint,
+      this.requiredValidation = false,
       this.initialValue,
       this.selectedOption});
 
@@ -213,7 +215,9 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
               (context as Element).markNeedsBuild();
             },
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (widget.requiredValidation &&
+                  widget.selectedOption != null &&
+                  (value == null || value.isEmpty)) {
                 return widget.hint;
               }
               return null;

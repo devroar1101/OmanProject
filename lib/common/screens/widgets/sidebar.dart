@@ -13,10 +13,10 @@ import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
-import 'package:tenderboard/office/search_screens/inbox/screens/list_Screen.dart';
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
+import 'package:tenderboard/office/search_screens/screens/list_Screen.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(Widget, String, String?)
@@ -39,17 +39,50 @@ class _CustomSidebarState extends State<CustomSidebar> {
       {
         'title': getTranslation('Inbox'),
         'icon': Icons.inbox,
-        'navigate': const ListScreen()
+        'navigate': const ListScreen(
+          screenName: 'Inbox',
+          key: ValueKey('Inbox'),
+        )
       },
       {
         'title': getTranslation('Outbox'),
         'icon': Icons.outbox,
-        'navigate': const OutboxScreen()
+        'navigate': const ListScreen(
+          screenName: 'Outbox',
+          key: ValueKey('Outbox'),
+        )
       },
       {
-        'title': getTranslation('CC'),
+        'title': getTranslation('Draft'),
         'icon': Icons.mail,
-        'navigate': const LetterSummary('121212')
+        'navigate': const ListScreen(
+          screenName: 'Draft',
+          key: ValueKey('Draft'),
+        )
+      },
+      {
+        'title': getTranslation('Suspend'),
+        'icon': Icons.mail,
+        'navigate': const ListScreen(
+          screenName: 'Suspend',
+          key: ValueKey('Suspend'),
+        )
+      },
+      {
+        'title': getTranslation('Close'),
+        'icon': Icons.mail,
+        'navigate': const ListScreen(
+          screenName: 'Close',
+          key: ValueKey('Close'),
+        )
+      },
+      {
+        'title': getTranslation('Hidden'),
+        'icon': Icons.mail,
+        'navigate': const ListScreen(
+          screenName: 'Hidden',
+          key: ValueKey('Hidden'),
+        )
       },
       {
         'title': getTranslation('Ejob'),

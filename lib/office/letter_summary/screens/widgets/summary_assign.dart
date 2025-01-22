@@ -9,6 +9,7 @@ import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/current_user.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/common/widgets/select_user.dart';
@@ -459,7 +460,7 @@ class _JobAssignFormState extends ConsumerState<JobAssignForm> {
                     classificationId: selectedClassification,
                     comments: _commentController.text,
                     follwedUpDate: _followUpDate,
-                    fromUserId: 2, // Replace with actual logged-in user ID
+                    fromUserId: CurrentUser().userId,
                     isHidden: _commentType,
                     objectId: widget.letterObjectId,
                     priorityId: selectedPriority,

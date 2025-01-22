@@ -2,23 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
 class ListSearchForm extends StatefulWidget {
-  const ListSearchForm({super.key});
+  final int totalCount;
+  final Function(String) search;
+  final Function() reset;
+  final Function(int, int) updatepagenation;
+  final int pagenumber;
+  final int pageSize;
+  const ListSearchForm(
+      {required this.pageSize,
+      required this.pagenumber,
+      required this.totalCount,
+      required this.updatepagenation,
+      required this.search,
+      required this.reset,
+      super.key});
 
   @override
   _ListSearchFormState createState() => _ListSearchFormState();
 }
 
 class _ListSearchFormState extends State<ListSearchForm> {
-  final TextEditingController _filterController = TextEditingController();
   final TextEditingController _searchForController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();
 
   bool showFilter = false;
 
   void _resetFields() {
-    _filterController.clear();
     _searchForController.clear();
     _statusController.clear();
+    widget.reset();
   }
 
   @override
@@ -40,21 +52,6 @@ class _ListSearchFormState extends State<ListSearchForm> {
                     const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 child: Row(
                   children: [
-                    // Filter TextField
-                    Expanded(
-                      child: TextField(
-                        controller: _filterController,
-                        decoration: InputDecoration(
-                          labelText: 'Filter',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0), // Spacing
-
-                    // Search For TextField
                     Expanded(
                       child: TextField(
                         controller: _searchForController,
@@ -89,7 +86,7 @@ class _ListSearchFormState extends State<ListSearchForm> {
                       child: IconButton(
                         icon: const Icon(Icons.search),
                         onPressed: () {
-                          // Add search functionality here
+                          widget.search(_searchForController.text);
                         },
                         tooltip: 'Search',
                       ),
@@ -131,12 +128,9 @@ class _ListSearchFormState extends State<ListSearchForm> {
 
         // Pagination
         Pagination(
-          totalItems: 18412,
-          initialPageSize: 30,
-          onPageChange: (page, pageSize) {
-            print('Page: $page, Page Size: $pageSize');
-            // Fetch new data based on `page` and `pageSize`
-          },
+          totalItems: widget.totalCount,
+          initialPageSize: widget.pageSize,
+          onPageChange: widget.updatepagenation,
         ),
       ],
     );

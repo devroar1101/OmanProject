@@ -79,24 +79,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await _saveAuthState(userName: userData['name']);
         return "Login successful"; // Return success message
       } else {
-        //temp
-        state = state.copyWith(
-          accessToken: '1111',
-          isAuthenticated: true,
-        );
         return 'Incorrect loginid or password. Please ensure your details are correct.'; // Return error message from API
       }
     } catch (e) {
-      //temp
-      //temp
       state = state.copyWith(
-        accessToken: '1111',
-        isAuthenticated: true,
-      );
-      /* state = state.copyWith(
         isAuthenticated: false,
         accessToken: null,
-      );*/
+      );
       return 'Incorrect loginid or password. Please ensure your details are correct.'; // Return error message from API
     }
   }
