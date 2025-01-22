@@ -222,8 +222,6 @@ class CustomAppBar {
                       );
                     },
                   ),
-                  Text(CurrentUser().email!,
-                      style: TextStyle(color: Colors.grey[100]))
                 ],
               ),
       ),

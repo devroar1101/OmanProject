@@ -10,9 +10,15 @@ import 'package:tenderboard/admin/section_master/screens/section_master_screen.d
 import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
+import 'package:tenderboard/office/List_circular/screens/circular_screen.dart';
+import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_home.dart';
+import 'package:tenderboard/office/createcircular_decision/screen/circular_home.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
+
+import 'package:tenderboard/office/list_decision/screens/decision_screen.dart';
+
 import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
@@ -96,14 +102,29 @@ class _CustomSidebarState extends State<CustomSidebar> {
       },
       {
         'title': getTranslation('ScanAndIndex'),
-        'icon': Icons.circle,
+        'icon': Icons.scanner,
         'navigate': const LetterIndex(),
+      },
+      {
+        'title': getTranslation(' Create Circular&Decision'),
+        'icon': Icons.circle,
+        'navigate': const CreateCircularAndDecision(),
+      },
+      {
+        'title': 'Circular',
+        'icon': Icons.crisis_alert_rounded,
+        'navigate': const CircularListScreen(),
       },
       {
         'title': getTranslation('Decision'),
         'icon': Icons.check_circle,
-        'navigate': const EjobSummaryScreen(),
+        'navigate': const DecisionListScreen(),
       },
+      // {
+      //   'title': 'MeetingMinutes',
+      //   'icon': Icons.meeting_room_rounded,
+      //   'navigate': const CreateMeetingMinutesScreen(),
+      // },
     ],
     'Admin': [
       {
