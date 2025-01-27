@@ -14,6 +14,7 @@ class Letter {
   final String? direction;
   final String? referenecNumber;
   final String? letterNumber;
+  final String? tenderNumber;
   final int? statusId;
   final String? actionToBeTaken;
   final int? tenderStatusId;
@@ -39,6 +40,7 @@ class Letter {
     this.direction,
     this.referenecNumber,
     this.letterNumber,
+    this.tenderNumber,
     this.statusId,
     this.actionToBeTaken,
     this.tenderStatusId,
@@ -68,8 +70,9 @@ class Letter {
       sendTo: map['sendTo'],
       flagStatus: map['flagStatus'],
       direction: map['direction'],
-      referenecNumber: map['referenecNumber'],
+      referenecNumber: map['referenceNumber'],
       letterNumber: map['letterNumber'],
+      tenderNumber: map['tenderNumber'],
       statusId: map['statusId'],
       actionToBeTaken: map['actionToBeTaken'],
       tenderStatusId: map['tenderStatusId'],
@@ -96,8 +99,9 @@ class Letter {
       'sendTo': sendTo,
       'flagStatus': flagStatus,
       'direction': direction,
-      'referenecNumber': referenecNumber,
+      'referenceNumber': referenecNumber,
       'letterNumber': letterNumber,
+      'tenderNumber': tenderNumber,
       'statusId': statusId,
       'actionToBeTaken': actionToBeTaken,
       'tenderStatusId': tenderStatusId,

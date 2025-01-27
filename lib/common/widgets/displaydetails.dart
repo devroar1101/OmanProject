@@ -246,77 +246,76 @@ class _DisplayDetailsState extends State<DisplayDetails>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (widget.details.isNotEmpty)
-          Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppTheme.displayHeaderColor,
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    ...widget.headers.take(headerColumns).map((header) {
-                      return Expanded(
-                        child: Text(
-                          getTranslation(header),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.center,
+        Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: AppTheme.displayHeaderColor,
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  ...widget.headers.take(headerColumns).map((header) {
+                    return Expanded(
+                      child: Text(
+                        getTranslation(header),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 14,
                         ),
-                      );
-                    }),
-                  ],
-                ),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }),
+                ],
               ),
-              Positioned(
-                top: 3,
-                left: isRtl ? 4 : null,
-                right: isRtl ? null : 4,
-                child: !isProcessing
-                    ? Row(
-                        children: [
-                          // Export CSV Button
-                          IconButton(
-                            icon: const Icon(
-                              Icons.download_for_offline_outlined,
-                              color: Colors.white,
-                            ),
-                            onPressed: isProcessing
-                                ? null
-                                : () {
-                                    exportData(context, widget.headers,
-                                        widget.data, widget.details);
-                                  },
-                            tooltip: 'Export as CSV',
+            ),
+            Positioned(
+              top: 3,
+              left: isRtl ? 4 : null,
+              right: isRtl ? null : 4,
+              child: !isProcessing
+                  ? Row(
+                      children: [
+                        // Export CSV Button
+                        IconButton(
+                          icon: const Icon(
+                            Icons.download_for_offline_outlined,
+                            color: Colors.white,
                           ),
-                          // Export PDF Button
-                          IconButton(
-                            icon: const Icon(
-                              Icons.picture_as_pdf,
-                              color: Colors.white,
-                            ),
-                            onPressed: isProcessing
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      isProcessing =
-                                          true; // Set the processing flag to true
-                                    });
-                                    await exportPdf(context, widget.headers,
-                                        widget.data, widget.details);
-                                  },
-                            tooltip: 'Export as PDF',
+                          onPressed: isProcessing
+                              ? null
+                              : () {
+                                  exportData(context, widget.headers,
+                                      widget.data, widget.details);
+                                },
+                          tooltip: 'Export as CSV',
+                        ),
+                        // Export PDF Button
+                        IconButton(
+                          icon: const Icon(
+                            Icons.picture_as_pdf,
+                            color: Colors.white,
                           ),
-                        ],
-                      )
-                    : const CircularProgressIndicator(),
-              ),
-            ],
-          ),
+                          onPressed: isProcessing
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    isProcessing =
+                                        true; // Set the processing flag to true
+                                  });
+                                  await exportPdf(context, widget.headers,
+                                      widget.data, widget.details);
+                                },
+                          tooltip: 'Export as PDF',
+                        ),
+                      ],
+                    )
+                  : const CircularProgressIndicator(),
+            ),
+          ],
+        ),
         const SizedBox(height: 2),
         if (widget.details.isNotEmpty)
           Expanded(

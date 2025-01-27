@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
+import 'package:tenderboard/office/document_search/model/document_search_repo.dart';
 import 'package:tenderboard/office/letter/model/letter.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 import 'package:tenderboard/office/letter/model/letter_action_repo.dart';
@@ -94,7 +97,7 @@ class LetterUtils {
         classificationId: classification ?? 0,
         priorityId: priority ?? 0,
         fromUserId: fromUser ?? 0,
-        locationId: locationId ?? 0,
+        // locationId: locationId ?? 0,
         pageSelected: 'All',
         sequenceNo: 1,
         toUserId: toUser ?? 0,
@@ -143,6 +146,31 @@ class LetterUtils {
       return 'success';
     } catch (e) {
       print('Error saving data: $e');
+      return 'failure';
+    }
+  }
+
+  Future<String> onSearch({required WidgetRef ref}) async {
+    try {
+      final filter = DocumentSearchFilter(
+              dateOnLetter: dateOnTheLetter,
+              direction: direction == 'All' ? null : direction,
+              directionType: null,
+              externalLocation: externalLocation?.toString(),
+              letterDate: dateOnTheLetter,
+              letterNumber: null,
+              referenceNumber: reference,
+              subject: subject == '' ? null : subject,
+              tenderNumber: tenderNumber == '' ? null : tenderNumber,
+              year: year)
+          .toMap();
+
+      updateFilter(ref, filter);
+
+      ref.read(sliderVisibilityProvider.notifier).toggleVisibility();
+      return 'success';
+    } catch (e) {
+      print('Error searching data: $e');
       return 'failure';
     }
   }
