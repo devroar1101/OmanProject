@@ -130,7 +130,7 @@ class LetterUtils {
       final repo = ProviderContainer();
 
       // Save Letter and LetterAction objects in parallel with LetterContent list
-      await Future.wait([
+      final response = await Future.wait([
         repo.read(letterRepositoryProvider).createLetter(letter.toMap()),
         repo
             .read(letterActionRepositoryProvider)
@@ -143,7 +143,7 @@ class LetterUtils {
             .createContent(content.toMap())),
       ]);
 
-      return 'success';
+      return response[0].data['data'];
     } catch (e) {
       print('Error saving data: $e');
       return 'failure';

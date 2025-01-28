@@ -222,7 +222,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
       setState(() {
         isSaving = false;
-        saved = response == 'success';
+        saved = response != 'failure';
+        _referenceController.text = response;
       });
     } else {
       setState(() {
@@ -250,11 +251,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   @override
   Widget build(BuildContext context) {
-    widget.screenName != 'Search' && isSaving
-        ? _referenceController.text =
-            'TB/$currentUserId/${_selectedDirection == 'Incoming' ? 1 : 2}-${_selectedDirectionType == 'Internal' ? 1 : 2}-$letterNo/$selectedYear'
-        : '';
-
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -466,38 +462,39 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
             const Spacer(),
             // Reduced spacing
-            GestureDetector(
-              onTap: () {
-                Clipboard.setData(
-                    ClipboardData(text: _referenceController.text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Reference copied to clipboard')),
-                );
-              },
-              child: Card(
-                elevation: 3, // Reduced elevation
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Compact corners
-                ),
-                color: Colors.blue.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4.0, // Compact vertical padding
-                    horizontal: 16.0, // Compact horizontal padding
+            if (_referenceController.text != '')
+              GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                      ClipboardData(text: _referenceController.text));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Reference copied to clipboard')),
+                  );
+                },
+                child: Card(
+                  elevation: 3, // Reduced elevation
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Compact corners
                   ),
-                  child: Center(
-                    child: Text(
-                      _referenceController.text,
-                      style: const TextStyle(
-                        fontSize: 16, // Slightly smaller font
-                        fontWeight: FontWeight.w500, // Medium weight
+                  color: Colors.blue.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4.0, // Compact vertical padding
+                      horizontal: 16.0, // Compact horizontal padding
+                    ),
+                    child: Center(
+                      child: Text(
+                        _referenceController.text,
+                        style: const TextStyle(
+                          fontSize: 16, // Slightly smaller font
+                          fontWeight: FontWeight.w500, // Medium weight
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
         const SizedBox(
