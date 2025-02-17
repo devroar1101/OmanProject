@@ -28,6 +28,7 @@ class AddDepartment extends ConsumerWidget {
     final dgOptionAsyncvalue = ref.watch(dgOptionsProvider(false));
 
     final dgOptions = dgOptionAsyncvalue.asData?.value;
+    print('current department - => $currentDepartment');
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -139,6 +140,9 @@ class AddDepartment extends ConsumerWidget {
   }
 
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
+    print('en- $_departmentNameEnglish');
+    print('ar- $_departmentNameArabic');
+    print('dg- $_selectedDG');
     try {
       if (currentDepartment == null) {
         await ref.read(departmentRepositoryProvider.notifier).addDepartment(
@@ -154,6 +158,7 @@ class AddDepartment extends ConsumerWidget {
               dgId: int.parse(_selectedDG!),
             );
       }
+      Navigator.pop(context);
       CustomSnackbar.show(
         context: context,
         title: 'successfully',
@@ -161,7 +166,6 @@ class AddDepartment extends ConsumerWidget {
         message: 'Department  saved successfully!',
         typeId: 1,
       );
-      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save department : $e')),

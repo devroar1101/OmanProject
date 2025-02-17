@@ -34,6 +34,7 @@ class AddListMasterItemScreen extends ConsumerWidget {
                 content: Text('ListMaster Item added successfully!')),
           );
         } else {
+          print('edit current list master id ==> $currentListMasterId');
           await ref
               .read(listMasterItemRepositoryProvider.notifier)
               .editListMasterItem(

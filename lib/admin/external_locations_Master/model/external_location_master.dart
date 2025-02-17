@@ -2,32 +2,29 @@ class ExternalLocation {
   int id;
   String nameArabic;
   String nameEnglish;
-  String typeNameEnglish;
-  int typeId;
-  bool isNew;
+  String type;
+  String isNew;
   bool isDeleted;
-  String objectId;
+  String? objectId;
 
   ExternalLocation({
     required this.id,
     required this.nameArabic,
     required this.nameEnglish,
-    required this.typeNameEnglish,
-    required this.typeId,
+    required this.type,
     required this.isNew,
     required this.isDeleted,
-    required this.objectId,
+    this.objectId,
   });
 
   // Factory constructor to create an instance from a Map
   factory ExternalLocation.fromMap(Map<String, dynamic> map) {
     return ExternalLocation(
-      id: map['externalLocationId'] ?? 0,
+      id: map['id'] ?? 0,
       nameArabic: map['nameArabic'] ?? '',
       nameEnglish: map['nameEnglish'] ?? '',
-      typeNameEnglish: map['listMasterItemNameEnglish'] ?? '',
-      typeId: map['typeId'] ?? 0,
-      isNew: map['isNew'] ?? false,
+      type: map['type'] ?? '',
+      isNew: map['isNew'] ?? '',
       isDeleted: map['isDeleted'] ?? false,
       objectId: map['objectId'] ?? '',
     );
@@ -39,9 +36,8 @@ class ExternalLocation {
       'id': id,
       'nameArabic': nameArabic,
       'nameEnglish': nameEnglish,
-      'typeNameEnglish': typeNameEnglish,
       'objectId': objectId,
-      'typeId': typeId,
+      'type': type,
       'isNew': isNew,
       'isDeleted': isDeleted,
     };

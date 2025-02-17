@@ -34,9 +34,10 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data =
-            response.data as List;
-        state = data.map((item) => ListMasterItem.fromMap(item as Map<String,dynamic>)).toList();
+        final List<dynamic> data = response.data as List;
+        state = data
+            .map((item) => ListMasterItem.fromMap(item as Map<String, dynamic>))
+            .toList();
       } else {
         throw Exception('Failed to load ListMasterItems');
       }
@@ -54,20 +55,23 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'listMasterId': listMasterId,
-      'listMasterItemNameEnglish': nameEnglish,
-      'listMasterItemNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
     };
 
     try {
-      await dio.post('/ListMasterItem/Create', data: requestBody);
+      final response =
+          await dio.post('/ListMasterItem/Create', data: requestBody);
       state = [
         ListMasterItem(
-            id: 0,
-            listMasterId: listMasterId,
-            nameArabic: nameArabic,
-            nameEnglish: nameEnglish,
-            code: '0',
-            objectId: 'da-32,aaa'),...state
+          id: response.data['data']['id'],
+          listMasterId: listMasterId,
+          nameArabic: nameArabic,
+          nameEnglish: nameEnglish,
+          code: response.data['data']['code'],
+          objectId: response.data['data']['objectId'],
+        ),
+        ...state
       ];
     } catch (e) {
       throw Exception('Error occurred while adding ListMasterItem: $e');
@@ -77,41 +81,40 @@ class ListMasterItemRepository extends StateNotifier<List<ListMasterItem>> {
   //Edit
 
   Future<void> editListMasterItem(
-      {
-      required int listMasterItemId,
+      {required int listMasterItemId,
       required int listMasterId,
       required nameEnglish,
       required nameArabic}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'listMasterItemId': listMasterItemId,
+      'id': listMasterItemId,
       'listMasterId': listMasterId,
-      'listMasterItemNameEnglish': nameEnglish,
-      'listMasterItemNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
     };
 
     try {
-      await dio.put(
+      final response = await dio.put(
         '/ListMasterItem/Update',
         data: requestBody,
       );
 
       // After successfully editing, update the state by replacing the old ListMaster with the updated one
       final updatedListMasterItem = ListMasterItem(
-        id: 0,
+        id: listMasterItemId,
         listMasterId:
             listMasterId, // Ensure the id remains the same as the existing ListMaster
         nameEnglish: nameEnglish,
         nameArabic: nameArabic,
-        code:
-            '1', // Optionally update this if you receive a new value from the backend
-        objectId:
-            'UpdatedObjectId', // Optionally update this if you receive a new value from the backend
+        code: response.data['data'][
+            'code'], // Optionally update this if you receive a new value from the backend
+        objectId: response.data['data'][
+            'objectId'], // Optionally update this if you receive a new value from the backend
       );
       // Update the state to reflect the edited ListMaster
       state = [
         for (var listMasterItem in state)
-          if (listMasterItem.id == listMasterId)
+          if (listMasterItem.id == listMasterItemId)
             updatedListMasterItem
           else
             listMasterItem

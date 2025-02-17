@@ -25,7 +25,7 @@ class AddLetterSubject extends ConsumerWidget {
          (subjectName: _subject!, 
          tenderNumber: _tenderNumber!
          ) : await ref.read(LetterSubjectMasterRepositoryProvider.notifier).editLetterSubject(
-          currentSubjectId: currentSubject!.subjectId,
+          currentSubjectId: currentSubject!.id,
           subjectName: _subject!,
           tenderNumber: _tenderNumber!,
          );

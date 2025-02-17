@@ -81,7 +81,6 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
           );
         },
       },
-      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
     ];
 
     return Scaffold(
@@ -134,6 +133,7 @@ class _ListMasterHomeState extends ConsumerState<ListMasterHome> {
                   iconButtons: iconButtons,
                   expandable: true,
                   onTap: (id, {objectId}) {
+                    print('current listmaster id = => $id ');
                     Navigator.push(
                       context,
                       MaterialPageRoute(

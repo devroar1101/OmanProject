@@ -22,9 +22,20 @@ class DgRepository extends StateNotifier<List<Dg>> {
   Future<void> addDg(
       {required String nameEnglish, required String nameArabic}) async {
     final dio = ref.watch(dioProvider);
+
+    // Check if a DG with the same name already exists
+    bool exists = state.any((dg) =>
+        dg.nameEnglish.toLowerCase() == nameEnglish.toLowerCase() ||
+        dg.nameArabic.toLowerCase() == nameArabic.toLowerCase());
+
+    if (exists) {
+       Exception('Name already exists');
+    }
+    print('name englisg :- $nameEnglish');
+    print('name arabic :- $nameArabic');
     Map<String, dynamic> requestBody = {
-      'dgNameEnglish': nameEnglish,
-      'dgNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
     };
 
     try {
@@ -32,7 +43,7 @@ class DgRepository extends StateNotifier<List<Dg>> {
 
       state = [
         Dg(
-          id: Response.data['data']['dgId'],
+          id: Response.data['data']['id'],
           nameArabic: nameArabic,
           nameEnglish: nameEnglish,
           code: Response.data['data']['code'],
@@ -84,10 +95,18 @@ class DgRepository extends StateNotifier<List<Dg>> {
     required int currentDGId,
   }) async {
     final dio = ref.watch(dioProvider);
+    bool exists = state.any((dg) =>
+        dg.id != currentDGId &&
+        (dg.nameEnglish.toLowerCase() == editNameEnglish.toLowerCase() ||
+            dg.nameArabic.toLowerCase() == editNameArabic.toLowerCase()));
+
+    if (exists) {
+      throw Exception('Name already exists');
+    }
     Map<String, dynamic> requestBody = {
-      'dgId': currentDGId,
-      'dgNameArabic': editNameArabic,
-      'dgNameEnglish': editNameEnglish,
+      'id': currentDGId,
+      'nameArabic': editNameArabic,
+      'nameEnglish': editNameEnglish,
     };
 
     try {
@@ -100,7 +119,7 @@ class DgRepository extends StateNotifier<List<Dg>> {
           id: currentDGId,
           nameArabic: editNameArabic,
           nameEnglish: editNameEnglish,
-          code: '0', // Update this as needed
+          code: response.data['data']['code'], // Update this as needed
         );
 
         // Update the state with the edited Dg

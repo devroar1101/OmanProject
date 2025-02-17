@@ -4,6 +4,7 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:tenderboard/office/List_circular/model/details_repo.dart';
+import 'package:tenderboard/office/createcircular_decision/screen/circular_home.dart';
 import 'package:tenderboard/office/list_decision/screens/decision_form.dart';
 
 class DecisionListScreen extends ConsumerStatefulWidget {
@@ -137,6 +138,14 @@ class _CircularScreen extends ConsumerState<DecisionListScreen> {
               return circulatItem.toMap();
             }).toList(),
             expandable: true,
+            onTap: (id){
+               final CircularDecisionSearch currentdocument = circularDecisionList.firstWhere((single) => single.objectId == id );
+               print(currentdocument.objectId);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => CreateCircularAndDecision(currentDocument: currentdocument,), ));
+            },
           )),
         ],
       ),

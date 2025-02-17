@@ -36,7 +36,8 @@ class _AddSectionState extends ConsumerState<AddSectionMaster> {
     return Consumer(
       builder: (context, ref, child) {
         final dgOptions = ref.watch(dgOptionsProvider(true));
-        final departmentOptions = ref.watch(departmentOptionsProvider('1'));
+        print('Selected DG - > $_selectedDG');
+        final departmentOptions = ref.watch(departmentOptionsProvider(_selectedDG));
 
         return dgOptions.when(
           data: (dgList) {

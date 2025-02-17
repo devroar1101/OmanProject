@@ -4,6 +4,7 @@ import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:tenderboard/office/List_circular/model/details_repo.dart';
+import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_home.dart';
 import 'package:tenderboard/office/list_meeting_minites/screens/list_meetingminutes_form.dart';
 
 class MeetingMinutesScreen extends ConsumerStatefulWidget {
@@ -21,7 +22,7 @@ class _MeetingMinutesScreenState extends ConsumerState<MeetingMinutesScreen> {
     super.initState();
     ref
         .read(circularDecisiondetailsRepositoryProvider.notifier)
-        .fetchListCircularDecisions('2');
+        .fetchListCircularDecisions('3');
   }
 
   String searchSubject = "";
@@ -65,7 +66,7 @@ class _MeetingMinutesScreenState extends ConsumerState<MeetingMinutesScreen> {
           (singleValue.priority?.toLowerCase() ?? '')
               .contains(searchPriority.toLowerCase());
       final matchClassification = searchClassification.isEmpty ||
-          (singleValue.classificationId?.toLowerCase() ?? '')
+          (singleValue.classificationId?.toString().toLowerCase() ?? '')
               .contains(searchClassification.toLowerCase());
       final matchDate = searchDate.isEmpty ||
           (singleValue.createdDate?.toLowerCase() ?? '')
@@ -112,7 +113,7 @@ class _MeetingMinutesScreenState extends ConsumerState<MeetingMinutesScreen> {
                         (singleValue.priority?.toLowerCase() ?? '')
                             .contains(searchPriority.toLowerCase());
                     final matchClassification = searchClassification.isEmpty ||
-                        (singleValue.classificationId?.toLowerCase() ?? '')
+                        (singleValue.classificationId?.toString().toLowerCase() ?? '')
                             .contains(searchClassification.toLowerCase());
                     final matchDate = searchDate.isEmpty ||
                         (singleValue.createdDate?.toLowerCase() ?? '')
@@ -153,6 +154,14 @@ class _MeetingMinutesScreenState extends ConsumerState<MeetingMinutesScreen> {
               return meetingItem.toMap();
             }).toList(),
             expandable: true,
+             onTap: (id){
+               final CircularDecisionSearch currentdocument = meetingMinutesList.firstWhere((single) => single.objectId == id );
+               print(currentdocument.objectId);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => CreateMeetingMinutesScreen(currentDocument: currentdocument,), ));
+            },
           )),
         ],
       ),
