@@ -4,23 +4,25 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 
 // ignore: must_be_immutable
 class SelectField<T> extends StatefulWidget {
-  final List<SelectOption<T>> options;
+  List<SelectOption<T>>? options;
   final Function(T, SelectOption) onChanged;
   final String? hint;
   final String label;
   String? selectedOption;
   String? initialValue;
   bool requiredValidation;
+  List<SelectOption<T>> Function(String searchText)? filterOptions;
 
   SelectField(
       {super.key,
-      required this.options,
+      this.options,
       required this.onChanged,
       required this.label,
       this.hint,
       this.requiredValidation = false,
       this.initialValue,
-      this.selectedOption});
+      this.selectedOption,
+      this.filterOptions});
 
   @override
   _SelectFieldState<T> createState() => _SelectFieldState<T>();
@@ -37,12 +39,11 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
   @override
   void initState() {
     super.initState();
-    filteredOptions = widget.options;
+    filteredOptions = widget.options ?? [];
 
     if (widget.initialValue != null && widget.initialValue != '') {
       _searchController.text = widget.initialValue!;
     }
-    //_searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -52,13 +53,17 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    setState(() {
-      String searchText = _searchController.text.toLowerCase();
-      filteredOptions = widget.options.where((option) {
-        return option.displayName.toLowerCase().contains(searchText);
-      }).toList();
-    });
+  void _onSearchChanged(String value) {
+    if (widget.options != []) {
+      setState(() {
+        String searchText = _searchController.text.toLowerCase();
+        filteredOptions = widget.options!.where((option) {
+          return option.displayName.toLowerCase().contains(searchText);
+        }).toList();
+      });
+    } else {
+      filteredOptions = widget.filterOptions!(value);
+    }
 
     if (_searchController.text.isNotEmpty) {
       _createOrUpdateOverlay();
@@ -144,8 +149,6 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
                                       _searchController.text =
                                           option.displayName;
                                       widget.selectedOption = option.key;
-
-                                      filteredOptions = widget.options;
                                     });
                                     widget.onChanged(option.value, option);
                                     _removeOverlay();
@@ -211,7 +214,7 @@ class _SelectFieldState<T> extends State<SelectField<T>> {
             ),
             onTap: _createOrUpdateOverlay,
             onChanged: (value) {
-              _onSearchChanged();
+              _onSearchChanged(value);
               (context as Element).markNeedsBuild();
             },
             validator: (value) {

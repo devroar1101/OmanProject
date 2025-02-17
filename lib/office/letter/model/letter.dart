@@ -1,17 +1,22 @@
+import 'package:tenderboard/common/utilities/global_helper.dart';
+
 class Letter {
   final int? letterId;
   final int? cabinetId;
-  final int? fileId;
+  final int? folderId;
+  final int? locationId;
   final String? subject;
   final int year;
   final DateTime? dateOnLetter;
   final int templateId;
   final DateTime? receivedDate;
+  final DateTime? createdDate;
   final int? classificationId;
   final int? priorityId;
   final String? sendTo;
   final int? flagStatus;
   final String? direction;
+  final String? directionType;
   final String? referenecNumber;
   final String? letterNumber;
   final String? tenderNumber;
@@ -27,17 +32,20 @@ class Letter {
   Letter({
     this.letterId,
     this.cabinetId,
-    this.fileId,
+    this.folderId,
+    this.locationId,
     this.subject,
     required this.year,
     this.dateOnLetter,
     required this.templateId,
     this.receivedDate,
+    this.createdDate,
     this.classificationId,
     this.priorityId,
     this.sendTo,
     this.flagStatus,
     this.direction,
+    this.directionType,
     this.referenecNumber,
     this.letterNumber,
     this.tenderNumber,
@@ -55,7 +63,8 @@ class Letter {
     return Letter(
       letterId: map['letterId'] ?? 0,
       cabinetId: map['cabinetId'],
-      fileId: map['fileId'],
+      folderId: map['folderId'],
+      locationId: map['locationId'],
       subject: map['subject'],
       year: map['year'] ?? 0,
       dateOnLetter: map['dateOnLetter'] != null
@@ -65,11 +74,15 @@ class Letter {
       receivedDate: map['receivedDate'] != null
           ? DateTime.parse(map['receivedDate'])
           : null,
+      createdDate: map['createdDate'] != null
+          ? DateTime.parse(map['createdDate'])
+          : null,
       classificationId: map['classificationId'],
       priorityId: map['priorityId'],
       sendTo: map['sendTo'],
       flagStatus: map['flagStatus'],
       direction: map['direction'],
+      directionType: map['directionType'],
       referenecNumber: map['referenceNumber'],
       letterNumber: map['letterNumber'],
       tenderNumber: map['tenderNumber'],
@@ -88,17 +101,20 @@ class Letter {
   Map<String, dynamic> toMap() {
     return {
       'cabinetId': cabinetId,
-      'fileId': fileId,
+      'folderId': folderId,
+      'locationId': locationId,
       'subject': subject,
       'year': year,
-      'dateOnLetter': dateOnLetter?.toIso8601String(),
+      'dateOnLetter': formatDateWithoutTime(dateOnLetter),
       'templateId': templateId,
-      'receivedDate': receivedDate?.toIso8601String(),
+      'receivedDate': formatDateWithoutTime(receivedDate),
+      'createdDate': formatDateWithoutTime(createdDate),
       'classificationId': classificationId,
       'priorityId': priorityId,
       'sendTo': sendTo,
       'flagStatus': flagStatus,
       'direction': direction,
+      'directionType': directionType,
       'referenceNumber': referenecNumber,
       'letterNumber': letterNumber,
       'tenderNumber': tenderNumber,

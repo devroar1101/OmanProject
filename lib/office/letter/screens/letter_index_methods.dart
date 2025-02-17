@@ -27,17 +27,17 @@ class LetterUtils {
   final int? fromUser;
   final int? locationId;
   final DateTime? receivedDate;
+  final DateTime? createdDate;
   final String? reference;
   final String? sendTo;
   final String? subject;
   final String? tenderNumber;
   final int? toUser;
-
+  final String? objectId;
+  final String? directionType;
   final int? priority;
   final int? year;
   List<String>? scanDocuments;
-
-  static const Uuid _uuid = Uuid();
 
   /// Constructor to initialize all fields
   LetterUtils(
@@ -48,11 +48,13 @@ class LetterUtils {
       this.createdBy,
       this.dateOnTheLetter,
       this.direction,
+      this.directionType,
       this.externalLocation,
       this.folder,
       this.fromUser,
       this.locationId,
       this.receivedDate,
+      this.createdDate,
       this.reference,
       this.sendTo,
       this.subject,
@@ -60,35 +62,36 @@ class LetterUtils {
       this.toUser,
       this.priority,
       this.year,
-      this.scanDocuments});
+      this.scanDocuments,
+      this.objectId});
 
   Future<String> onSave() async {
+    print(reference);
     try {
-      final objectId = _uuid.v4();
-
-      // Build Letter object
       final letter = Letter(
-        year: year ?? 0,
-        templateId: 0,
-        actionToBeTaken: actionToBeTaken,
-        cabinetId: cabinet ?? 0,
-        classificationId: classification ?? 0,
-        createdBy: createdBy ?? 0,
-        dateOnLetter: dateOnTheLetter,
-        direction: direction ?? 'incoming',
-        fileId: folder ?? 0,
-        flagStatus: 0,
-        jobOwnerId: toUser ?? 0,
-        letterNumber: tenderNumber,
-        objectId: objectId,
-        priorityId: priority ?? 0,
-        referenecNumber: reference ?? '',
-        sendTo: sendTo ?? '',
-        statusId: 1,
-        receivedDate: receivedDate,
-        subject: subject ?? '',
-        tenderStatusId: 1,
-      );
+          year: year ?? 0,
+          templateId: 0,
+          actionToBeTaken: actionToBeTaken,
+          cabinetId: cabinet ?? 0,
+          classificationId: classification ?? 0,
+          createdBy: createdBy ?? 0,
+          dateOnLetter: dateOnTheLetter,
+          direction: direction ?? 'incoming',
+          directionType: directionType,
+          folderId: folder ?? 0,
+          flagStatus: 0,
+          jobOwnerId: toUser ?? 0,
+          letterNumber: tenderNumber,
+          objectId: objectId,
+          priorityId: priority ?? 0,
+          referenecNumber: reference ?? '',
+          sendTo: sendTo ?? '',
+          statusId: reference != null ? 1 : 0,
+          receivedDate: receivedDate,
+          createdDate: createdDate,
+          subject: subject ?? '',
+          tenderStatusId: 1,
+          locationId: locationId);
 
       // Build LetterAction object
       final letterAction = LetterAction(

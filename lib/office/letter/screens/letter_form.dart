@@ -22,6 +22,7 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
 import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
+import 'package:uuid/uuid.dart';
 
 // ignore: must_be_immutable
 class LetterForm extends ConsumerStatefulWidget {
@@ -44,6 +45,8 @@ class LetterForm extends ConsumerStatefulWidget {
 class _LetterFormState extends ConsumerState<LetterForm> {
   final _formKey = GlobalKey<FormState>();
 
+  static const Uuid _uuid = Uuid();
+  late String objectId;
   final TextEditingController _referenceController = TextEditingController();
   final TextEditingController _sendToController = TextEditingController();
   final TextEditingController _receivedFromController = TextEditingController();
@@ -75,7 +78,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   String _selectedDirectionType = 'Internal';
   String _selectedLocationType = 'Government';
   bool _isNewLocation = true;
-  int letterNo = 1101;
+  int letterNo = 0;
   double fieldHeight = 45;
   bool isSaving = false;
   bool saved = false;
@@ -114,6 +117,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   void initialise() async {
     // Check if widget.letterObjectId is null
     if (widget.letterObjectId == null) {
+      objectId = _uuid.v4();
       if (widget.screenName == 'Search') {
         final locationAsyncValue = ref.read(locationOptionsProvider);
         locationOptions = locationAsyncValue.asData?.value ?? [];
@@ -138,7 +142,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       final letterSummaryFuture = ref
           .read(letterSummaryRepositoryProvider)
           .fetchLetterSummary(widget.letterObjectId!);
-
+      objectId = widget.letterObjectId!;
       letterSummaryFuture.then((letter) {
         // After fetching the letter summary, initialize your variables
         setState(() {
@@ -192,16 +196,18 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       final response = await LetterUtils(
               actionToBeTaken: _actionToBeController.text,
               cabinet: _selectedCabinet,
-              classification: selectedClassification, //replace
+              classification: selectedClassification,
               comments: _summaryController.text,
               createdBy: currentUserId,
               dateOnTheLetter: _dateOnTheLetter,
+              createdDate: _createdDate,
               direction: _selectedDirection,
+              directionType: _selectedDirectionType,
               externalLocation: _selectedLocation,
               folder: _selectedFolder,
               fromUser: currentUserId,
               locationId: _selectedLocation,
-              priority: selectedPriority, //replace
+              priority: selectedPriority,
               receivedDate: _receviedDate,
               reference: _referenceController.text,
               sendTo: _sendToController.text,
@@ -209,7 +215,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               tenderNumber: _tenderNumberController.text,
               toUser: _selectedUser,
               year: selectedYear,
-              scanDocuments: widget.scanDocumnets)
+              scanDocuments: widget.scanDocumnets,
+              objectId: objectId)
           .onSave();
 
       CustomSnackbar.show(
@@ -846,18 +853,20 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   }
 
   Widget _letterForm3(WidgetRef ref) {
-    if (_selectedDG != null) {
-      filteredUserOption = usersOptions.where((option) {
-        bool matchesDG =
-            (_selectedDG == null || option.filter == _selectedDG.toString());
+    if (_selectedUserName == '') {
+      if (_selectedDG != null) {
+        filteredUserOption = usersOptions.where((option) {
+          bool matchesDG =
+              (_selectedDG == null || option.filter == _selectedDG.toString());
 
-        bool matchesDepartment = (_selectedDepartment == null ||
-            option.filter1 == _selectedDepartment.toString());
+          bool matchesDepartment = (_selectedDepartment == null ||
+              option.filter1 == _selectedDepartment.toString());
 
-        return matchesDG && matchesDepartment;
-      }).toList();
-    } else {
-      filteredUserOption = [];
+          return matchesDG && matchesDepartment;
+        }).toList();
+      } else {
+        filteredUserOption = [];
+      }
     }
 
     return Column(
@@ -915,7 +924,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           ),
           SizedBox(
             height: fieldHeight,
-            child: _buildTextField('Tender Number',
+            child: _buildTextField('Letter Number',
                 controller: _tenderNumberController),
           ),
         ]),
@@ -1001,11 +1010,17 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ]),
         const SizedBox(height: 6),
 
-        // Letter Subject
-        SizedBox(
-            height: fieldHeight,
-            child: _buildTextField('Letter Subject',
-                controller: _subjectController)),
+        _buildRow([
+          SizedBox(
+              height: fieldHeight,
+              width: 20,
+              child: _buildTextField('Tender Number',
+                  controller: _subjectController)),
+          SizedBox(
+              height: fieldHeight,
+              child: _buildTextField('Letter Subject',
+                  controller: _subjectController)),
+        ]),
 
         // Save button
         const SizedBox(height: 6),
