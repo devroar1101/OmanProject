@@ -5,6 +5,7 @@ import 'package:tenderboard/common/widgets/pagenation.dart';
 import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:tenderboard/office/List_circular/model/details_repo.dart';
 import 'package:tenderboard/office/List_circular/screens/circular_form.dart';
+import 'package:tenderboard/office/createcircular_decision/screen/circular_home.dart';
 
 class CircularListScreen extends ConsumerStatefulWidget {
   const CircularListScreen({super.key});
@@ -140,6 +141,15 @@ class _CircularScreen extends ConsumerState<CircularListScreen> {
               return circulatItem.toMap();
             }).toList(),
             expandable: true,
+           
+            onTap: (id){
+               final CircularDecisionSearch currentdocument = filteredAndPaginatedList.firstWhere((single) => single.objectId == id );
+               print(currentdocument.objectId);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => CreateCircularAndDecision(currentDocument: currentdocument,), ));
+            },
           )),
         ],
       ),

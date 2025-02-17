@@ -42,30 +42,30 @@ class circularDecisiondetailsRepository extends StateNotifier<List<CircularDecis
     return state;
   }
 
-  Future<CircularDecisionSearch?> getContentByObjectId({
-    required String objectId,
-    required int pageNumber,
-  }) async {
-    final dio = ref.watch(dioProvider);
-    try {
-      final response = await dio.get(
-        '/LetterContent/GetByObjectId',
-        queryParameters: {
-          'LetterAttachementObjectId': objectId,
-          'PageNumber': pageNumber,
-        },
-      );
+  // Future<CircularDecisionSearch?> getContentByObjectId({
+  //   required String objectId,
+  //   required int pageNumber,
+  // }) async {
+  //   final dio = ref.watch(dioProvider);
+  //   try {
+  //     final response = await dio.get(
+  //       '/LetterContent/GetByObjectId',
+  //       queryParameters: {
+  //         'LetterAttachementObjectId': objectId,
+  //         'PageNumber': pageNumber,
+  //       },
+  //     );
 
-      // Parse the data field into a LetterContent object
-      if (response.data != null && response.data['data'] != null) {
-        return CircularDecisionSearch.fromMap(response.data['data']);
-      }
-      return null; // Return null if data is not available
-    } catch (e) {
-      // Handle errors and return null or rethrow as needed
-      print('Error: $e');
-      return null;
-    }
-  }
+  //     // Parse the data field into a LetterContent object
+  //     if (response.data != null && response.data['data'] != null) {
+  //       return CircularDecisionSearch.fromMap(response.data['data']);
+  //     }
+  //     return null; // Return null if data is not available
+  //   } catch (e) {
+  //     // Handle errors and return null or rethrow as needed
+  //     print('Error: $e');
+  //     return null;
+  //   }
+  // }
 
 }

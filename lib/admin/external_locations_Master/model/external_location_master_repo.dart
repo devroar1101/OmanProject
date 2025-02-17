@@ -18,13 +18,15 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
   Future<void> addExternalLocation({
     required String nameEnglish,
     required String nameArabic,
-    required int typeId,
+    required String type,
+    required String isNew,
   }) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'nameEnglish': nameEnglish,
       'nameArabic': nameArabic,
-      'typeId': typeId,
+      'type': type,
+      'isNew': isNew,
     };
 
     try {
@@ -33,14 +35,14 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
 
       state = [
         ExternalLocation(
-            id: 0,
-            nameArabic: nameArabic,
-            nameEnglish: nameEnglish,
-            typeId: typeId,
-            typeNameEnglish: 'Government',
-            isNew: response.data['data']['isNew'],
-            isDeleted: response.data['data']['isDeleted'],
-            objectId: 'as-da-sd-sa'),
+          id: response.data['data']['id'],
+          nameArabic: nameArabic,
+          nameEnglish: nameEnglish,
+          type: type,
+          isNew: isNew,
+          isDeleted: response.data['data']['isDeleted'],
+          objectId: response.data['data']['objectId'],
+        ),
         ...state
       ];
     } catch (e) {
@@ -52,30 +54,36 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
   Future<void> editExternalLocation(
       {required String nameEnglish,
       required String nameArabic,
-      required int typeId,
+      required String type,
+      required String isNew,
       required int currentExternalLocationId}) async {
+    print('Id $currentExternalLocationId');
+    print('English $nameEnglish');
+    print('Arabic $nameArabic');
+    print('type $type');
+    print('isNew $isNew');
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'externalLocationId': currentExternalLocationId,
+      'id': currentExternalLocationId,
       'nameEnglish': nameEnglish,
       'nameArabic': nameArabic,
-      'typeId': typeId,
+      'type': type,
+      'isNew': isNew,
     };
 
     try {
       final response =
           await dio.put('/ExternalLocation/Update', data: requestBody);
-
+      print('external Location Object Id ${response.data}');
       if (response.statusCode == 200) {
         final updatedExternalLocation = ExternalLocation(
             id: currentExternalLocationId,
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
-            typeNameEnglish: 'Government',
-            typeId: typeId,
-            isNew: response.data['data']['isNew'],
-            isDeleted: response.data['data']['isDeleted'],
-            objectId: '');
+            type: type,
+            isNew: isNew,
+            isDeleted: false,
+            objectId: response.data['data']['objectId']);
 
         state = [
           for (var externalLoaction in state)
@@ -86,10 +94,31 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
         ];
       } else {
         throw Exception(
-            'Failed to update LetterSubject. Status code: ${response.statusCode}');
+            'Failed to update External Location. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error occurred while editing LetterSubject: $e');
+      throw Exception('Error occurred while editing External Location: $e');
+    }
+  }
+
+  Future<void> deleteExternalLocation({required int locationId}) async {
+    final dio = ref.watch(dioProvider);
+
+    try {
+      final response = await dio.delete(
+        '/ExternalLocation/Delete',
+        queryParameters: {'Id': locationId},
+      );
+
+      if (response.statusCode == 200) {
+        state = state.where((location) => location.id != locationId).toList();
+      } else {
+        throw Exception(
+            'Failed to delete External Location. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while deleting External Locatioszn: $e');
     }
   }
 
@@ -143,7 +172,6 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
               ? location.nameEnglish
               : location.nameArabic,
           key: location.id.toString(),
-          filter: location.typeNameEnglish.toString(),
           filter1: location.isNew.toString(),
           value: location,
         );

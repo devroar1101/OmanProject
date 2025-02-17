@@ -85,7 +85,7 @@ class _LetterSubjectMasterScreenState
         "button": Icons.edit,
         "function": (int id) {
           final LetterSubjecct currentSubject =
-              letterSubjects.firstWhere((subject) => subject.subjectId == id);
+              letterSubjects.firstWhere((subject) => subject.id == id);
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -164,8 +164,8 @@ class _LetterSubjectMasterScreenState
                   details: LetterSubjecct.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (index, {objectId}) {},
-                  detailKey: 'subjectId',
+                  onTap: (id, {objectId}) {},
+                  detailKey: 'id',
                 ),
               ),
             ),

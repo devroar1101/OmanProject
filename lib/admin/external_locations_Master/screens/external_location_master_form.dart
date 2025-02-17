@@ -4,7 +4,7 @@ import 'package:tenderboard/common/utilities/color_picker.dart';
 class ExternalLocationMasterSearchForm extends StatefulWidget {
   const ExternalLocationMasterSearchForm({super.key, required this.onSearch});
 
-  final Function(String, String) onSearch;
+  final Function(String, String, String) onSearch;
 
   @override
   _ExternalLocationMasterSearchFormState createState() =>
@@ -30,7 +30,7 @@ class _ExternalLocationMasterSearchFormState
     setState(() {
       _selectedType = null; // Reset the dropdown
     });
-    widget.onSearch('', '');
+    widget.onSearch('', '', '');
   }
 
   void _handleSearch() {
@@ -38,7 +38,7 @@ class _ExternalLocationMasterSearchFormState
     String nameArabic = _nameArabicController.text;
     String code = _codeController.text;
     String? type = _selectedType;
-    widget.onSearch(nameArabic, nameEnglish);
+    widget.onSearch(nameArabic, nameEnglish, type!);
 
     // Perform search logic with the collected values
     print(
@@ -107,7 +107,7 @@ class _ExternalLocationMasterSearchFormState
                       ),
                     ),
                     items: _typeOptions.map((type) {
-                      return DropdownMenuItem(
+                      return DropdownMenuItem(  
                         value: type,
                         child: Text(type),
                       );

@@ -10,6 +10,7 @@ class CircularDecisionRepository {
 
   Future<Response> createCircularDecision(Map<String, dynamic> circularDecisionData) async {
     try {
+      print('body:- $circularDecisionData');
       final response = await dio.post('/CircularAndDecision/Create', data: circularDecisionData);
       return response;
     } catch (e) {
@@ -26,18 +27,18 @@ class CircularDecisionRepository {
   //   }
   // }
 
-  // Future<Response> getLetterById(
-  //     {required int letterId, required String letterObjectId}) async {
-  //   try {
-  //     final response = await dio.get('/GetById', queryParameters: {
-  //       'LetterId': letterId,
-  //       'LetterObjectId': letterObjectId,
-  //     });
-  //     return response;
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
+  Future<Response> getById(
+      {required int id, String? objectId}) async {
+    try {
+      final response = await dio.get('/CircularAndDecision/GetById', queryParameters: {
+        'Id': id,
+        'ObjectId': objectId,
+      });
+      return response.data['data'];
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 // Provider for CircularDecisionRepository

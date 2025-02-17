@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:tenderboard/office/List_circular/model/circular_decision.dart';
 import 'package:uuid/uuid.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
@@ -13,8 +14,11 @@ import 'package:tenderboard/office/createcircular_decision/model/cretae_circular
 
 class CircularDecisionForm extends ConsumerStatefulWidget {
   final List<String>? scanDocuments;
+  final CircularDecisionSearch? currentDocument;
+  final String? ScreenName;
 
-  CircularDecisionForm({super.key, this.scanDocuments});
+  CircularDecisionForm(
+      {super.key, this.scanDocuments, this.currentDocument, this.ScreenName});
 
   @override
   _CircularDecisionFormState createState() => _CircularDecisionFormState();
@@ -46,7 +50,29 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
       _documentType = 'Internal';
     });
   }
-  
+
+  void assignvalue() {
+    print('show Document ${widget.currentDocument!.objectId}');
+
+    if (widget.currentDocument != null) {
+      if (widget.currentDocument?.typyId == 1) {
+        _numberController.text = widget.currentDocument!.documentNumber!;
+        _commentsController.text = widget.currentDocument!.comment!;
+        _documentType = widget.currentDocument!.documentType!;
+        _scanType = widget.currentDocument!.typyId.toString();
+        _subjectController.text = widget.currentDocument!.subject!;
+        _dateController.text = widget.currentDocument!.documentDate!;
+      } else {
+        _numberController.text = widget.currentDocument!.documentNumber!;
+        _commentsController.text = widget.currentDocument!.comment!;
+        _documentType = widget.currentDocument!.documentType!;
+        selectedClassification = widget.currentDocument!.classificationId!;
+        _scanType = widget.currentDocument!.typyId.toString();
+        _subjectController.text = widget.currentDocument!.subject!;
+        _dateController.text = widget.currentDocument!.documentDate!;
+      }
+    }
+  }
 
   Future<void> onSave(BuildContext context) async {
     if (!_formKey.currentState!.validate()) {
@@ -61,6 +87,7 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
       classificationId: selectedClassification,
       typeId: _scanType == 'Circular' ? 1 : 2,
       objectId: objectId,
+      documentDate: _dateController.text,
       subject: _subjectController.text,
     );
 
@@ -121,7 +148,15 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    assignvalue();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isReadOnly = widget.currentDocument != null;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -177,6 +212,7 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
 
                     // Number Field
                     TextFormField(
+                      readOnly: isReadOnly,
                       controller: _numberController,
                       decoration: InputDecoration(
                         labelText: 'Number',
@@ -198,24 +234,26 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
                       controller: _dateController,
                       readOnly:
                           true, // Make the field read-only to prevent manual input
-                      onTap: () async {
-                        // Show the date picker
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000), // Minimum date
-                          lastDate: DateTime(2100), // Maximum date
-                        );
+                      onTap: isReadOnly
+                          ? null
+                          : () async {
+                              // Show the date picker
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000), // Minimum date
+                                lastDate: DateTime(2100), // Maximum date
+                              );
 
-                        if (pickedDate != null) {
-                          // Format the date and update the controller
-                          String formattedDate =
-                              DateFormat('yyyy-MM-dd').format(pickedDate);
-                          setState(() {
-                            _dateController.text = formattedDate;
-                          });
-                        }
-                      },
+                              if (pickedDate != null) {
+                                // Format the date and update the controller
+                                String formattedDate =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                setState(() {
+                                  _dateController.text = formattedDate;
+                                });
+                              }
+                            },
                       decoration: InputDecoration(
                         labelText: 'Date',
                         border: OutlineInputBorder(
@@ -283,6 +321,7 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
 
                     // Subject Field
                     TextFormField(
+                      readOnly: isReadOnly,
                       controller: _subjectController,
                       decoration: InputDecoration(
                         labelText: 'Subject',
@@ -302,6 +341,7 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
 
                     // Comments Field
                     TextFormField(
+                      readOnly: isReadOnly,
                       controller: _commentsController,
                       decoration: InputDecoration(
                         labelText: 'Comments',
@@ -324,7 +364,14 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        items: classifications!.map((item) {
+                        items: (isReadOnly
+                                ? classifications!
+                                    .where((singleClassification) =>
+                                        singleClassification.id ==
+                                        selectedClassification)
+                                    .toList()
+                                : classifications!)
+                            .map((item) {
                           return DropdownMenuItem<int>(
                             value: item.id,
                             child: Text(item.getLabel(context)),
@@ -353,10 +400,11 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
                             style: TextStyle(color: Colors.black87),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () => onSave(context),
-                          child: const Text('Save'),
-                        ),
+                        if (!isReadOnly)
+                          ElevatedButton(
+                            onPressed: () => onSave(context),
+                            child: const Text('Save'),
+                          ),
                       ],
                     ),
                   ],

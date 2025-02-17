@@ -35,8 +35,8 @@ class DepartmentRepository extends StateNotifier<List<Department>> {
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             dgNameEnglish: 'test',
-            objectId: 'aqaq-aqa',
-            id: 1,
+            objectId: Response.data['data']['objectId'],
+            id: Response.data['data']['id'],
             dgId: currentDGId),
         ...state
       ];
@@ -54,10 +54,10 @@ class DepartmentRepository extends StateNotifier<List<Department>> {
   }) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'departmentId': currentDepartmentId,
+      'id': currentDepartmentId,
       'dgId': dgId,
-      'departmentNameEnglish': nameEnglish,
-      'departmentNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
     };
 
     try {
@@ -65,11 +65,11 @@ class DepartmentRepository extends StateNotifier<List<Department>> {
 
       if (response.statusCode == 200) {
         final updatedDepartment = Department(
-            code: '0',
+            code: response.data['data']['code'],
             nameArabic: nameArabic,
             nameEnglish: nameEnglish,
             dgNameEnglish: 'test',
-            objectId: 'ds-ds-d',
+            objectId:response.data['data']['objectId'],
             id: currentDepartmentId,
             dgId: dgId);
 
@@ -91,18 +91,18 @@ class DepartmentRepository extends StateNotifier<List<Department>> {
   }
 
   // Delete
-  Future<void> deleteDpartment({required int DepartmentId}) async {
+  Future<void> deleteDpartment({required int departmentId}) async {
     final dio = ref.watch(dioProvider);
 
     try {
       final response = await dio.delete(
         '/Department/Delete',
-        queryParameters: {'departmentId': DepartmentId},
+        queryParameters: {'Id': departmentId},
       );
 
       if (response.statusCode == 200) {
         state =
-            state.where((department) => department.id != DepartmentId).toList();
+            state.where((department) => department.id != departmentId).toList();
       } else {
         throw Exception(
             'Failed to delete Department. Status code: ${response.statusCode}');
@@ -194,7 +194,9 @@ final departmentOptionsProvider =
     FutureProvider.family<List<SelectOption<Department>>, String?>(
         (ref, dgId) async {
   final authState = ref.watch(authProvider);
+  print('Get depatment for dg :-> $dgId');
   return ref
       .read(departmentRepositoryProvider.notifier)
+      
       .getDepartMentOptions(dgId, authState.selectedLanguage);
 });

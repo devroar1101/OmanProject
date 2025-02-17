@@ -11,7 +11,7 @@ import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
 import 'package:tenderboard/common/screens/login.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
-import 'package:tenderboard/common/utilities/current_user.dart';
+import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart'; // Import the screen
 
@@ -201,6 +201,19 @@ class CustomAppBar {
                   ),
                   IconButton(
                     icon: const Icon(
+                      Icons.meeting_room_outlined,
+                      color: AppTheme.iconColor,
+                    ),
+                    tooltip: 'Meeting Minutes',
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const CreateMeetingMinutesScreen()));
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(
                       Icons.logout,
                       color: AppTheme.iconColor,
                     ),
@@ -233,7 +246,8 @@ class CustomAppBar {
     required BuildContext context,
     required String screenName,
   }) {
-    if (screenName == 'ListMaster') {
+    print('Screen Name ->> $screenName');
+    if (screenName == 'List Master') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -261,21 +275,21 @@ class CustomAppBar {
           return const AddSectionMaster();
         },
       );
-    } else if (screenName == 'SubjectMaster') {
+    } else if (screenName == 'Subject Master') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AddLetterSubject();
         },
       );
-    } else if (screenName == 'User') {
+    } else if (screenName == 'Users') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return const AddUserScreen();
         },
       );
-    } else if (screenName == 'ListMasterItem') {
+    } else if (screenName == 'List Master Item') {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -284,7 +298,7 @@ class CustomAppBar {
           );
         },
       );
-    } else if (screenName == 'ExternalLocation') {
+    } else if (screenName == 'External Location') {
       showDialog(
         context: context,
         builder: (BuildContext context) {

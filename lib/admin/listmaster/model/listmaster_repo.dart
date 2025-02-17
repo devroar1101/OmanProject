@@ -14,19 +14,20 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
   Future<void> addListMaster({required String nameEnglish, required String nameArabic}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
-      'listMasterNameEnglish': nameEnglish,
-      'listMasterNameArabic': nameArabic,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
     };
 
     try {
-      await dio.post('/ListMaster/Create', data: requestBody);
+      final response = await dio.post('/ListMaster/Create', data: requestBody);
 
       // After adding a ListMaster, we update the state to trigger a rebuild
       state = [ ListMaster(
         nameEnglish: nameEnglish, 
         nameArabic: nameArabic,
-        id: 0,listMasterCode: '',
-        objectId: '1111',),...state];
+        id: response.data['data']['id'],
+        listMasterCode: response.data['data']['code'],
+        objectId: response.data['data']['objectId'],),...state];
     } catch (e) {
       throw Exception('Error occurred while adding ListMaster: $e');
     }
@@ -60,24 +61,26 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
   Future<void> editListMaster({required int id, required String nameEnglish, required String nameArabic}) async {
   final dio = ref.watch(dioProvider);
   Map<String, dynamic> requestBody = {
-    'listMasterNameEnglish': nameEnglish,
-    'listMasterNameArabic': nameArabic,
+    'id': id,
+    'nameEnglish': nameEnglish,
+    'nameArabic': nameArabic,
   };
 
   try {
     // Make a PUT or PATCH request to edit the existing ListMaster
-    await dio.put(
+    final response = await dio.put(
       '/ListMaster/Update',  // Assuming you're using a RESTful API where you pass the ID in the URL
       data: requestBody,
     );
+    print('listmaster commig result== > ${response.data}');
 
     // After successfully editing, update the state by replacing the old ListMaster with the updated one
     final updatedListMaster = ListMaster(
       id: id, // Ensure the id remains the same as the existing ListMaster
       nameEnglish: nameEnglish,
       nameArabic: nameArabic,
-      listMasterCode: 'UpdatedCode', // Optionally update this if you receive a new value from the backend
-      objectId: 'UpdatedObjectId',  // Optionally update this if you receive a new value from the backend
+      listMasterCode: response.data['data']['code'],
+        objectId: response.data['data']['objectId'], // Optionally update this if you receive a new value from the backend
       // Update if there are any changes to the items list, otherwise leave as is
     );
 

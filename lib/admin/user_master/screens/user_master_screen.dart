@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
-
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/admin/user_master/screens/add_user_master.dart';
+import 'package:tenderboard/admin/user_master/screens/user_master_form.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -18,10 +18,8 @@ class _UserScreenState extends ConsumerState<UserScreen>
     with SingleTickerProviderStateMixin {
   bool _isSearchFormVisible = false;
   late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
-  late Animation<double> _scaleAnimation;
+  late Animation<Offset> _slideAnimation;
 
-  // Pagination and search variables
   int pageNumber = 1;
   int pageSize = 15;
   String searchLoginId = '';
@@ -39,12 +37,10 @@ class _UserScreenState extends ConsumerState<UserScreen>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _opacityAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    );
-    _scaleAnimation =
-        Tween<double>(begin: 0.8, end: 1.0).animate(_animationController);
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(1.0, 0.0), // Start from off-screen (right)
+      end: const Offset(0.0, 0.0), // Move to visible position
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -64,8 +60,7 @@ class _UserScreenState extends ConsumerState<UserScreen>
     });
   }
 
-  void onSearch(String loginId, String name, String dg, String department,
-      String section) {
+  void onSearch(String loginId, String name, String dg, String department, String section) {
     setState(() {
       searchLoginId = loginId;
       searchName = name;
@@ -73,7 +68,7 @@ class _UserScreenState extends ConsumerState<UserScreen>
       searchDepartment = department;
       searchSection = section;
       pageNumber = 1;
-      pageSize = 15; // Reset to first page on new search
+      pageSize = 15;
       search = true;
     });
   }
@@ -84,24 +79,16 @@ class _UserScreenState extends ConsumerState<UserScreen>
     }
 
     List<User> filteredList = users.where((singleUser) {
-      // final matchesLoginId = searchLoginId.isEmpty ||
-      //     (singleUser.loginId.toLowerCase())
-      // .contains(searchNameArabic.toLowerCase());
       final matchesName = searchName.isEmpty ||
           (singleUser.name.toLowerCase()).contains(searchName.toLowerCase());
-      final matchesDg =
-          searchDG.isEmpty || singleUser.dgId.toString() == searchDG;
+      final matchesDg = searchDG.isEmpty || singleUser.dgId.toString() == searchDG;
       final matchesDepartment = searchDepartment.isEmpty ||
           singleUser.departmentId.toString() == searchDepartment;
       final matchesSection = searchSection.isEmpty ||
           singleUser.sectionId.toString() == searchSection;
-      return matchesDg &&
-          matchesSection &&
-          matchesDepartment &&
-          matchesName; // && matchesDg;
+      return matchesDg && matchesSection && matchesDepartment && matchesName;
     }).toList();
 
-    // Apply pagination
     int startIndex = (pageNumber - 1) * pageSize;
     int endIndex = startIndex + pageSize;
     endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
@@ -122,9 +109,7 @@ class _UserScreenState extends ConsumerState<UserScreen>
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AddUserScreen(
-                currentUser: currentUser,
-              );
+              return AddUserScreen(currentUser: currentUser);
             },
           );
         },
@@ -133,54 +118,81 @@ class _UserScreenState extends ConsumerState<UserScreen>
     ];
 
     return Scaffold(
-      body: Column(
+      appBar: AppBar(
+        title: const Text('User Master'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _toggleSearchForm, // Show search form on click
+          ),
+        ],
+      ),
+      body: Stack(
         children: [
-          /* UsersSearchForm(
-            onSearch: onSearch,
-          ),*/
-          if (users.isNotEmpty)
-            Pagination(
-              totalItems:
-                  search ? filteredAndPaginatedList.length : users.length,
-              initialPageSize: pageSize,
-              onPageChange: (pageNo, newPageSize) {
-                setState(() {
-                  pageNumber = pageNo;
-                  pageSize = newPageSize;
-                });
-              },
-            ), // Search form widget
-          if (users.isEmpty)
-            const Center(child: Text('No items found'))
-          else
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: DisplayDetails(
-                  headers: const [
-                    'LoginId',
-                    'DisplayName',
-                    'DG',
-                    'Department',
-                    'Section',
-                    //'Designation',
-                  ],
-                  data: const [
-                    'name',
-                    'systemName',
-                    'dgName',
-                    'departmentName',
-                    'sectionName',
-                    //'designationNameEnglish',
-                  ],
-                  details: User.listToMap(filteredAndPaginatedList),
-                  expandable: true,
-                  iconButtons: iconButtons,
-                  onTap: (id, {objectId}) {},
-                  detailKey: 'id',
+          Column(
+            children: [
+              if (users.isNotEmpty)
+                Pagination(
+                  totalItems: search ? filteredAndPaginatedList.length : users.length,
+                  initialPageSize: pageSize,
+                  onPageChange: (pageNo, newPageSize) {
+                    setState(() {
+                      pageNumber = pageNo;
+                      pageSize = newPageSize;
+                    });
+                  },
                 ),
-              ),
-            ),
+              if (users.isEmpty)
+                const Center(child: Text('No items found'))
+              else
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DisplayDetails(
+                      headers: const [
+                        'LoginId',
+                        'DisplayName',
+                        'DG',
+                        'Department',
+                        'Section',
+                      ],
+                      data: const [
+                        'name',
+                        'systemName',
+                        'dgName',
+                        'departmentName',
+                        'sectionName',
+                      ],
+                      details: User.listToMap(filteredAndPaginatedList),
+                      expandable: true,
+                      iconButtons: iconButtons,
+                      onTap: (id, {objectId}) {},
+                      detailKey: 'id',
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return SlideTransition(
+                position: _slideAnimation,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4, // 40% width of screen
+                    height: double.infinity,
+                    color: Colors.white, // Background color
+                    padding: const EdgeInsets.all(16.0),
+                    child: UsersSearchForm(
+                      onSearch: onSearch,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

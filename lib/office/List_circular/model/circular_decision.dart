@@ -4,8 +4,10 @@ class CircularDecisionSearch {
   final String? meetingNumber;
   final String? priority;
   final String? subject;
-  final String? typyId;
-  final String? classificationId;
+  final int? typyId;
+  final String? comment	;
+  final String? documentDate	;
+  final int? classificationId;
   final String objectId;
   final String? createdDate;
 
@@ -16,6 +18,8 @@ class CircularDecisionSearch {
     this.priority,
     this.subject,
     this.typyId,
+    this.comment,
+    this.documentDate,
     this.classificationId,
     required this.objectId,
     this.createdDate,
@@ -26,11 +30,13 @@ class CircularDecisionSearch {
     return CircularDecisionSearch(
       documentNumber: map['documentNumber'] as String?,
       documentType: map['documentType'] as String?,
-      meetingNumber: map['documentType'] as String?,
-      priority: map['documentType'] as String?,
+      meetingNumber: map['meetingNumber'] as String?,
+      comment	: map['comment'] as String?,
+      priority: map['priorityId'] as String?,
       subject: map['subject'] as String?,
-      typyId: map['typyId'] as String?,
-      classificationId: map['classificationId'] as String?,
+      documentDate: map['documentDate'] as String?,
+      typyId: map['typyId'] as int?,
+      classificationId: map['classificationId'] as int?,
       objectId: map['objectId'] as String,
       createdDate: map['createdDate'] as String?,
     );

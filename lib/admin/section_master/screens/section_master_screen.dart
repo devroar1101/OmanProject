@@ -6,6 +6,7 @@ import 'package:tenderboard/admin/section_master/screens/add_section_master.dart
 import 'package:tenderboard/admin/section_master/screens/section_master_form.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_alert_box.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -83,7 +84,7 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Section Deleted successfully!')),
     );
-    Navigator.pop(context);
+   
   }
 
   @override
@@ -108,20 +109,28 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
       },
       {
         "button": Icons.delete,
-        "function": (int id) {
+        "function": (int id) => {
           showDialog(
-            context: context,
-            builder: (context) => ConfirmationAlertBox(
-              messageType: 3,
-              message: getTranslation('Areyousureyouwanttodeletethissection?'),
-              onConfirm: () {
-                onDelete(id);
-              },
-              onCancel: () {
-                Navigator.pop(context);
-              },
-            ),
-          );
+                context: context,
+                builder: (context) => ConfirmationAlertBox(
+                  messageType: 3,
+                  message: getTranslation('Areyousureyouwanttodeletethissection?'),
+                  onConfirm: () {
+                    onDelete(id);
+                    Navigator.of(context).pop(context);
+                    CustomSnackbar.show(
+                        context: context,
+                        title: 'successfully',
+                        message: getTranslation('Sectiondeletedsuccessfully!'),
+                        typeId: 1,
+                        durationInSeconds: 3);
+                     
+                  },
+                  onCancel: () {
+                    Navigator.of(context).pop(context);
+                  },
+                ),
+              )
         }
       },
     ];
@@ -198,8 +207,8 @@ class _SectionMasterScreenState extends ConsumerState<SectionMasterScreen> {
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true,
                   iconButtons: iconButtons, // Expandable table rows
-                  onTap: (index, {objectId}) {},
-                  detailKey: 'sectionId', // Unique key for row selection
+                  onTap: (id, {objectId}) {},
+                  detailKey: 'id', // Unique key for row selection
                 ),
               ),
             ),

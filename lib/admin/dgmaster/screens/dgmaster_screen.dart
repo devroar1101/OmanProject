@@ -71,14 +71,10 @@ class _DgScreenState extends ConsumerState<DgScreen> {
 
   void onDelete(int dgId) {
     ref.watch(dgRepositoryProvider.notifier).deleteDg(dgId: dgId);
-
-    CustomSnackbar.show(
-        context: context,
-        title: 'successfully',
-        message: getTranslation('Dgdeletedsuccessfully!'),
-        typeId: 1,
-        durationInSeconds: 3);
-    Navigator.pop(context);
+     ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Dg Deleted successfully!')),
+    );
+  
   }
 
   @override
@@ -113,6 +109,13 @@ class _DgScreenState extends ConsumerState<DgScreen> {
                   message: getTranslation('Areyousureyouwanttodeletethisdg?'),
                   onConfirm: () {
                     onDelete(id);
+                    Navigator.of(context).pop(context);
+                    CustomSnackbar.show(
+                        context: context,
+                        title: 'successfully',
+                        message: getTranslation('Dgdeletedsuccessfully!'),
+                        typeId: 1,
+                        durationInSeconds: 3);
                   },
                   onCancel: () {
                     Navigator.of(context).pop(context);

@@ -11,16 +11,11 @@ import 'package:tenderboard/admin/user_master/screens/user_master_screen.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/office/List_circular/screens/circular_screen.dart';
-import 'package:tenderboard/office/create_meetingminutes/screens/create_meetingminutes_home.dart';
 import 'package:tenderboard/office/createcircular_decision/screen/circular_home.dart';
 import 'package:tenderboard/office/document_search/screens/document_search_home.dart';
 import 'package:tenderboard/office/ejob/screens/ejob_screen.dart';
-import 'package:tenderboard/office/ejob_summary/screens/ejob_summary_screen.dart';
-
 import 'package:tenderboard/office/list_decision/screens/decision_screen.dart';
-
-import 'package:tenderboard/office/outbox/screens/outbox_screen.dart';
-import 'package:tenderboard/office/letter_summary/screens/letter_summary.dart';
+import 'package:tenderboard/office/list_meeting_minites/screens/list_meetingminutes_screen.dart';
 import 'package:tenderboard/office/letter/screens/letter_index.dart';
 import 'package:tenderboard/office/search_screens/screens/list_Screen.dart';
 
@@ -120,11 +115,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'icon': Icons.check_circle,
         'navigate': const DecisionListScreen(),
       },
-      // {
-      //   'title': 'MeetingMinutes',
-      //   'icon': Icons.meeting_room_rounded,
-      //   'navigate': const CreateMeetingMinutesScreen(),
-      // },
+      {
+        'title': 'MeetingMinutes',
+        'icon': Icons.meeting_room_rounded,
+        'navigate': const MeetingMinutesScreen(),
+      },
     ],
     'Admin': [
       {
@@ -143,7 +138,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const SectionMasterScreen()
       },
       {
-        'title': getTranslation('ListMaster'),
+        'title': getTranslation('List Master'),
         'icon': Icons.list,
         'navigate': const ListMasterHome()
       },
@@ -158,12 +153,12 @@ class _CustomSidebarState extends State<CustomSidebar> {
         'navigate': const FolderPermissionHome(),
       },
       {
-        'title': getTranslation('SubjectMaster'),
+        'title': getTranslation('Subject Master'),
         'icon': Icons.subject,
         'navigate': const LetterSubjectMasterScreen()
       },
       {
-        'title': getTranslation('ExternalLocation'),
+        'title': getTranslation('External Location'),
         'icon': Icons.account_tree,
         'navigate': const ExternalLocationScreen()
       },

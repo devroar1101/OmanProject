@@ -8,20 +8,18 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFFF5F5F5); // Light gray
   static const Color darkBackgroundColor = Color(0xFF2C3E50); // Dark blue-gray
   static const Color activeColor = Color.fromARGB(255, 252, 174, 30); // Green
-  static const Color buttonColor =
-      Color.fromARGB(255, 212, 180, 146); // Bright button color
-  static const Color buttonTextColor =
-      Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
-  static const Color textColor =
-      Color.fromARGB(255, 33, 37, 41); // Black text color
+  static const Color buttonColor = Color.fromARGB(255, 212, 180, 146); // Bright button color
+  static const Color buttonTextColor = Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
+  static const Color textColor = Color.fromARGB(255, 33, 37, 41); // Black text color
   static const Color appBarColor = Color(0xFF004F95); // Matches primary color
   static const Color cardColor = Color(0xFFFFFFFF); // White for cards
-  static const Color iconColor =
-      Color.fromARGB(255, 237, 240, 241); // Consistent icon color
+  static const Color iconColor = Color.fromARGB(255, 237, 240, 241); // Consistent icon color
   static const Color borderColor = Color(0xFFCCCCCC); // Light gray for borders
-  static const Color displayHeaderColor =
-      Color.fromARGB(255, 142, 174, 155); // Same as primary
+  static const Color displayHeaderColor = Color.fromARGB(255, 142, 174, 155); // Same as primary
   static const Color dialogColor = Color.fromARGB(255, 237, 238, 240);
+  static const Color snackBarColor = Color(0xFFB71C1C); // Red for error messages
+  static const Color dropdownBackgroundColor = Color.fromARGB(255, 50, 50, 50); // Custom dropdown background
+
   // Common text theme using GoogleFonts for Kufam
   static final TextTheme _textTheme = TextTheme(
     headlineLarge: GoogleFonts.kufam(
@@ -55,7 +53,7 @@ class AppTheme {
   static ThemeData getTheme({required bool isDarkMode}) {
     return ThemeData(
       primaryColor: primaryColor,
-      scaffoldBackgroundColor: const Color(0x00f8f9fa),
+      scaffoldBackgroundColor: const Color.fromARGB(255, 248, 249, 250),
       colorScheme: ColorScheme(
         primary: primaryColor,
         secondary: secondaryColor,
@@ -89,7 +87,6 @@ class AppTheme {
           iconColor: WidgetStatePropertyAll(textColor),
         ),
       ),
-
       inputDecorationTheme: const InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: borderColor),
@@ -100,8 +97,8 @@ class AppTheme {
         border: OutlineInputBorder(
           borderSide: BorderSide(color: borderColor),
         ),
-        labelStyle: TextStyle(color: textColor),
-        hintStyle: TextStyle(color: textColor),
+        labelStyle: TextStyle(color: Color.fromARGB(255, 28, 28, 29)),
+        hintStyle: TextStyle(color: Color.fromARGB(255, 28, 28, 29)),
       ),
       cardTheme: CardTheme(
         color: isDarkMode
@@ -121,6 +118,29 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
+        ),
+      ),
+
+      // Change error message (Snackbar) background color
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: snackBarColor, // Change this to your preferred color
+        contentTextStyle: const TextStyle(color: Colors.white), // Text color
+        actionTextColor: const Color.fromARGB(255, 27, 27, 27), // Action button text color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        behavior: SnackBarBehavior.floating, // Makes it appear floating
+      ),
+
+      // Change BottomSheet background color
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.black, // Change to your preferred color
+      ),
+
+      // Set Dropdown Background Color
+      dropdownMenuTheme: const DropdownMenuThemeData(
+        menuStyle: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 206, 204, 204)), // Set dropdown background color
         ),
       ),
     );

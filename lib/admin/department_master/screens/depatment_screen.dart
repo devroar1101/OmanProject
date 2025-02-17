@@ -77,7 +77,7 @@ class _DepartmentScreenState extends ConsumerState<DepartmentScreen> {
   void onDelete(int departmentId) {
     ref
         .watch(departmentRepositoryProvider.notifier)
-        .deleteDpartment(DepartmentId: departmentId);
+        .deleteDpartment(departmentId: departmentId);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Department Deleted successfully!')),
     );
@@ -91,7 +91,7 @@ class _DepartmentScreenState extends ConsumerState<DepartmentScreen> {
 
     final iconButtons = [
       {
-        "button": (Icons.edit,),
+        "button": Icons.edit,
         "function": (int id) {
           final Department currentDepartment =
               departments.firstWhere((department) => department.id == id);
@@ -194,7 +194,7 @@ class _DepartmentScreenState extends ConsumerState<DepartmentScreen> {
                       filteredAndPaginatedList), // Convert list to map
                   expandable: true, // Expandable table rows
                   iconButtons: iconButtons,
-                  onTap: (index, {objectId}) {},
+                  onTap: (id, {objectId}) {},
                   detailKey: 'id', // Unique key for row selection
                 ),
               ),

@@ -7,6 +7,7 @@ class CircularDecision {
   final String? comment;
   final int? classificationId;
   final String? meetingNumber;
+  final String? documentDate;
   final int? priorityId;
   final String? objectId;
 
@@ -19,6 +20,7 @@ class CircularDecision {
     this.comment,
     this.classificationId,
     this.meetingNumber,
+    this.documentDate,
     this.priorityId,
     this.objectId,
   });
@@ -34,6 +36,7 @@ class CircularDecision {
       subject: map['subject'] as String?,
       typeId: map['typeId'] as int, // Required field
       comment: map['comment'] as String?,
+      documentDate: map['documentDate'] as String?,
       classificationId: map['classificationId'] as int?,
       objectId: map['objectId'] as String?,
     );
@@ -43,11 +46,12 @@ class CircularDecision {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'circularNo': circularNo,
+      'documentNumber': circularNo,
       'documentType': documentType,
       'subject': subject,
       'typeId': typeId,
       'comment': comment,
+      'documentDate': documentDate,
       'classificationId': classificationId,
       'meetingNumber': meetingNumber,
       'priorityId': priorityId,

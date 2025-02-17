@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/admin/external_locations_Master/screens/add_external_location.dart';
 
 import 'package:tenderboard/admin/external_locations_Master/screens/external_location_master_form.dart';
+import 'package:tenderboard/common/utilities/global_helper.dart';
+import 'package:tenderboard/common/widgets/custom_alert_box.dart';
+import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/displaydetails.dart';
 import 'package:tenderboard/common/widgets/pagenation.dart';
 
@@ -27,14 +31,16 @@ class _ExternalLocationScreenState
 
   String searchNameArabic = '';
   String searchNameEnglish = '';
+  String searchType = '';
   int pageNumber = 1; // Default to the first page
   int pageSize = 15; // Default page size
   bool search = false;
 
-  void onSearch(String nameArabic, String nameEnglish) {
+  void onSearch(String nameArabic, String nameEnglish, String type) {
     setState(() {
       searchNameArabic = nameArabic;
       searchNameEnglish = nameEnglish;
+      searchType = type;
       search = true;
     });
   }
@@ -52,7 +58,9 @@ class _ExternalLocationScreenState
           externalLocation.nameEnglish
               .toLowerCase()
               .contains(searchNameEnglish.toLowerCase());
-      return matchesArabic && matchesEnglish;
+      final matchesType = searchType.isEmpty ||
+          externalLocation.type.toLowerCase().contains(searchType.toLowerCase());
+      return matchesArabic && matchesEnglish && matchesType;
     }).toList();
 
     // Apply pagination
@@ -61,6 +69,12 @@ class _ExternalLocationScreenState
     endIndex = endIndex > filteredList.length ? filteredList.length : endIndex;
 
     return filteredList.sublist(startIndex, endIndex);
+  }
+
+  void onDelete(int locationId) {
+    ref
+        .watch(ExternalLocationRepositoryProvider.notifier)
+        .deleteExternalLocation(locationId: locationId);
   }
 
   @override
@@ -73,20 +87,48 @@ class _ExternalLocationScreenState
       {
         "button": Icons.edit,
         "function": (int id) {
-          // final ExternalLocation currentLocation =
-          //               externalLocations.firstWhere(
-          //                   (location) => location.id == id);
-          //           showDialog(
-          //             context: context,
-          //             builder: (BuildContext context) {
-          //               return const AddUserMasterScreen(
-
-          //               );
-          //             },
-          //           );
+          final ExternalLocation currentLocation =
+              externalLocations.firstWhere((location) => location.id == id);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddExternalLocation(
+                currentExternalLocationId: currentLocation.id,
+                currentlocation: currentLocation,
+                editNameArabic: currentLocation.nameArabic,
+                editNameEnglish: currentLocation.nameEnglish,
+              );
+            },
+          );
         },
       },
-      {"button": Icons.delete, "function": (int id) => print("Delete $id")},
+      {
+        "button": Icons.delete,
+        "function": (int id) => {
+              showDialog(
+                context: context,
+                builder: (context) => ConfirmationAlertBox(
+                  messageType: 3,
+                  message: getTranslation(
+                      'AreyousureyouwanttodeletethisExternalLocation?'),
+                  onConfirm: () {
+                    onDelete(id);
+                    Navigator.of(context).pop(context);
+                    CustomSnackbar.show(
+                        context: context,
+                        title: 'successfully',
+                        message: getTranslation(
+                            'ExternalLocationdeletedsuccessfully!'),
+                        typeId: 1,
+                        durationInSeconds: 3);
+                  },
+                  onCancel: () {
+                    Navigator.of(context).pop(context);
+                  },
+                ),
+              )
+            },
+      }
     ];
 
     return Scaffold(
@@ -112,7 +154,9 @@ class _ExternalLocationScreenState
                             externalLocation.nameEnglish
                                 .toLowerCase()
                                 .contains(searchNameEnglish.toLowerCase());
-                        return matchesArabic && matchesEnglish;
+                                final matchesType = searchType.isEmpty ||
+          externalLocation.type.toLowerCase().contains(searchType.toLowerCase());
+                        return matchesArabic && matchesEnglish && matchesType;
                       }).length
                     : externalLocations.length,
                 initialPageSize: pageSize,
@@ -136,21 +180,19 @@ class _ExternalLocationScreenState
                     'NameArabic',
                     'NameEnglish',
                     'Type',
-                    'Active',
-                    'Location',
+                    'category'
                   ],
                   data: const [
                     'nameArabic',
                     'nameEnglish',
-                    'typeNameEnglish',
-                    'active',
-                    'isYes',
+                    'type',
+                    'isNew',
                   ],
                   details: ExternalLocation.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
-                  onTap: (index, {objectId}) {},
-                  detailKey: 'objectId',
+                  onTap: (id, {objectId}) {},
+                  detailKey: 'id',
                 ),
               ),
             ),

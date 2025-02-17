@@ -32,8 +32,8 @@ class LetterSubjectMasterRepository
         LetterSubjecct(
           subject: subjectName,
           tenderNumber: tenderNumber,
-          objectId: 'weq-eqw-eq',
-          subjectId: 0,
+          objectId: response.data['data']['objectId'],
+          id: response.data['data']['id'],
         ),
         ...state
       ];
@@ -95,12 +95,12 @@ class LetterSubjectMasterRepository
         final updatedLetterSubject = LetterSubjecct(
             subject: subjectName,
             tenderNumber: tenderNumber,
-            objectId: 'das-das',
-            subjectId: 0);
+            objectId: response.data['data']['objectId'],
+            id: response.data['data']['id']);
 
         state = [
           for (var letterSubject in state)
-            if (letterSubject.subjectId == currentSubjectId)
+            if (letterSubject.id == currentSubjectId)
               updatedLetterSubject
             else
               letterSubject
@@ -128,7 +128,7 @@ class LetterSubjectMasterRepository
 
       if (response.statusCode == 200) {
         // Update the state by removing the deleted DgMaster
-        state = state.where((subject) => subject.subjectId != subjectId).toList();
+        state = state.where((subject) => subject.id != subjectId).toList();
       } else {
         throw Exception(
             'Failed to delete Subject. Status code: ${response.statusCode}');

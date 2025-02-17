@@ -97,7 +97,7 @@ class SectionRepository extends StateNotifier<List<Section>> {
     try {
       final response = await dio.delete(
         '/Section/Delete',
-        queryParameters: {'id': id},
+        queryParameters: {'Id': id},
       );
 
       if (response.statusCode == 200) {
