@@ -947,6 +947,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                         [];
                     _selectedDepartment = null;
                     _selectedDG = dg.id;
+                    _selectedUserName = '';
                   });
                 },
                 hint: 'Select DG',
@@ -964,6 +965,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 onChanged: (department, selectedOption) {
                   setState(() {
                     _selectedDepartment = department.id;
+                    _selectedUserName = '';
                   });
                 },
                 hint: departmentOptions.isNotEmpty
@@ -986,6 +988,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 initialValue: _selectedUserName,
                 onChanged: (user, selectedOption) {
                   _selectedUser = user.id;
+                  _selectedUserName = selectedOption.displayName;
                 },
                 hint: departmentOptions.isNotEmpty
                     ? 'Select User'
