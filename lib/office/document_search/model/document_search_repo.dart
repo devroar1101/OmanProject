@@ -1,49 +1,66 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 import 'package:tenderboard/office/document_search/model/document_search.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
 
-final DocumentSearchRepositoryProvider =
-    StateNotifierProvider<DocumentSearchRepository, List<DocumentSearch>>((ref) {
+final documentSearchProvider =
+    StateNotifierProvider<DocumentSearchRepository, SearchListResponse>((ref) {
   return DocumentSearchRepository(ref);
 });
 
-class DocumentSearchRepository extends StateNotifier<List<DocumentSearch>> {
-  DocumentSearchRepository(this.ref) : super([]);
+class DocumentSearchRepository extends StateNotifier<SearchListResponse> {
+  DocumentSearchRepository(this.ref)
+      : super(SearchListResponse(data: [], totalCount: 0));
+
   final Ref ref;
 
-  /// Fetch List of Document Searches
-  Future<List<DocumentSearch>> fetchListDocumentSearch({
-    int pageSize = 15,
-    int pageNumber = 1,
-  }) async {
-    final dio = ref.watch(dioProvider);
-    Map<String, dynamic> requestBody = {
-      'paginationDetail': {
-        'pageSize': pageSize,
-        'pageNumber': pageNumber,
-      }
+  Future<void> fetchListDocumentSearch() async {
+    final dio = ref.read(dioProvider);
+
+    final filterProvider = ref.read(documentSearchFilterProvider);
+    final filter = DocumentSearchFilter.fromMap(filterProvider['filter']);
+    final Map<String, dynamic> requestBody = {
+      'paginationDetail': filterProvider['pagination'],
+      ...filter.toMap(),
     };
+
     try {
       final response = await dio.post(
         '/JobFlow/SearchandListDocumentSearch',
         data: requestBody,
       );
 
-      // Check if the response is successful
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data as List;
-        state = data
-            .map((item) => DocumentSearch.fromMap(item as Map<String, dynamic>))
-            .toList();
-      } else {
-        throw Exception('Failed to load Document Searches');
+        final data = response.data;
+
+        state = SearchListResponse.fromMap(data);
       }
     } catch (e) {
-      // Handle any errors during the request
-      throw Exception('Error occurred while fetching Document Searches: $e');
+      throw Exception('Error fetching document searches: $e');
     }
-    return state;
+  }
+}
+
+// Create a StateNotifier for controlling the slider visibility
+class SliderVisibilityNotifier extends StateNotifier<bool> {
+  SliderVisibilityNotifier() : super(false); // Initialize to false (hidden)
+
+  void toggleVisibility() {
+    state = !state; // Toggle the visibility state
   }
 
-  /// Additional methods (e.g., add, update, delete) can be implemented here
+  void show() {
+    state = true; // Force show the slider
+  }
+
+  void hide() {
+    state = false; // Force hide the slider
+  }
 }
+
+// Create a provider for the SliderVisibilityNotifier
+final sliderVisibilityProvider =
+    StateNotifierProvider<SliderVisibilityNotifier, bool>((ref) {
+  return SliderVisibilityNotifier();
+});

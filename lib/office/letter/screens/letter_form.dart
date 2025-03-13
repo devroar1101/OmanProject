@@ -19,8 +19,10 @@ import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
 import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
+import 'package:uuid/uuid.dart';
 
 // ignore: must_be_immutable
 class LetterForm extends ConsumerStatefulWidget {
@@ -43,14 +45,15 @@ class LetterForm extends ConsumerStatefulWidget {
 class _LetterFormState extends ConsumerState<LetterForm> {
   final _formKey = GlobalKey<FormState>();
 
+  static const Uuid _uuid = Uuid();
+  late String objectId;
   final TextEditingController _referenceController = TextEditingController();
   final TextEditingController _sendToController = TextEditingController();
   final TextEditingController _receivedFromController = TextEditingController();
   final TextEditingController _summaryController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _actionToBeController = TextEditingController();
-  final TextEditingController _tenderNumberBeController =
-      TextEditingController();
+  final TextEditingController _tenderNumberController = TextEditingController();
 
   DateTime _createdDate = DateTime.now();
   DateTime? _dateOnTheLetter;
@@ -75,7 +78,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   String _selectedDirectionType = 'Internal';
   String _selectedLocationType = 'Government';
   bool _isNewLocation = true;
-  int letterNo = 1101;
+  int letterNo = 0;
   double fieldHeight = 45;
   bool isSaving = false;
   bool saved = false;
@@ -102,7 +105,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     _summaryController.dispose();
     _subjectController.dispose();
     _actionToBeController.dispose();
-    _tenderNumberBeController.dispose();
+    _tenderNumberController.dispose();
   }
 
   @override
@@ -114,26 +117,32 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   void initialise() async {
     // Check if widget.letterObjectId is null
     if (widget.letterObjectId == null) {
-      // Fetch options for cabinet, location, and dg when letterObjectId is null
-      final cabinetAsyncValue = ref.read(cabinetOptionsProvider(true));
-      cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
+      objectId = _uuid.v4();
+      if (widget.screenName == 'Search') {
+        final locationAsyncValue = ref.read(locationOptionsProvider);
+        locationOptions = locationAsyncValue.asData?.value ?? [];
+        _selectedDirection = 'All';
+        _selectedDirectionType = 'All';
+      } else {
+        final locationAsyncValue = ref.read(locationOptionsProvider);
+        locationOptions = locationAsyncValue.asData?.value ?? [];
+        final cabinetAsyncValue = ref.read(cabinetOptionsProvider(true));
+        cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
 
-      final locationAsyncValue = ref.read(locationOptionsProvider);
-      locationOptions = locationAsyncValue.asData?.value ?? [];
+        final dgAsyncValue = ref.read(dgOptionsProvider(true));
+        dgOptions = dgAsyncValue.asData?.value ?? [];
 
-      final dgAsyncValue = ref.read(dgOptionsProvider(true));
-      dgOptions = dgAsyncValue.asData?.value ?? [];
-
-      final userAsyncValue = ref.read(userOptionsProvider);
-      if (usersOptions.isEmpty) {
-        usersOptions = userAsyncValue.asData?.value ?? [];
+        final userAsyncValue = ref.read(userOptionsProvider);
+        if (usersOptions.isEmpty) {
+          usersOptions = userAsyncValue.asData?.value ?? [];
+        }
       }
-    } else {
+    } else if (widget.screenName != 'Search') {
       // When letterObjectId is not null, fetch the letter summary
       final letterSummaryFuture = ref
           .read(letterSummaryRepositoryProvider)
           .fetchLetterSummary(widget.letterObjectId!);
-
+      objectId = widget.letterObjectId!;
       letterSummaryFuture.then((letter) {
         // After fetching the letter summary, initialize your variables
         setState(() {
@@ -143,7 +152,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           _summaryController.text = letter.summary ?? '';
           _subjectController.text = letter.subject ?? '';
           _actionToBeController.text = letter.actionToBeTaken ?? '';
-          _tenderNumberBeController.text = letter.tenderNumber ?? '';
+          _tenderNumberController.text = letter.tenderNumber ?? '';
 
           //  _createdDate = letter.createdDate ?? DateTime.now(); date type
           // _dateOnTheLetter = letter.dateOnTheLetter;
@@ -187,24 +196,27 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       final response = await LetterUtils(
               actionToBeTaken: _actionToBeController.text,
               cabinet: _selectedCabinet,
-              classification: selectedClassification, //replace
+              classification: selectedClassification,
               comments: _summaryController.text,
               createdBy: currentUserId,
               dateOnTheLetter: _dateOnTheLetter,
+              createdDate: _createdDate,
               direction: _selectedDirection,
+              directionType: _selectedDirectionType,
               externalLocation: _selectedLocation,
               folder: _selectedFolder,
               fromUser: currentUserId,
               locationId: _selectedLocation,
-              priority: selectedPriority, //replace
+              priority: selectedPriority,
               receivedDate: _receviedDate,
               reference: _referenceController.text,
               sendTo: _sendToController.text,
               subject: _subjectController.text,
-              tenderNumber: _tenderNumberBeController.text,
+              tenderNumber: _tenderNumberController.text,
               toUser: _selectedUser,
               year: selectedYear,
-              scanDocuments: widget.scanDocumnets)
+              scanDocuments: widget.scanDocumnets,
+              objectId: objectId)
           .onSave();
 
       CustomSnackbar.show(
@@ -217,7 +229,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
       setState(() {
         isSaving = false;
-        saved = response == 'success';
+        saved = response != 'failure';
+        _referenceController.text = response;
       });
     } else {
       setState(() {
@@ -227,46 +240,63 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     }
   }
 
+  void search(context, WidgetRef ref) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      await LetterUtils(
+        dateOnTheLetter: _dateOnTheLetter,
+        direction: _selectedDirection,
+        externalLocation: _selectedLocation,
+        locationId: _selectedLocation,
+        receivedDate: _receviedDate,
+        reference: _referenceController.text,
+        subject: _subjectController.text,
+        tenderNumber: _tenderNumberController.text,
+        year: selectedYear,
+      ).onSearch(ref: ref);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    _referenceController.text =
-        'TB/$currentUserId/${_selectedDirection == 'Incoming' ? 1 : 2}-${_selectedDirectionType == 'Internal' ? 1 : 2}-$letterNo/$selectedYear';
-
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _letterForm1(ref),
-            if (_selectedDirection == 'Outgoing' &&
-                _selectedDirectionType == 'External')
-              _letterForm2(ref),
-            _letterForm3(ref),
-            if (widget.screenName == 'LetterIndex')
-              if (!isSaving)
-                ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      isSaving = true; // Corrected assignment
-                    });
+        child: widget.screenName != 'Search'
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _letterForm1(ref),
+                  if (_selectedDirection == 'Outgoing' &&
+                      _selectedDirectionType == 'External')
+                    _letterForm2(ref),
+                  _letterForm3(ref),
+                  if (widget.screenName == 'LetterIndex')
+                    if (!isSaving)
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            isSaving = true; // Corrected assignment
+                          });
 
-                    save(context);
-                  },
-                  label: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      saved ? 'Send' : 'Save',
-                      textDirection: Directionality.of(context),
-                    ),
-                  ),
-                  icon: saved ? const Icon(Icons.send) : const Icon(Icons.save),
-                )
-              else
-                const CircularProgressIndicator(),
-          ],
-        ),
+                          save(context);
+                        },
+                        label: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            saved ? 'Send' : 'Save',
+                            textDirection: Directionality.of(context),
+                          ),
+                        ),
+                        icon: saved
+                            ? const Icon(Icons.send)
+                            : const Icon(Icons.save),
+                      )
+                    else
+                      const CircularProgressIndicator(),
+                ],
+              )
+            : searchwidget(),
       ),
     );
   }
@@ -439,41 +469,41 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
             const Spacer(),
             // Reduced spacing
-            GestureDetector(
-              onTap: () {
-                Clipboard.setData(
-                    ClipboardData(text: _referenceController.text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Reference copied to clipboard')),
-                );
-              },
-              child: Card(
-                elevation: 3, // Reduced elevation
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Compact corners
-                ),
-                color: Colors.blue.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4.0, // Compact vertical padding
-                    horizontal: 16.0, // Compact horizontal padding
+            if (_referenceController.text != '')
+              GestureDetector(
+                onTap: () {
+                  Clipboard.setData(
+                      ClipboardData(text: _referenceController.text));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Reference copied to clipboard')),
+                  );
+                },
+                child: Card(
+                  elevation: 3, // Reduced elevation
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Compact corners
                   ),
-                  child: Center(
-                    child: Text(
-                      _referenceController.text,
-                      style: const TextStyle(
-                        fontSize: 16, // Slightly smaller font
-                        fontWeight: FontWeight.w500, // Medium weight
+                  color: Colors.blue.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4.0, // Compact vertical padding
+                      horizontal: 16.0, // Compact horizontal padding
+                    ),
+                    child: Center(
+                      child: Text(
+                        _referenceController.text,
+                        style: const TextStyle(
+                          fontSize: 16, // Slightly smaller font
+                          fontWeight: FontWeight.w500, // Medium weight
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
-
         const SizedBox(
           height: 6,
         ),
@@ -609,12 +639,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
             ),
           ],
         ),
-
         const SizedBox(
           height: 6,
         ),
-
-        // Row for Year, Cabinet, Folder
         Row(
           children: [
             Expanded(
@@ -826,18 +853,20 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   }
 
   Widget _letterForm3(WidgetRef ref) {
-    if (_selectedDG != null) {
-      filteredUserOption = usersOptions.where((option) {
-        bool matchesDG =
-            (_selectedDG == null || option.filter == _selectedDG.toString());
+    if (_selectedUserName == '') {
+      if (_selectedDG != null) {
+        filteredUserOption = usersOptions.where((option) {
+          bool matchesDG =
+              (_selectedDG == null || option.filter == _selectedDG.toString());
 
-        bool matchesDepartment = (_selectedDepartment == null ||
-            option.filter1 == _selectedDepartment.toString());
+          bool matchesDepartment = (_selectedDepartment == null ||
+              option.filter1 == _selectedDepartment.toString());
 
-        return matchesDG && matchesDepartment;
-      }).toList();
-    } else {
-      filteredUserOption = [];
+          return matchesDG && matchesDepartment;
+        }).toList();
+      } else {
+        filteredUserOption = [];
+      }
     }
 
     return Column(
@@ -895,11 +924,13 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           ),
           SizedBox(
             height: fieldHeight,
-            child: _buildTextField('Tender Number',
-                controller: _tenderNumberBeController),
+            child: _buildTextField('Letter Number',
+                controller: _tenderNumberController),
           ),
         ]),
+
         const SizedBox(height: 6),
+
         _buildRow([
           Expanded(
             child: SizedBox(
@@ -916,6 +947,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                         [];
                     _selectedDepartment = null;
                     _selectedDG = dg.id;
+                    _selectedUserName = '';
                   });
                 },
                 hint: 'Select DG',
@@ -933,6 +965,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 onChanged: (department, selectedOption) {
                   setState(() {
                     _selectedDepartment = department.id;
+                    _selectedUserName = '';
                   });
                 },
                 hint: departmentOptions.isNotEmpty
@@ -943,6 +976,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           ),
         ]),
         const SizedBox(height: 6),
+
         _buildRow([
           Expanded(
             child: SizedBox(
@@ -954,6 +988,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 initialValue: _selectedUserName,
                 onChanged: (user, selectedOption) {
                   _selectedUser = user.id;
+                  _selectedUserName = selectedOption.displayName;
                 },
                 hint: departmentOptions.isNotEmpty
                     ? 'Select User'
@@ -978,11 +1013,17 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ]),
         const SizedBox(height: 6),
 
-        // Letter Subject
-        SizedBox(
-            height: fieldHeight,
-            child: _buildTextField('Letter Subject',
-                controller: _subjectController)),
+        _buildRow([
+          SizedBox(
+              height: fieldHeight,
+              width: 20,
+              child: _buildTextField('Tender Number',
+                  controller: _subjectController)),
+          SizedBox(
+              height: fieldHeight,
+              child: _buildTextField('Letter Subject',
+                  controller: _subjectController)),
+        ]),
 
         // Save button
         const SizedBox(height: 6),
@@ -1005,7 +1046,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   }
 
 // Text Field widget
-  Widget _buildTextField(String label, {TextEditingController? controller}) {
+  Widget _buildTextField(String label,
+      {TextEditingController? controller, bool? validation}) {
+    validation ??= true;
     return SizedBox(
       height: fieldHeight,
       child: TextFormField(
@@ -1030,11 +1073,430 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
         validator: (value) {
-          if (value == null || value.isEmpty) {
+          if ((value == null || value.isEmpty) && validation!) {
             return 'Please enter $label';
           }
           return null;
         },
+      ),
+    );
+  }
+
+  Widget searchwidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        spacing: 8,
+        children: [
+          Row(children: [
+            Expanded(
+              child: SizedBox(
+                height: fieldHeight,
+                child: _buildTextField('ReferenceNumber',
+                    controller: _referenceController, validation: false),
+              ),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 90,
+              height: fieldHeight,
+              child: DropdownButtonFormField<int>(
+                dropdownColor: AppTheme.backgroundColor,
+                value: selectedYear,
+                decoration: InputDecoration(
+                  labelText: 'Year',
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+                  floatingLabelAlignment: FloatingLabelAlignment.center,
+                  floatingLabelStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black, // Black color when active
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(
+                        color:
+                            Colors.black), // Optional: Black border when active
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                items: List.generate(
+                  61, // Total range: 30 years before + current year + 30 years after
+                  (index) {
+                    int year = DateTime.now().year - 30 + index;
+                    return DropdownMenuItem(
+                      value: year,
+                      child: Text(
+                        year.toString(),
+                        style:
+                            const TextStyle(fontSize: 14), // Smaller item font
+                      ),
+                    );
+                  },
+                ),
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      selectedYear = newValue;
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Select Year';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ]),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: fieldHeight,
+                  child: TextFormField(
+                    readOnly: true, // Disable manual input
+                    decoration: InputDecoration(
+                      labelText: 'Created Date',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => selectDate(
+                          context,
+                          _createdDate,
+                          (picked) => setState(() => _createdDate = picked),
+                        ),
+                      ),
+                      labelStyle:
+                          const TextStyle(fontSize: 16, color: Colors.grey),
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      floatingLabelStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black, // Black color when active
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                            color: Colors
+                                .black), // Optional: Black border when active
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
+                    controller: TextEditingController(
+                      text: DateFormat('yyyy-MM-dd').format(_createdDate),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              // Date on the Letter TextFormField with Calendar Icon
+              Expanded(
+                child: SizedBox(
+                  height: fieldHeight,
+                  child: TextFormField(
+                    readOnly: true, // Disable manual input
+                    decoration: InputDecoration(
+                      labelText: 'Date on the Letter',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => selectDate(
+                          context,
+                          _dateOnTheLetter ?? DateTime.now(),
+                          (picked) => setState(() => _dateOnTheLetter = picked),
+                        ),
+                      ),
+                      labelStyle:
+                          const TextStyle(fontSize: 16, color: Colors.grey),
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      floatingLabelStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black, // Black color when active
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                            color: Colors
+                                .black), // Optional: Black border when active
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
+                    controller: TextEditingController(
+                      text: _dateOnTheLetter != null
+                          ? DateFormat('yyyy-MM-dd').format(_dateOnTheLetter!)
+                          : '', // Display empty string if null
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              // Date on the Letter TextFormField with Calendar Icon
+              Expanded(
+                child: SizedBox(
+                  height: fieldHeight,
+                  child: TextFormField(
+                    readOnly: true, // Disable manual input
+                    decoration: InputDecoration(
+                      labelText: 'Recevied Date',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => selectDate(
+                          context,
+                          _receviedDate ?? DateTime.now(),
+                          (picked) => setState(() => _receviedDate = picked),
+                        ),
+                      ),
+                      labelStyle:
+                          const TextStyle(fontSize: 16, color: Colors.grey),
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      floatingLabelStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black, // Black color when active
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                            color: Colors
+                                .black), // Optional: Black border when active
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
+                    controller: TextEditingController(
+                      text: _receviedDate != null
+                          ? DateFormat('yyyy-MM-dd').format(_receviedDate!)
+                          : '', // Display empty string if null
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTapDown: (_) => _directionScale.value = 0.95, // Shrink on tap
+                onTapUp: (_) =>
+                    _directionScale.value = 1.0, // Return to normal size
+                onTapCancel: () => _directionScale.value = 1.0,
+                onTap: () => setState(() {
+                  _selectedDirection = _selectedDirection == 'All'
+                      ? 'Incoming'
+                      : _selectedDirection == 'Incoming'
+                          ? 'Outgoing'
+                          : 'All';
+                }),
+                child: ValueListenableBuilder<double>(
+                  valueListenable: _directionScale,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        color: Colors.blue.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3.0, horizontal: 4.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _selectedDirection == 'Incoming'
+                                    ? Icons.arrow_circle_down_outlined
+                                    : _selectedDirection == 'All'
+                                        ? Icons.clear_all_sharp
+                                        : Icons.arrow_circle_up_outlined,
+                                color: ColorPicker.formIconColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Direction : ${_selectedDirection}',
+                                style: const TextStyle(
+                                  fontSize: 16, // Slightly smaller font
+                                  fontWeight: FontWeight.w500, // Medium weight
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 2),
+              GestureDetector(
+                onTapDown: (_) => _typeScale.value = 0.95, // Shrink on tap
+                onTapUp: (_) => _typeScale.value = 1.0, // Return to normal size
+                onTapCancel: () => _typeScale.value = 1.0,
+                onTap: () => setState(() {
+                  _selectedDirectionType = _selectedDirectionType == 'All'
+                      ? 'Internal'
+                      : _selectedDirectionType == 'Internal'
+                          ? 'External'
+                          : 'All';
+                }),
+                child: ValueListenableBuilder<double>(
+                  valueListenable: _typeScale,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        color: Colors.blue.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3.0, horizontal: 4.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                  _selectedDirectionType == 'Internal'
+                                      ? Icons.arrow_circle_left_outlined
+                                      : _selectedDirectionType == 'All'
+                                          ? Icons.clear_all_sharp
+                                          : Icons.arrow_circle_right_outlined,
+                                  color: ColorPicker.formIconColor),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Type : $_selectedDirectionType',
+                                style: const TextStyle(
+                                  fontSize: 16, // Slightly smaller font
+                                  fontWeight: FontWeight.w500, // Medium weight
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              GestureDetector(
+                onTapDown: (_) =>
+                    _newLocationScale.value = 0.95, // Shrink on tap
+                onTapUp: (_) =>
+                    _newLocationScale.value = 1.0, // Return to normal size
+                onTapCancel: () => _newLocationScale.value = 1.0,
+                onTap: () => setState(() {
+                  _isNewLocation = !_isNewLocation;
+                }),
+                child: ValueListenableBuilder<double>(
+                  valueListenable: _newLocationScale,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        color: Colors.blue.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 3.0, horizontal: 4.0),
+                          child: Text(
+                            _isNewLocation ? 'New' : 'Old',
+                            style: const TextStyle(
+                              fontSize: 16, // Slightly smaller font
+                              fontWeight: FontWeight.w500, // Medium weight
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: SizedBox(
+                  height: fieldHeight,
+                  child: SelectField<ExternalLocation>(
+                    label: "Location",
+                    options: locationOptions.where((option) {
+                      return option.filter == _selectedLocationType &&
+                          option.filter1!.toString() ==
+                              _isNewLocation.toString();
+                    }).toList(),
+                    key: ValueKey(locationOptions),
+                    initialValue: _selectedLocationName,
+                    onChanged: (location, selectedOption) {
+                      setState(() {
+                        // Clear the selected folder when cabinet changes
+                        _selectedLocation = location.id;
+                      });
+                    },
+                    hint: 'Select Location',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(children: [
+            Expanded(
+              child: SizedBox(
+                height: fieldHeight,
+                width: 50,
+                child: _buildTextField('Tender Number',
+                    controller: _tenderNumberController, validation: false),
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                  height: fieldHeight,
+                  child: _buildTextField('Letter Subject',
+                      controller: _subjectController, validation: false)),
+            ),
+          ]),
+          _buildRow([
+            ElevatedButton.icon(
+              onPressed: () {
+                search(context, ref);
+              },
+              label: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Search',
+                  textDirection: Directionality.of(context),
+                ),
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                initialise();
+                clearFilterAndPagination(ref);
+              },
+              label: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Clear',
+                  textDirection: Directionality.of(context),
+                ),
+              ),
+            ),
+          ]),
+        ],
       ),
     );
   }

@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter.dart';
+import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
+import 'package:tenderboard/office/document_search/model/document_search_repo.dart';
 import 'package:tenderboard/office/letter/model/letter.dart';
 import 'package:tenderboard/office/letter/model/letter_action.dart';
 import 'package:tenderboard/office/letter/model/letter_action_repo.dart';
@@ -24,17 +27,17 @@ class LetterUtils {
   final int? fromUser;
   final int? locationId;
   final DateTime? receivedDate;
+  final DateTime? createdDate;
   final String? reference;
   final String? sendTo;
   final String? subject;
   final String? tenderNumber;
   final int? toUser;
-
+  final String? objectId;
+  final String? directionType;
   final int? priority;
   final int? year;
   List<String>? scanDocuments;
-
-  static const Uuid _uuid = Uuid();
 
   /// Constructor to initialize all fields
   LetterUtils(
@@ -45,11 +48,13 @@ class LetterUtils {
       this.createdBy,
       this.dateOnTheLetter,
       this.direction,
+      this.directionType,
       this.externalLocation,
       this.folder,
       this.fromUser,
       this.locationId,
       this.receivedDate,
+      this.createdDate,
       this.reference,
       this.sendTo,
       this.subject,
@@ -57,35 +62,36 @@ class LetterUtils {
       this.toUser,
       this.priority,
       this.year,
-      this.scanDocuments});
+      this.scanDocuments,
+      this.objectId});
 
   Future<String> onSave() async {
+    print(reference);
     try {
-      final objectId = _uuid.v4();
-
-      // Build Letter object
       final letter = Letter(
-        year: year ?? 0,
-        templateId: 0,
-        actionToBeTaken: actionToBeTaken,
-        cabinetId: cabinet ?? 0,
-        classificationId: classification ?? 0,
-        createdBy: createdBy ?? 0,
-        dateOnLetter: dateOnTheLetter,
-        direction: direction ?? 'incoming',
-        fileId: folder ?? 0,
-        flagStatus: 0,
-        jobOwnerId: toUser ?? 0,
-        letterNumber: tenderNumber,
-        objectId: objectId,
-        priorityId: priority ?? 0,
-        referenecNumber: reference ?? '',
-        sendTo: sendTo ?? '',
-        statusId: 1,
-        receivedDate: receivedDate,
-        subject: subject ?? '',
-        tenderStatusId: 1,
-      );
+          year: year ?? 0,
+          templateId: 0,
+          actionToBeTaken: actionToBeTaken,
+          cabinetId: cabinet ?? 0,
+          classificationId: classification ?? 0,
+          createdBy: createdBy ?? 0,
+          dateOnLetter: dateOnTheLetter,
+          direction: direction ?? 'incoming',
+          directionType: directionType,
+          folderId: folder ?? 0,
+          flagStatus: 0,
+          jobOwnerId: toUser ?? 0,
+          letterNumber: tenderNumber,
+          objectId: objectId,
+          priorityId: priority ?? 0,
+          referenecNumber: reference ?? '',
+          sendTo: sendTo ?? '',
+          statusId: reference != null ? 1 : 0,
+          receivedDate: receivedDate,
+          createdDate: createdDate,
+          subject: subject ?? '',
+          tenderStatusId: 1,
+          locationId: locationId);
 
       // Build LetterAction object
       final letterAction = LetterAction(
@@ -94,7 +100,7 @@ class LetterUtils {
         classificationId: classification ?? 0,
         priorityId: priority ?? 0,
         fromUserId: fromUser ?? 0,
-        locationId: locationId ?? 0,
+        // locationId: locationId ?? 0,
         pageSelected: 'All',
         sequenceNo: 1,
         toUserId: toUser ?? 0,
@@ -127,7 +133,7 @@ class LetterUtils {
       final repo = ProviderContainer();
 
       // Save Letter and LetterAction objects in parallel with LetterContent list
-      await Future.wait([
+      final response = await Future.wait([
         repo.read(letterRepositoryProvider).createLetter(letter.toMap()),
         repo
             .read(letterActionRepositoryProvider)
@@ -140,9 +146,34 @@ class LetterUtils {
             .createContent(content.toMap())),
       ]);
 
-      return 'success';
+      return response[0].data['data'];
     } catch (e) {
       print('Error saving data: $e');
+      return 'failure';
+    }
+  }
+
+  Future<String> onSearch({required WidgetRef ref}) async {
+    try {
+      final filter = DocumentSearchFilter(
+              dateOnLetter: dateOnTheLetter,
+              direction: direction == 'All' ? null : direction,
+              directionType: null,
+              externalLocation: externalLocation?.toString(),
+              letterDate: dateOnTheLetter,
+              letterNumber: null,
+              referenceNumber: reference,
+              subject: subject == '' ? null : subject,
+              tenderNumber: tenderNumber == '' ? null : tenderNumber,
+              year: year)
+          .toMap();
+
+      updateFilter(ref, filter);
+
+      ref.read(sliderVisibilityProvider.notifier).toggleVisibility();
+      return 'success';
+    } catch (e) {
+      print('Error searching data: $e');
       return 'failure';
     }
   }

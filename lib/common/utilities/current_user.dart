@@ -7,6 +7,7 @@ class CurrentUser {
   String? systemName;
   String? name;
   String? token;
+  String? folderPermissions;
 
   CurrentUser._internal();
 
@@ -21,6 +22,7 @@ class CurrentUser {
     systemName = userData['systemName'];
     name = userData['name'];
     token = userData['token'];
+    folderPermissions = userData['folderPermissions'];
   }
 
   void clearUserDetails() {

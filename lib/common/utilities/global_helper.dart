@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tenderboard/common/utilities/language_mannager.dart';
 
 String getTranslation(String key) {
@@ -34,4 +35,11 @@ String _generateRandomToken() {
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   return List.generate(
       32, (index) => characters[random.nextInt(characters.length)]).join();
+}
+
+String? formatDateWithoutTime(DateTime? date) {
+  if (date == null) {
+    return null;
+  }
+  return DateFormat('yyyy-MM-dd').format(date);
 }
