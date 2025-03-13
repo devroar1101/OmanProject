@@ -6,7 +6,7 @@ class AppTheme {
   static const Color primaryColor = Color(0xFF004F95); // Blue
   static const Color secondaryColor = Color(0xFF004F95); // Same as primary
   static const Color backgroundColor = Color(0xFFF5F5F5); // Light gray
-  static const Color darkBackgroundColor = Color(0xFF2C3E50); // Dark blue-gray
+  static const Color darkBackgroundColor = Color.fromARGB(255, 203, 222, 241); // Dark blue-gray
   static const Color activeColor = Color.fromARGB(255, 252, 174, 30); // Green
   static const Color buttonColor = Color.fromARGB(255, 212, 180, 146); // Bright button color
   static const Color buttonTextColor = Color.fromARGB(255, 33, 37, 41); // Text color on button (blackish)
@@ -17,7 +17,7 @@ class AppTheme {
   static const Color borderColor = Color(0xFFCCCCCC); // Light gray for borders
   static const Color displayHeaderColor = Color.fromARGB(255, 142, 174, 155); // Same as primary
   static const Color dialogColor = Color.fromARGB(255, 237, 238, 240);
-  static const Color snackBarColor = Color(0xFFB71C1C); // Red for error messages
+  static const Color snackBarColor = Color.fromARGB(255, 124, 183, 28); // Red for error messages
   static const Color dropdownBackgroundColor = Color.fromARGB(255, 50, 50, 50); // Custom dropdown background
 
   // Common text theme using GoogleFonts for Kufam
