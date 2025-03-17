@@ -26,21 +26,26 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
   String? _nameEnglish;
   String? _type = 'Government';
   bool _isNew = false; // Default value to prevent null issues
- @override
+  @override
   void initState() {
     super.initState();
-    if(widget.currentlocation != null){
-    _type = widget.currentlocation!.type == 'Government' ? 'Government' : 'Others'; // Set default or assigned value
-    _isNew = widget.currentlocation!.isNew == 'New Location' ? true : false; // Set default or assigned value
+    if (widget.currentlocation != null) {
+      _type = widget.currentlocation!.type == 'Government'
+          ? 'Government'
+          : 'Others'; // Set default or assigned value
+      _isNew = widget.currentlocation!.isNew == 'New Location'
+          ? true
+          : false; // Set default or assigned value
     }
   }
+
   Future<void> _saveForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
         widget.currentExternalLocationId == null
             ? await ref
-                .read(ExternalLocationRepositoryProvider.notifier)
+                .read(externalLocationRepositoryProvider.notifier)
                 .addExternalLocation(
                   nameEnglish: _nameEnglish!,
                   nameArabic: _nameArabic!,
@@ -48,7 +53,7 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
                   isNew: _isNew == true ? 'New Location' : 'Old Location',
                 )
             : await ref
-                .read(ExternalLocationRepositoryProvider.notifier)
+                .read(externalLocationRepositoryProvider.notifier)
                 .editExternalLocation(
                   nameEnglish: _nameEnglish!,
                   nameArabic: _nameArabic!,
@@ -67,7 +72,10 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.currentExternalLocationId == null? 'Failed to add External Location : $e' :'Failed to Edit External LOcation : $e')),
+          SnackBar(
+              content: Text(widget.currentExternalLocationId == null
+                  ? 'Failed to add External Location : $e'
+                  : 'Failed to Edit External LOcation : $e')),
         );
       }
     }
@@ -135,7 +143,7 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
                         title: const Text('Government'),
                         value: 'Government',
                         groupValue:
-                            _type ,//== null ? widget.currentlocation!.type : null,
+                            _type, //== null ? widget.currentlocation!.type : null,
                         onChanged: (value) {
                           setState(() {
                             _type = value;
@@ -148,7 +156,7 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
                         title: const Text('Others'),
                         value: 'Others',
                         groupValue:
-                            _type ,//== null ? widget.currentlocation!.type : null,
+                            _type, //== null ? widget.currentlocation!.type : null,
                         onChanged: (value) {
                           setState(() {
                             _type = value;
@@ -167,10 +175,10 @@ class _AddExternalLocationState extends ConsumerState<AddExternalLocation> {
                     const Text('New Location'),
                     Switch(
                       value: _isNew, //== false
-                          //? widget.currentlocation!.isNew == 'New Location'
-                            //  ? true
-                              //: false
-                          //: false,
+                      //? widget.currentlocation!.isNew == 'New Location'
+                      //  ? true
+                      //: false
+                      //: false,
                       onChanged: (value) {
                         setState(() {
                           _isNew = value;

@@ -23,7 +23,7 @@ class _LetterSubjectMasterScreenState
     super.initState();
     // Fetch Letter Subjects during initialization
     ref
-        .read(LetterSubjectMasterRepositoryProvider.notifier)
+        .read(letterSubjectMasterRepositoryProvider.notifier)
         .fetchLetterSubjects();
   }
 
@@ -41,10 +41,10 @@ class _LetterSubjectMasterScreenState
     });
   }
 
-  List<LetterSubjecct> _applyFiltersAndPagination(
-      List<LetterSubjecct> letterSubjects) {
+  List<LetterSubject> _applyFiltersAndPagination(
+      List<LetterSubject> letterSubjects) {
     // Apply search filters
-    List<LetterSubjecct> filteredList = letterSubjects.where((singleSubject) {
+    List<LetterSubject> filteredList = letterSubjects.where((singleSubject) {
       final matchesArabic = searchSubject.isEmpty ||
           singleSubject.subject
               .toLowerCase()
@@ -66,7 +66,7 @@ class _LetterSubjectMasterScreenState
 
   void onDelete(int subjectId) {
     ref
-        .watch(LetterSubjectMasterRepositoryProvider.notifier)
+        .watch(letterSubjectMasterRepositoryProvider.notifier)
         .deleteSubject(subjectId: subjectId);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Subject Deleted successfully!')),
@@ -76,7 +76,7 @@ class _LetterSubjectMasterScreenState
 
   @override
   Widget build(BuildContext context) {
-    final letterSubjects = ref.watch(LetterSubjectMasterRepositoryProvider);
+    final letterSubjects = ref.watch(letterSubjectMasterRepositoryProvider);
     final filteredAndPaginatedList = _applyFiltersAndPagination(letterSubjects);
     print('subject : $letterSubjects');
 
@@ -84,7 +84,7 @@ class _LetterSubjectMasterScreenState
       {
         "button": Icons.edit,
         "function": (int id) {
-          final LetterSubjecct currentSubject =
+          final LetterSubject currentSubject =
               letterSubjects.firstWhere((subject) => subject.id == id);
           showDialog(
             context: context,
@@ -161,7 +161,7 @@ class _LetterSubjectMasterScreenState
                 child: DisplayDetails(
                   headers: const ['TenderNumber', 'Subject'],
                   data: const ['tenderNumber', 'subject'],
-                  details: LetterSubjecct.listToMap(filteredAndPaginatedList),
+                  details: LetterSubject.listToMap(filteredAndPaginatedList),
                   expandable: true,
                   iconButtons: iconButtons,
                   onTap: (id, {objectId}) {},

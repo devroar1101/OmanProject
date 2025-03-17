@@ -10,6 +10,10 @@ import 'package:tenderboard/admin/dgmaster/model/dgmaster.dart';
 import 'package:tenderboard/admin/dgmaster/model/dgmaster_repo.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master.dart';
 import 'package:tenderboard/admin/external_locations_Master/model/external_location_master_repo.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
+import 'package:tenderboard/admin/letter_subject/model/letter_subject_repo.dart';
+import 'package:tenderboard/admin/listmaster/model/listmaster_repo.dart';
+import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
 import 'package:tenderboard/admin/user_master/model/user_master.dart';
 import 'package:tenderboard/admin/user_master/model/user_master_repo.dart';
 import 'package:tenderboard/common/model/global_enum.dart';
@@ -18,6 +22,7 @@ import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
+import 'package:tenderboard/common/widgets/onkeyupfield.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
 import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
@@ -46,7 +51,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   final _formKey = GlobalKey<FormState>();
 
   static const Uuid _uuid = Uuid();
-  late String objectId;
+  String objectId = _uuid.v4();
   final TextEditingController _referenceController = TextEditingController();
   final TextEditingController _sendToController = TextEditingController();
   final TextEditingController _receivedFromController = TextEditingController();
@@ -54,12 +59,19 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _actionToBeController = TextEditingController();
   final TextEditingController _tenderNumberController = TextEditingController();
+  final TextEditingController _letterNumberController = TextEditingController();
+  final TextEditingController _externalLocationController =
+      TextEditingController();
+  final TextEditingController _negotiationNumberController =
+      TextEditingController();
 
   DateTime _createdDate = DateTime.now();
   DateTime? _dateOnTheLetter;
   DateTime? _receviedDate;
   final int currentUserId = 2;
   int selectedYear = 2024;
+  int? _selectedTenderStatus;
+  String _selectedTenderStatusValue = '';
   int? _selectedCabinet;
   String _selectedCabinetName = '';
   int? _selectedFolder;
@@ -77,7 +89,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   String _selectedDirection = 'Incoming';
   String _selectedDirectionType = 'Internal';
   String _selectedLocationType = 'Government';
-  bool _isNewLocation = true;
+  String _isNewLocation = 'New';
   int letterNo = 0;
   double fieldHeight = 45;
   bool isSaving = false;
@@ -87,9 +99,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   late List<SelectOption<Folder>> folderOptions = [];
   late List<SelectOption<Dg>> dgOptions = [];
   late List<SelectOption<Department>> departmentOptions = [];
-  late List<SelectOption<ExternalLocation>> locationOptions = [];
+
   late List<SelectOption<User>> usersOptions = [];
   late List<SelectOption<User>> filteredUserOption = [];
+  late List<SelectOption<ListMasterItem>> tenderStatusOption = [];
 
   final _directionScale = ValueNotifier<double>(1.0);
   final _typeScale = ValueNotifier<double>(1.0);
@@ -106,6 +119,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     _subjectController.dispose();
     _actionToBeController.dispose();
     _tenderNumberController.dispose();
+    _letterNumberController.dispose();
+    _externalLocationController.dispose();
+    _negotiationNumberController.dispose();
   }
 
   @override
@@ -117,15 +133,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   void initialise() async {
     // Check if widget.letterObjectId is null
     if (widget.letterObjectId == null) {
-      objectId = _uuid.v4();
       if (widget.screenName == 'Search') {
-        final locationAsyncValue = ref.read(locationOptionsProvider);
-        locationOptions = locationAsyncValue.asData?.value ?? [];
         _selectedDirection = 'All';
         _selectedDirectionType = 'All';
       } else {
-        final locationAsyncValue = ref.read(locationOptionsProvider);
-        locationOptions = locationAsyncValue.asData?.value ?? [];
         final cabinetAsyncValue = ref.read(cabinetOptionsProvider(true));
         cabinetOptions = cabinetAsyncValue.asData?.value ?? [];
 
@@ -136,6 +147,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         if (usersOptions.isEmpty) {
           usersOptions = userAsyncValue.asData?.value ?? [];
         }
+
+        tenderStatusOption = await ref
+            .read(listMasterRepositoryProvider.notifier)
+            .getItemsByMaster('Tender Status');
       }
     } else if (widget.screenName != 'Search') {
       // When letterObjectId is not null, fetch the letter summary
@@ -179,9 +194,10 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           folderOptions = [];
           dgOptions = [];
           departmentOptions = [];
-          locationOptions = [];
+
           usersOptions = [];
           filteredUserOption = [];
+          tenderStatusOption = [];
         });
       }).catchError((error) {
         // Handle any errors during the fetch
@@ -213,6 +229,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               sendTo: _sendToController.text,
               subject: _subjectController.text,
               tenderNumber: _tenderNumberController.text,
+              letterNumber: _letterNumberController.text,
+              negotiationNumber: _negotiationNumberController.text,
+              tenderStatus: _selectedTenderStatus,
               toUser: _selectedUser,
               year: selectedYear,
               scanDocuments: widget.scanDocumnets,
@@ -258,6 +277,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   @override
   Widget build(BuildContext context) {
+    bool outgoing = _selectedDirection == 'Outgoing' &&
+        _selectedDirectionType == 'External';
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -267,31 +288,44 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _letterForm1(ref),
-                  if (_selectedDirection == 'Outgoing' &&
-                      _selectedDirectionType == 'External')
-                    _letterForm2(ref),
-                  _letterForm3(ref),
+                  if (outgoing) _letterForm2(ref),
+                  _letterForm3(ref, outgoing),
                   if (widget.screenName == 'LetterIndex')
                     if (!isSaving)
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            isSaving = true; // Corrected assignment
-                          });
+                      _buildRow([
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              isSaving = true; // Corrected assignment
+                            });
 
-                          save(context);
-                        },
-                        label: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            saved ? 'Send' : 'Save',
-                            textDirection: Directionality.of(context),
+                            save(context);
+                          },
+                          label: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              saved ? 'Send' : 'Save',
+                              textDirection: Directionality.of(context),
+                            ),
                           ),
+                          icon: saved
+                              ? const Icon(Icons.send)
+                              : const Icon(Icons.save),
                         ),
-                        icon: saved
-                            ? const Icon(Icons.send)
-                            : const Icon(Icons.save),
-                      )
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            _formKey.currentState?.reset();
+                          },
+                          label: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Clear',
+                              textDirection: Directionality.of(context),
+                            ),
+                          ),
+                          icon: const Icon(Icons.refresh),
+                        )
+                      ])
                     else
                       const CircularProgressIndicator(),
                 ],
@@ -752,9 +786,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               onTap: () => setState(() {
                 _selectedLocationType = _selectedLocationType == 'Government'
                     ? 'Others'
-                    : _selectedLocationType == 'Others'
-                        ? 'Add'
-                        : 'Government';
+                    : 'Government';
+                _externalLocationController.text = '';
+                _selectedLocation = null;
               }),
               child: ValueListenableBuilder<double>(
                 valueListenable: _locationTypeScale,
@@ -790,7 +824,9 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                   _newLocationScale.value = 1.0, // Return to normal size
               onTapCancel: () => _newLocationScale.value = 1.0,
               onTap: () => setState(() {
-                _isNewLocation = !_isNewLocation;
+                _isNewLocation = _isNewLocation == 'Old' ? 'New' : 'Old';
+                _externalLocationController.text = '';
+                _selectedLocation = null;
               }),
               child: ValueListenableBuilder<double>(
                 valueListenable: _newLocationScale,
@@ -807,7 +843,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 3.0, horizontal: 4.0),
                         child: Text(
-                          _isNewLocation ? 'New' : 'Old',
+                          _isNewLocation == 'Old' ? 'Old' : 'New',
                           style: const TextStyle(
                             fontSize: 16, // Slightly smaller font
                             fontWeight: FontWeight.w500, // Medium weight
@@ -823,21 +859,24 @@ class _LetterFormState extends ConsumerState<LetterForm> {
             Expanded(
               child: SizedBox(
                 height: fieldHeight,
-                child: SelectField<ExternalLocation>(
+                child: OnKeyUp<ExternalLocation>(
+                  textController: _externalLocationController,
+                  fetchOptions: (query) {
+                    final repository =
+                        ref.read(externalLocationRepositoryProvider.notifier);
+                    return repository.getLocationOptions(
+                        _externalLocationController.text,
+                        _selectedLocationType,
+                        _isNewLocation);
+                  },
                   label: "Location",
-                  options: locationOptions.where((option) {
-                    return option.filter == _selectedLocationType &&
-                        option.filter1!.toString() == _isNewLocation.toString();
-                  }).toList(),
-                  key: ValueKey(locationOptions),
-                  initialValue: _selectedLocationName,
-                  onChanged: (location, selectedOption) {
+                  onSelected: (selectedOption, location) {
                     setState(() {
-                      // Clear the selected folder when cabinet changes
+                      _externalLocationController.text =
+                          selectedOption.displayName;
                       _selectedLocation = location.id;
                     });
                   },
-                  hint: 'Select Location',
                 ),
               ),
             ),
@@ -852,7 +891,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     );
   }
 
-  Widget _letterForm3(WidgetRef ref) {
+  Widget _letterForm3(WidgetRef ref, bool outgoing) {
     if (_selectedUserName == '') {
       if (_selectedDG != null) {
         filteredUserOption = usersOptions.where((option) {
@@ -915,117 +954,143 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           ),
         ]),
         const SizedBox(height: 6),
+
         _buildRow([
-          SizedBox(
-            height: fieldHeight,
-            child: _buildTextField(
-              'Tender Status',
-            ),
-          ),
           SizedBox(
             height: fieldHeight,
             child: _buildTextField('Letter Number',
-                controller: _tenderNumberController),
+                controller: _letterNumberController),
+          ),
+          SizedBox(
+            height: fieldHeight,
+            child: _buildTextField('Negotiation Number',
+                controller: _negotiationNumberController),
           ),
         ]),
 
         const SizedBox(height: 6),
+        if (!outgoing)
+          _buildRow([
+            Expanded(
+              child: SizedBox(
+                height: fieldHeight,
+                child: SelectField<Dg>(
+                  label: 'DG',
+                  options: dgOptions,
+                  key: ValueKey(dgOptions),
+                  initialValue: _selectedDGName,
+                  onChanged: (dg, selectedOption) {
+                    setState(() {
+                      departmentOptions = selectedOption.childOptions
+                              ?.cast<SelectOption<Department>>() ??
+                          [];
+                      _selectedDepartment = null;
+                      _selectedDG = dg.id;
+                      _selectedUserName = '';
+                    });
+                  },
+                  hint: 'Select DG',
+                ),
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                height: fieldHeight,
+                child: SelectField<Department>(
+                  label: 'Department',
+                  options: departmentOptions,
+                  initialValue: _selectedDepartmentName,
+                  key: ValueKey(departmentOptions),
+                  onChanged: (department, selectedOption) {
+                    setState(() {
+                      _selectedDepartment = department.id;
+                      _selectedUserName = '';
+                    });
+                  },
+                  hint: departmentOptions.isNotEmpty
+                      ? 'Select Department'
+                      : 'No Department Available',
+                ),
+              ),
+            ),
+          ]),
+        if (!outgoing) const SizedBox(height: 6),
+        if (!outgoing)
+          _buildRow([
+            Expanded(
+              child: SizedBox(
+                height: fieldHeight,
+                child: SelectField<User>(
+                  label: 'User',
+                  options: filteredUserOption,
+                  key: ValueKey(filteredUserOption),
+                  initialValue: _selectedUserName,
+                  onChanged: (user, selectedOption) {
+                    _selectedUser = user.id;
+                    _selectedUserName = selectedOption.displayName;
+                  },
+                  hint: departmentOptions.isNotEmpty
+                      ? 'Select User'
+                      : 'No User Available',
+                ),
+              ),
+            ),
+          ]),
+        if (!outgoing) const SizedBox(height: 6),
 
         _buildRow([
           Expanded(
             child: SizedBox(
               height: fieldHeight,
-              child: SelectField<Dg>(
-                label: 'DG',
-                options: dgOptions,
-                key: ValueKey(dgOptions),
-                initialValue: _selectedDGName,
-                onChanged: (dg, selectedOption) {
+              child: SelectField<ListMasterItem>(
+                options: tenderStatusOption,
+                label: 'Tender Status',
+                initialValue: _selectedTenderStatusValue,
+                key: ValueKey(tenderStatusOption),
+                onChanged: (tenderStatus, selectedOption) {
                   setState(() {
-                    departmentOptions = selectedOption.childOptions
-                            ?.cast<SelectOption<Department>>() ??
-                        [];
-                    _selectedDepartment = null;
-                    _selectedDG = dg.id;
-                    _selectedUserName = '';
+                    _selectedTenderStatus = tenderStatus.id;
                   });
                 },
-                hint: 'Select DG',
+                hint: 'Tender Status',
               ),
             ),
           ),
-          Expanded(
-            child: SizedBox(
-              height: fieldHeight,
-              child: SelectField<Department>(
-                label: 'Department',
-                options: departmentOptions,
-                initialValue: _selectedDepartmentName,
-                key: ValueKey(departmentOptions),
-                onChanged: (department, selectedOption) {
-                  setState(() {
-                    _selectedDepartment = department.id;
-                    _selectedUserName = '';
-                  });
-                },
-                hint: departmentOptions.isNotEmpty
-                    ? 'Select Department'
-                    : 'No Department Available',
-              ),
+          SizedBox(
+            height: fieldHeight,
+            child: OnKeyUp<LetterSubject>(
+              textController: _tenderNumberController,
+              fetchOptions: (query) {
+                final repository =
+                    ref.read(letterSubjectMasterRepositoryProvider.notifier);
+                return repository.getSubjectByTenderNumber(query);
+              },
+              label: "Tender Number",
+              onSelected: (selectedOption, subject) {
+                setState(() {
+                  _subjectController.text = subject.subject;
+                  _tenderNumberController.text = subject.tenderNumber;
+                });
+              },
             ),
-          ),
+          )
         ]),
-        const SizedBox(height: 6),
 
-        _buildRow([
-          Expanded(
-            child: SizedBox(
-              height: fieldHeight,
-              child: SelectField<User>(
-                label: 'User',
-                options: filteredUserOption,
-                key: ValueKey(filteredUserOption),
-                initialValue: _selectedUserName,
-                onChanged: (user, selectedOption) {
-                  _selectedUser = user.id;
-                  _selectedUserName = selectedOption.displayName;
-                },
-                hint: departmentOptions.isNotEmpty
-                    ? 'Select User'
-                    : 'No User Available',
-              ),
-            ),
-          ),
-        ]),
         const SizedBox(height: 6),
+        _buildRow([
+          _buildCommentField('Subject', controller: _subjectController),
+        ]),
+
+        const SizedBox(
+          height: 6,
+        ),
 
         // Summary and Action to be Taken
         _buildRow([
-          SizedBox(
-              height: fieldHeight,
-              child:
-                  _buildTextField('Summary', controller: _summaryController)),
-          SizedBox(
-            height: fieldHeight,
-            child: _buildTextField('Action to be Taken',
-                controller: _actionToBeController),
-          )
+          _buildCommentField('Summary', controller: _summaryController),
+          _buildCommentField('Action to be Taken',
+              controller: _actionToBeController)
         ]),
-        const SizedBox(height: 6),
-
-        _buildRow([
-          SizedBox(
-              height: fieldHeight,
-              width: 20,
-              child: _buildTextField('Tender Number',
-                  controller: _subjectController)),
-          SizedBox(
-              height: fieldHeight,
-              child: _buildTextField('Letter Subject',
-                  controller: _subjectController)),
-        ]),
-
-        // Save button
         const SizedBox(height: 6),
       ],
     );
@@ -1051,11 +1116,55 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     validation ??= true;
     return SizedBox(
       height: fieldHeight,
+      width: double.infinity,
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+          floatingLabelAlignment: FloatingLabelAlignment.center,
+          floatingLabelStyle: const TextStyle(
+            fontSize: 16,
+            color: Colors.black, // Black color when active
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(
+                color: Colors.black), // Optional: Black border when active
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+        validator: (value) {
+          if ((value == null || value.isEmpty) && validation!) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildCommentField(String label,
+      {TextEditingController? controller, bool? validation}) {
+    validation ??= true;
+    return SizedBox(
+      height: 70,
+      width: double.infinity,
+      child: TextFormField(
+        controller: controller,
+        expands: true,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
           floatingLabelAlignment: FloatingLabelAlignment.center,
           floatingLabelStyle: const TextStyle(
             fontSize: 16,
@@ -1399,7 +1508,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                     _newLocationScale.value = 1.0, // Return to normal size
                 onTapCancel: () => _newLocationScale.value = 1.0,
                 onTap: () => setState(() {
-                  _isNewLocation = !_isNewLocation;
+                  _isNewLocation = _isNewLocation == 'Old' ? 'New' : 'Old';
                 }),
                 child: ValueListenableBuilder<double>(
                   valueListenable: _newLocationScale,
@@ -1416,7 +1525,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 3.0, horizontal: 4.0),
                           child: Text(
-                            _isNewLocation ? 'New' : 'Old',
+                            _isNewLocation == 'Old' ? 'Old' : 'New',
                             style: const TextStyle(
                               fontSize: 16, // Slightly smaller font
                               fontWeight: FontWeight.w500, // Medium weight
@@ -1432,22 +1541,24 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               Expanded(
                 child: SizedBox(
                   height: fieldHeight,
-                  child: SelectField<ExternalLocation>(
+                  child: OnKeyUp<ExternalLocation>(
+                    textController: _externalLocationController,
+                    fetchOptions: (query) {
+                      final repository =
+                          ref.read(externalLocationRepositoryProvider.notifier);
+                      return repository.getLocationOptions(
+                          _externalLocationController.text,
+                          _selectedLocationType,
+                          _isNewLocation);
+                    },
                     label: "Location",
-                    options: locationOptions.where((option) {
-                      return option.filter == _selectedLocationType &&
-                          option.filter1!.toString() ==
-                              _isNewLocation.toString();
-                    }).toList(),
-                    key: ValueKey(locationOptions),
-                    initialValue: _selectedLocationName,
-                    onChanged: (location, selectedOption) {
+                    onSelected: (selectedOption, location) {
                       setState(() {
-                        // Clear the selected folder when cabinet changes
+                        _externalLocationController.text =
+                            selectedOption.displayName;
                         _selectedLocation = location.id;
                       });
                     },
-                    hint: 'Select Location',
                   ),
                 ),
               ),

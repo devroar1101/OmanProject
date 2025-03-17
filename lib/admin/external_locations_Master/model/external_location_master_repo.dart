@@ -4,7 +4,7 @@ import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final ExternalLocationRepositoryProvider =
+final externalLocationRepositoryProvider =
     StateNotifierProvider<ExternalLocationRepository, List<ExternalLocation>>(
         (ref) {
   return ExternalLocationRepository(ref);
@@ -57,11 +57,6 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
       required String type,
       required String isNew,
       required int currentExternalLocationId}) async {
-    print('Id $currentExternalLocationId');
-    print('English $nameEnglish');
-    print('Arabic $nameArabic');
-    print('type $type');
-    print('isNew $isNew');
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'id': currentExternalLocationId,
@@ -74,7 +69,7 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
     try {
       final response =
           await dio.put('/ExternalLocation/Update', data: requestBody);
-      print('external Location Object Id ${response.data}');
+
       if (response.statusCode == 200) {
         final updatedExternalLocation = ExternalLocation(
             id: currentExternalLocationId,
@@ -157,18 +152,43 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
   }
 
   Future<List<SelectOption<ExternalLocation>>> getLocationOptions(
-      String currentLanguage) async {
-    List<ExternalLocation> locations = state;
-
-    if (locations.isEmpty) {
-      locations = await fetchExternalLocation();
+      String location, String type, String category) async {
+    final dio = ref.watch(dioProvider);
+    final auth = ref.watch(authProvider);
+    List<ExternalLocation> locations = [];
+    String searchBy =
+        auth.selectedLanguage == 'en' ? "nameEnglish" : "nameArabic";
+    Map<String, dynamic> requestBody = {
+      searchBy: location,
+      "type": type,
+      "isNew": category,
+      "paginationDetail": {"pageSize": 1, "pageNumber": 15}
+    };
+    try {
+      final response = await dio.post(
+        '/Master/SearchAndListExternalLocation',
+        data: requestBody,
+      );
+      // Check if the response is successful
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data as List;
+        locations = data
+            .map((item) =>
+                ExternalLocation.fromMap(item as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Failed to load External Location');
+      }
+    } catch (e) {
+      // Handle any errors during the request
+      throw Exception('Error occurred while fetching Externa Location: $e');
     }
 
     // Create the options list
     final List<SelectOption<ExternalLocation>> options = await Future.wait(
       locations.map((location) async {
         return SelectOption<ExternalLocation>(
-          displayName: currentLanguage == 'en'
+          displayName: auth.selectedLanguage == 'en'
               ? location.nameEnglish
               : location.nameArabic,
           key: location.id.toString(),
@@ -181,12 +201,3 @@ class ExternalLocationRepository extends StateNotifier<List<ExternalLocation>> {
     return options;
   }
 }
-
-final locationOptionsProvider =
-    FutureProvider<List<SelectOption<ExternalLocation>>>((ref) async {
-  final authState = ref.watch(authProvider);
-
-  return ref
-      .read(ExternalLocationRepositoryProvider.notifier)
-      .getLocationOptions(authState.selectedLanguage);
-});

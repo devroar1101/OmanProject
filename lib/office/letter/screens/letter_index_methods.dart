@@ -16,6 +16,8 @@ import 'dart:async';
 /// Utility class for saving form data
 class LetterUtils {
   final String? actionToBeTaken;
+  final String? negotiationNumber;
+
   final int? cabinet;
   final int? classification;
   final String? comments;
@@ -32,6 +34,8 @@ class LetterUtils {
   final String? sendTo;
   final String? subject;
   final String? tenderNumber;
+  final String? letterNumber;
+  final int? tenderStatus;
   final int? toUser;
   final String? objectId;
   final String? directionType;
@@ -59,14 +63,16 @@ class LetterUtils {
       this.sendTo,
       this.subject,
       this.tenderNumber,
+      this.letterNumber,
+      this.tenderStatus,
       this.toUser,
       this.priority,
       this.year,
       this.scanDocuments,
-      this.objectId});
+      this.objectId,
+      this.negotiationNumber});
 
   Future<String> onSave() async {
-    print(reference);
     try {
       final letter = Letter(
           year: year ?? 0,
@@ -81,7 +87,8 @@ class LetterUtils {
           folderId: folder ?? 0,
           flagStatus: 0,
           jobOwnerId: toUser ?? 0,
-          letterNumber: tenderNumber,
+          letterNumber: letterNumber,
+          tenderNumber: tenderNumber,
           objectId: objectId,
           priorityId: priority ?? 0,
           referenecNumber: reference ?? '',
@@ -90,8 +97,10 @@ class LetterUtils {
           receivedDate: receivedDate,
           createdDate: createdDate,
           subject: subject ?? '',
-          tenderStatusId: 1,
-          locationId: locationId);
+          tenderStatusId: tenderStatus,
+          locationId: locationId,
+          comments: comments,
+          negotiationNumber: negotiationNumber);
 
       // Build LetterAction object
       final letterAction = LetterAction(

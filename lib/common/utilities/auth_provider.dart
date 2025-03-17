@@ -114,7 +114,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (state.isAuthenticated) {
       Future.microtask(() => ref.read(dgOptionsProvider(true)));
       Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
-      Future.microtask(() => ref.read(locationOptionsProvider));
+
       Future.microtask(() => ref.read(userOptionsProvider));
     }
   }
