@@ -20,6 +20,7 @@ import 'package:tenderboard/common/model/global_enum.dart';
 import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
+import 'package:tenderboard/common/utilities/current_user.dart';
 import 'package:tenderboard/common/utilities/global_helper.dart';
 import 'package:tenderboard/common/widgets/custom_snackbar.dart';
 import 'package:tenderboard/common/widgets/onkeyupfield.dart';
@@ -68,7 +69,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
   DateTime _createdDate = DateTime.now();
   DateTime? _dateOnTheLetter;
   DateTime? _receviedDate;
-  final int currentUserId = 2;
+  final int currentUserId = CurrentUser().userId!;
   int selectedYear = 2024;
   int? _selectedTenderStatus;
   String _selectedTenderStatusValue = '';
@@ -194,7 +195,6 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           folderOptions = [];
           dgOptions = [];
           departmentOptions = [];
-
           usersOptions = [];
           filteredUserOption = [];
           tenderStatusOption = [];
@@ -207,36 +207,45 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     setState(() {});
   }
 
+  //Save method
+
   void save(context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      final response = await LetterUtils(
-              actionToBeTaken: _actionToBeController.text,
-              cabinet: _selectedCabinet,
-              classification: selectedClassification,
-              comments: _summaryController.text,
-              createdBy: currentUserId,
-              dateOnTheLetter: _dateOnTheLetter,
-              createdDate: _createdDate,
-              direction: _selectedDirection,
-              directionType: _selectedDirectionType,
-              externalLocation: _selectedLocation,
-              folder: _selectedFolder,
-              fromUser: currentUserId,
-              locationId: _selectedLocation,
-              priority: selectedPriority,
-              receivedDate: _receviedDate,
-              reference: _referenceController.text,
-              sendTo: _sendToController.text,
-              subject: _subjectController.text,
-              tenderNumber: _tenderNumberController.text,
-              letterNumber: _letterNumberController.text,
-              negotiationNumber: _negotiationNumberController.text,
-              tenderStatus: _selectedTenderStatus,
-              toUser: _selectedUser,
-              year: selectedYear,
-              scanDocuments: widget.scanDocumnets,
-              objectId: objectId)
-          .onSave();
+      var response;
+      final util = await LetterUtils(
+          actionToBeTaken: _actionToBeController.text,
+          cabinet: _selectedCabinet,
+          classification: selectedClassification,
+          comments: _summaryController.text,
+          createdBy: currentUserId,
+          dateOnTheLetter: _dateOnTheLetter,
+          createdDate: _createdDate,
+          direction: _selectedDirection,
+          directionType: _selectedDirectionType,
+          externalLocation: _selectedLocation,
+          folder: _selectedFolder,
+          fromUser: currentUserId,
+          locationId: _selectedLocation,
+          priority: selectedPriority,
+          receivedDate: _receviedDate,
+          reference: _referenceController.text,
+          sendTo: _sendToController.text,
+          subject: _subjectController.text,
+          tenderNumber: _tenderNumberController.text,
+          letterNumber: _letterNumberController.text,
+          negotiationNumber: _negotiationNumberController.text,
+          tenderStatus: _selectedTenderStatus,
+          toUser: _selectedUser,
+          year: selectedYear,
+          statusId: saved ? 1 : 0,
+          scanDocuments: widget.scanDocumnets,
+          objectId: objectId);
+
+      if (!saved) {
+        response = util.onSave();
+      } else {
+        response = util.onSend();
+      }
 
       CustomSnackbar.show(
           context: context,
@@ -258,6 +267,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       });
     }
   }
+
+  //Search Method
 
   void search(context, WidgetRef ref) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -319,11 +330,13 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                           label: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Clear',
+                              saved ? 'Edit' : 'Clear',
                               textDirection: Directionality.of(context),
                             ),
                           ),
-                          icon: const Icon(Icons.refresh),
+                          icon: saved
+                              ? const Icon(Icons.refresh)
+                              : const Icon(Icons.edit),
                         )
                       ])
                     else

@@ -41,6 +41,7 @@ class LetterUtils {
   final String? directionType;
   final int? priority;
   final int? year;
+  final int? statusId;
   List<String>? scanDocuments;
 
   /// Constructor to initialize all fields
@@ -68,6 +69,7 @@ class LetterUtils {
       this.toUser,
       this.priority,
       this.year,
+      this.statusId,
       this.scanDocuments,
       this.objectId,
       this.negotiationNumber});
@@ -93,7 +95,7 @@ class LetterUtils {
           priorityId: priority ?? 0,
           referenecNumber: reference ?? '',
           sendTo: sendTo ?? '',
-          statusId: reference != null ? 1 : 0,
+          statusId: statusId,
           receivedDate: receivedDate,
           createdDate: createdDate,
           subject: subject ?? '',
@@ -185,5 +187,13 @@ class LetterUtils {
       print('Error searching data: $e');
       return 'failure';
     }
+  }
+
+  Future<String> onSend() async {
+    final repo = ProviderContainer();
+    final response = await repo
+        .read(letterRepositoryProvider)
+        .updateLetterStatus(objectId!, statusId!);
+    return response.data['data'];
   }
 }
