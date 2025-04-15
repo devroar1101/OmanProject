@@ -223,6 +223,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _passwordController.text,
                 _selectedLanguage,
               );
+              authNotifier.preLoad();
 
               setState(() {
                 if (response != 'Login successful') {

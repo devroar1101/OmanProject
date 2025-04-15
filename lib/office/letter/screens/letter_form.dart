@@ -28,6 +28,7 @@ import 'package:tenderboard/common/widgets/select_field.dart';
 import 'package:tenderboard/office/document_search/model/document_search_filter_repo.dart';
 import 'package:tenderboard/office/letter_summary/model/letter_summary_repo.dart';
 import 'package:tenderboard/office/letter/screens/letter_index_methods.dart';
+import 'package:tenderboard/office/letter_summary/model/letter_summary_result.dart';
 import 'package:uuid/uuid.dart';
 
 // ignore: must_be_immutable
@@ -37,10 +38,12 @@ class LetterForm extends ConsumerStatefulWidget {
       this.scanDocumnets,
       this.letterObjectId,
       this.clear,
+      this.letter,
       required this.screenName});
 
   List<String>? scanDocumnets;
   String? letterObjectId;
+  LetterSummaryResult? letter;
   void Function()? clear;
   final String screenName;
 
@@ -155,53 +158,50 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       }
     } else if (widget.screenName != 'Search') {
       // When letterObjectId is not null, fetch the letter summary
-      final letterSummaryFuture = ref
-          .read(letterSummaryRepositoryProvider)
-          .fetchLetterSummary(widget.letterObjectId!);
+      final letter = widget.letter ??
+          await ref
+              .read(letterSummaryRepositoryProvider)
+              .fetchLetterSummary(widget.letterObjectId!);
       objectId = widget.letterObjectId!;
-      letterSummaryFuture.then((letter) {
-        // After fetching the letter summary, initialize your variables
-        setState(() {
-          // Assign values to the controllers and other variables
-          _referenceController.text = letter.referenceNumber ?? '';
-          _sendToController.text = letter.referenceNumber ?? ''; //missing
-          _summaryController.text = letter.summary ?? '';
-          _subjectController.text = letter.subject ?? '';
-          _actionToBeController.text = letter.actionToBeTaken ?? '';
-          _tenderNumberController.text = letter.tenderNumber ?? '';
 
-          //  _createdDate = letter.createdDate ?? DateTime.now(); date type
-          // _dateOnTheLetter = letter.dateOnTheLetter;
-          // _receviedDate = letter.receivedDate;
+      // After fetching the letter summary, initialize your variables
+      setState(() {
+        // Assign values to the controllers and other variables
+        _referenceController.text = letter.referenceNumber ?? '';
+        _sendToController.text = letter.referenceNumber ?? ''; //missing
+        _summaryController.text = letter.summary ?? '';
+        _subjectController.text = letter.subject ?? '';
+        _actionToBeController.text = letter.actionToBeTaken ?? '';
+        _tenderNumberController.text = letter.tenderNumber ?? '';
 
-          //selectedYear = letter.year!;
+        //  _createdDate = letter.createdDate ?? DateTime.now(); date type
+        // _dateOnTheLetter = letter.dateOnTheLetter;
+        // _receviedDate = letter.receivedDate;
 
-          _selectedCabinetName = letter.cabinetName ?? '';
+        //selectedYear = letter.year!;
 
-          _selectedFolderName = letter.folderName ?? '';
+        _selectedCabinetName = letter.cabinetName ?? '';
 
-          _selectedDGName = letter.dgName ?? '';
+        _selectedFolderName = letter.folderName ?? '';
 
-          _selectedDepartmentName = letter.departmentName ?? '';
+        _selectedDGName = letter.dgName ?? '';
 
-          _selectedUserName = letter.systemName ?? '';
+        _selectedDepartmentName = letter.departmentName ?? '';
 
-          _selectedLocationName = letter.locationName ?? '';
-          // selectedPriority = letter.priority!;
-          //selectedClassification = letter.classificationId!;
-          _selectedDirection = letter.direction ?? 'Incoming';
-          _selectedDirectionType = letter.directionType ?? 'Internal';
-          cabinetOptions = [];
-          folderOptions = [];
-          dgOptions = [];
-          departmentOptions = [];
-          usersOptions = [];
-          filteredUserOption = [];
-          tenderStatusOption = [];
-        });
-      }).catchError((error) {
-        // Handle any errors during the fetch
-        print("Error fetching letter summary: $error");
+        _selectedUserName = letter.systemName ?? '';
+
+        _selectedLocationName = letter.locationName ?? '';
+        // selectedPriority = letter.priority!;
+        //selectedClassification = letter.classificationId!;
+        _selectedDirection = letter.direction ?? 'Incoming';
+        _selectedDirectionType = letter.directionType ?? 'Internal';
+        cabinetOptions = [];
+        folderOptions = [];
+        dgOptions = [];
+        departmentOptions = [];
+        usersOptions = [];
+        filteredUserOption = [];
+        tenderStatusOption = [];
       });
     }
     setState(() {});
@@ -211,7 +211,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   void save(context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      var response;
+      String response;
       final util = await LetterUtils(
           actionToBeTaken: _actionToBeController.text,
           cabinet: _selectedCabinet,
@@ -242,11 +242,13 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           objectId: objectId);
 
       if (!saved) {
-        response = util.onSave();
+        response = await util.onSave();
       } else {
-        response = util.onSend();
+        response = await util.onSend();
       }
-
+      isSaving = false;
+      saved = response != 'failure';
+      _referenceController.text = response;
       CustomSnackbar.show(
           context: context,
           durationInSeconds: 3,
@@ -254,12 +256,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           title: 'Successful',
           typeId: 1,
           asset: 'assets/saving.gif');
-
-      setState(() {
-        isSaving = false;
-        saved = response != 'failure';
-        _referenceController.text = response;
-      });
+      setState(() {});
     } else {
       setState(() {
         isSaving = false;
@@ -298,18 +295,25 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _letterForm1(ref),
-                  if (outgoing) _letterForm2(ref),
-                  _letterForm3(ref, outgoing),
+                  IgnorePointer(
+                      ignoring: saved ?? false, child: _letterForm1(ref)),
+                  if (outgoing)
+                    IgnorePointer(
+                      ignoring: saved ?? false,
+                      child: _letterForm2(ref),
+                    ),
+                  IgnorePointer(
+                    ignoring: saved ?? false,
+                    child: _letterForm3(ref, outgoing),
+                  ),
                   if (widget.screenName == 'LetterIndex')
                     if (!isSaving)
                       _buildRow([
                         ElevatedButton.icon(
                           onPressed: () {
                             setState(() {
-                              isSaving = true; // Corrected assignment
+                              isSaving = true;
                             });
-
                             save(context);
                           },
                           label: Padding(
@@ -325,7 +329,13 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                         ),
                         ElevatedButton.icon(
                           onPressed: () {
-                            _formKey.currentState?.reset();
+                            if (saved) {
+                              setState(() {
+                                saved = !saved;
+                              });
+                            } else {
+                              _formKey.currentState?.reset();
+                            }
                           },
                           label: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -337,7 +347,23 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                           icon: saved
                               ? const Icon(Icons.refresh)
                               : const Icon(Icons.edit),
-                        )
+                        ),
+
+                        // Add Copy button if saved is true
+                        if (saved)
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(
+                                  text: _referenceController.text));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Reference copied to clipboard!')),
+                              );
+                            },
+                            icon: const Icon(Icons.copy),
+                            label: const Text('Copy Reference'),
+                          ),
                       ])
                     else
                       const CircularProgressIndicator(),
@@ -517,34 +543,17 @@ class _LetterFormState extends ConsumerState<LetterForm> {
             const Spacer(),
             // Reduced spacing
             if (_referenceController.text != '')
-              GestureDetector(
-                onTap: () {
-                  Clipboard.setData(
-                      ClipboardData(text: _referenceController.text));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Reference copied to clipboard')),
-                  );
-                },
-                child: Card(
-                  elevation: 3, // Reduced elevation
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Compact corners
-                  ),
-                  color: Colors.blue.shade50,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4.0, // Compact vertical padding
-                      horizontal: 16.0, // Compact horizontal padding
-                    ),
-                    child: Center(
-                      child: Text(
-                        _referenceController.text,
-                        style: const TextStyle(
-                          fontSize: 16, // Slightly smaller font
-                          fontWeight: FontWeight.w500, // Medium weight
-                        ),
-                      ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4.0, // Compact vertical padding
+                  horizontal: 16.0, // Compact horizontal padding
+                ),
+                child: Center(
+                  child: Text(
+                    _referenceController.text,
+                    style: const TextStyle(
+                      fontSize: 20, // Slightly smaller font
+                      fontWeight: FontWeight.w500, // Medium weight
                     ),
                   ),
                 ),
@@ -1035,6 +1044,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
                 height: fieldHeight,
                 child: SelectField<User>(
                   label: 'User',
+                  requiredValidation: !outgoing ? false : true,
                   options: filteredUserOption,
                   key: ValueKey(filteredUserOption),
                   initialValue: _selectedUserName,
@@ -1153,7 +1163,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ),
         validator: (value) {
           if ((value == null || value.isEmpty) && validation!) {
-            return 'Please enter $label';
+            return null;
           }
           return null;
         },
@@ -1196,7 +1206,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         ),
         validator: (value) {
           if ((value == null || value.isEmpty) && validation!) {
-            return 'Please enter $label';
+            return null;
           }
           return null;
         },

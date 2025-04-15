@@ -19,8 +19,8 @@ class Cabinet {
       id: map['id'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
       code: map['code'] ?? '', // Defaulting to empty string if null
-      nameArabic: map['nameEnglish'] ?? '',
-      nameEnglish: map['nameArabic'] ?? '',
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
     );
   }
 

@@ -29,7 +29,7 @@ class DgRepository extends StateNotifier<List<Dg>> {
         dg.nameArabic.toLowerCase() == nameArabic.toLowerCase());
 
     if (exists) {
-       Exception('Name already exists');
+      Exception('Name already exists');
     }
     print('name englisg :- $nameEnglish');
     print('name arabic :- $nameArabic');
