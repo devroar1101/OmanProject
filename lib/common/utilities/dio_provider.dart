@@ -12,7 +12,10 @@ final dioProvider = Provider<Dio>((ref) {
   ));
 
   // Optional: Add interceptors for logging or error handling
-  dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+  dio.interceptors.add(LogInterceptor(
+    requestBody: true,
+    responseBody: true,
+  ));
 
   return dio;
 });

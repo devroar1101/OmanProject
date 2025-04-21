@@ -1,6 +1,7 @@
-/*import 'dart:typed_data';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
+import 'package:flutter/services.dart';
+import 'package:pro_image_editor/pro_image_editor.dart';
 
 class EditImageScreen extends StatefulWidget {
   final Uint8List imageData;
@@ -8,100 +9,93 @@ class EditImageScreen extends StatefulWidget {
   const EditImageScreen({super.key, required this.imageData});
 
   @override
-  _EditImageScreenState createState() => _EditImageScreenState();
+  State<EditImageScreen> createState() => _EditImageScreenState();
 }
 
 class _EditImageScreenState extends State<EditImageScreen> {
-  late img.Image _image;
-  Offset _overlayPosition =
-      const Offset(100, 100); // Default position for the PNG overlay
-  Uint8List? _overlayImage;
+  Uint8List? _signatureImage;
 
   @override
   void initState() {
     super.initState();
-    _image = img.decodeImage(Uint8List.fromList(widget.imageData))!;
-    _loadOverlayImage();
+    _loadSignatureImage();
   }
 
-  // Load PNG image from assets
-  Future<void> _loadOverlayImage() async {
-    final overlayData =
-        await DefaultAssetBundle.of(context).load("assets/signature.png");
+  Future<void> _loadSignatureImage() async {
+    final data = await rootBundle.load("assets/signature.png");
     setState(() {
-      _overlayImage = overlayData.buffer.asUint8List();
+      _signatureImage = data.buffer.asUint8List();
     });
   }
 
-  // Apply PNG overlay to the main image during save
-  void _applyOverlayOnSave() {
-    if (_overlayImage != null) {
-      final overlay = img.decodeImage(_overlayImage!)!;
-      _image = img.compositeImage(
-        _image,
-        overlay,
-        dstX: _overlayPosition.dx.toInt(),
-        dstY: _overlayPosition.dy.toInt(),
-        // Enable blending for transparency
+  Future<void> _openEditor() async {
+    if (_signatureImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Signature image not loaded")),
       );
+      return;
     }
-  }
 
-  // Function to save the edited image
-  void _saveImage() {
-    _applyOverlayOnSave(); // Apply overlay before saving
-    final editedImage =
-        Uint8List.fromList(img.encodeJpg(_image)); // Encode image to JPG
-    Navigator.pop(context, editedImage); // Return the edited image
+    final editedImage = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ProImageEditor.memory(
+          widget.imageData,
+          configs: ProImageEditorConfigs(
+            theme: ThemeData.dark(useMaterial3: true),
+
+            // 👇 Inject signature as a sticker
+            stickerEditor: StickerEditorConfigs(
+              enabled: true,
+              buildStickers: (addSticker, scrollController) {
+                return ListView(
+                  controller: scrollController,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        addSticker(Image.memory(_signatureImage!));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.memory(_signatureImage!, width: 100),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+
+            cropRotateEditor: CropRotateEditorConfigs(
+              enabled: true,
+              canFlip: true,
+              canRotate: true,
+              canChangeAspectRatio: true,
+              showLayers: true,
+            ),
+          ),
+          callbacks: ProImageEditorCallbacks(
+            onImageEditingComplete: (Uint8List editedImageBytes) async {
+              Navigator.pop(context, editedImageBytes);
+            },
+          ),
+        ),
+      ),
+    );
+
+    if (editedImage != null) {
+      Navigator.pop(context, editedImage);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Image")),
-      body: Stack(
-        children: [
-          Center(
-            child: Image.memory(Uint8List.fromList(img.encodeJpg(_image))),
-          ),
-          if (_overlayImage != null)
-            Positioned(
-              left: _overlayPosition.dx,
-              top: _overlayPosition.dy,
-              child: Draggable(
-                feedback: Material(
-                  color: Colors.transparent,
-                  child: Image.memory(
-                    _overlayImage!,
-                    width: 100, // Adjust overlay size if needed
-                  ),
-                ),
-                childWhenDragging:
-                    Container(), // Hide the original widget while dragging
-                onDragEnd: (details) {
-                  setState(() {
-                    // Update position after dragging
-                    _overlayPosition = details.offset;
-                  });
-                },
-                child: Image.memory(
-                  _overlayImage!,
-                  width: 100, // Adjust overlay size if needed
-                ),
-              ),
-            ),
-        ],
-      ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(
-            onPressed: _saveImage,
-            child: const Text("Save"),
-          ),
-        ],
+      body: Center(
+        child: ElevatedButton(
+          onPressed: _openEditor,
+          child: const Text("Open Editor"),
+        ),
       ),
     );
   }
 }
-*/

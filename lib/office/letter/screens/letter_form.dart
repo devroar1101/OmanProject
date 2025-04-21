@@ -246,9 +246,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       } else {
         response = await util.onSend();
       }
-      isSaving = false;
-      saved = response != 'failure';
-      _referenceController.text = response;
+
       CustomSnackbar.show(
           context: context,
           durationInSeconds: 3,
@@ -256,7 +254,11 @@ class _LetterFormState extends ConsumerState<LetterForm> {
           title: 'Successful',
           typeId: 1,
           asset: 'assets/saving.gif');
-      setState(() {});
+      setState(() {
+        isSaving = false;
+        saved = response != 'failure';
+        _referenceController.text = response;
+      });
     } else {
       setState(() {
         isSaving = false;
