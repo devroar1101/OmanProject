@@ -22,8 +22,8 @@ class Folder {
       cabinetId: map['cabinetId'],
       objectId: map['objectId'] ?? '', // Defaulting to empty string if null
       code: map['id'] ?? map['folderId'], // Defaulting to empty string if null
-      nameArabic: map['nameEnglish'] ?? '',
-      nameEnglish: map['nameArabic'] ?? '',
+      nameArabic: map['nameArabic'] ?? '',
+      nameEnglish: map['nameEnglish'] ?? '',
     );
   }
 

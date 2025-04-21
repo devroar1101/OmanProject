@@ -110,11 +110,11 @@ class _DocumentViewerState extends State<DocumentViewer> {
   }
 
   void _editImage() async {
-    /*final selectedImage = widget.imagePaths[currentPage];
+    final selectedImage = widget.imagePaths[currentPage];
     final editedImage = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>  EditImageScreen(imageData: selectedImage),
+        builder: (context) => EditImageScreen(imageData: selectedImage),
       ),
     );
 
@@ -122,7 +122,7 @@ class _DocumentViewerState extends State<DocumentViewer> {
       setState(() {
         widget.imagePaths[currentPage] = editedImage;
       });
-    }*/
+    }
   }
 
   @override

@@ -26,6 +26,21 @@ class LetterRepository {
     }
   }
 
+  Future<Response> updateLetterStatus(String objectId, int statusId) async {
+    Map<String, dynamic> requestBody = {
+      "objectId": objectId,
+      "statusId": statusId
+    };
+
+    try {
+      final response =
+          await dio.post('/Letter/UpdateStatus', data: requestBody);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> getLetterById(
       {required int letterId, required String letterObjectId}) async {
     try {

@@ -1,16 +1,15 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/letter_subject/model/letter_subjecct.dart';
+import 'package:tenderboard/common/model/select_option.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final LetterSubjectMasterRepositoryProvider =
-    StateNotifierProvider<LetterSubjectMasterRepository, List<LetterSubjecct>>(
+final letterSubjectMasterRepositoryProvider =
+    StateNotifierProvider<LetterSubjectMasterRepository, List<LetterSubject>>(
         (ref) {
   return LetterSubjectMasterRepository(ref);
 });
 
-class LetterSubjectMasterRepository
-    extends StateNotifier<List<LetterSubjecct>> {
+class LetterSubjectMasterRepository extends StateNotifier<List<LetterSubject>> {
   LetterSubjectMasterRepository(this.ref) : super([]);
   final Ref ref;
 
@@ -29,7 +28,7 @@ class LetterSubjectMasterRepository
       final response = await dio.post('/Subject/Create', data: requestBody);
 
       state = [
-        LetterSubjecct(
+        LetterSubject(
           subject: subjectName,
           tenderNumber: tenderNumber,
           objectId: response.data['data']['objectId'],
@@ -43,7 +42,7 @@ class LetterSubjectMasterRepository
   }
 
   /// Fetch Departments from the API
-  Future<List<LetterSubjecct>> fetchLetterSubjects({
+  Future<List<LetterSubject>> fetchLetterSubjects({
     int pageSize = 15,
     int pageNumber = 1,
   }) async {
@@ -63,7 +62,7 @@ class LetterSubjectMasterRepository
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List;
         state = data
-            .map((item) => LetterSubjecct.fromMap(item as Map<String, dynamic>))
+            .map((item) => LetterSubject.fromMap(item as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to load Letter Subject');
@@ -92,7 +91,7 @@ class LetterSubjectMasterRepository
       final response = await dio.put('/Subject/Update', data: requestBody);
 
       if (response.statusCode == 200) {
-        final updatedLetterSubject = LetterSubjecct(
+        final updatedLetterSubject = LetterSubject(
             subject: subjectName,
             tenderNumber: tenderNumber,
             objectId: response.data['data']['objectId'],
@@ -136,6 +135,45 @@ class LetterSubjectMasterRepository
     } catch (e) {
       // Handle any errors during the request
       throw Exception('Error occurred while deleting Subject: $e');
+    }
+  }
+
+  Future<List<SelectOption<LetterSubject>>> getSubjectByTenderNumber(
+      String tenderNumber) async {
+    final dio = ref.watch(dioProvider);
+
+    Map<String, dynamic> requestBody = {"tenderNumber": tenderNumber};
+
+    try {
+      final response = await dio.post(
+        '/Master/SearchListSubjectByTenderNumber',
+        data: requestBody,
+      );
+
+      if (response.statusCode == 200 && response.data['isSuccess'] == true) {
+        final List<dynamic> data = response.data['data'] ?? [];
+
+        print(data);
+
+        // Convert API response into ListMasterItem objects
+        List<LetterSubject> subjectItems =
+            data.map((item) => LetterSubject.fromMap(item)).toList();
+
+        // Convert subjectItems into SelectOption<ListMasterItem>
+        List<SelectOption<LetterSubject>> options = subjectItems.map((item) {
+          return SelectOption<LetterSubject>(
+            displayName: item.tenderNumber,
+            key: item.objectId, // Unique key for selection
+            value: item, // Store full item as value
+          );
+        }).toList();
+
+        return options;
+      } else {
+        throw Exception('Failed to fetch list master items');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching ListMaster items: $e');
     }
   }
 }

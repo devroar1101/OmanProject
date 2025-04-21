@@ -30,12 +30,12 @@ class _ListPageState extends ConsumerState<ListPage> {
     initialise();
   }
 
-  void initialise() {
+  void initialise() async {
     pageSize = 15;
     pageNumber = 1;
     searchFor = null;
     status = null;
-    ref.read(inboxRepositoryProvider.notifier).fetchInbox(
+    await ref.read(inboxRepositoryProvider.notifier).fetchInbox(
           screenName: widget.screenName,
           pageNumber: pageNumber,
           pageSize: pageSize,

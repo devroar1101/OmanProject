@@ -16,6 +16,8 @@ import 'dart:async';
 /// Utility class for saving form data
 class LetterUtils {
   final String? actionToBeTaken;
+  final String? negotiationNumber;
+
   final int? cabinet;
   final int? classification;
   final String? comments;
@@ -32,11 +34,14 @@ class LetterUtils {
   final String? sendTo;
   final String? subject;
   final String? tenderNumber;
+  final String? letterNumber;
+  final int? tenderStatus;
   final int? toUser;
   final String? objectId;
   final String? directionType;
   final int? priority;
   final int? year;
+  final int? statusId;
   List<String>? scanDocuments;
 
   /// Constructor to initialize all fields
@@ -59,14 +64,17 @@ class LetterUtils {
       this.sendTo,
       this.subject,
       this.tenderNumber,
+      this.letterNumber,
+      this.tenderStatus,
       this.toUser,
       this.priority,
       this.year,
+      this.statusId,
       this.scanDocuments,
-      this.objectId});
+      this.objectId,
+      this.negotiationNumber});
 
   Future<String> onSave() async {
-    print(reference);
     try {
       final letter = Letter(
           year: year ?? 0,
@@ -81,17 +89,20 @@ class LetterUtils {
           folderId: folder ?? 0,
           flagStatus: 0,
           jobOwnerId: toUser ?? 0,
-          letterNumber: tenderNumber,
+          letterNumber: letterNumber,
+          tenderNumber: tenderNumber,
           objectId: objectId,
           priorityId: priority ?? 0,
           referenecNumber: reference ?? '',
           sendTo: sendTo ?? '',
-          statusId: reference != null ? 1 : 0,
+          statusId: statusId,
           receivedDate: receivedDate,
           createdDate: createdDate,
           subject: subject ?? '',
-          tenderStatusId: 1,
-          locationId: locationId);
+          tenderStatusId: tenderStatus,
+          locationId: locationId,
+          comments: comments,
+          negotiationNumber: negotiationNumber);
 
       // Build LetterAction object
       final letterAction = LetterAction(
@@ -176,5 +187,13 @@ class LetterUtils {
       print('Error searching data: $e');
       return 'failure';
     }
+  }
+
+  Future<String> onSend() async {
+    final repo = ProviderContainer();
+    final response = await repo
+        .read(letterRepositoryProvider)
+        .updateLetterStatus(objectId!, statusId!);
+    return response.data['data'];
   }
 }

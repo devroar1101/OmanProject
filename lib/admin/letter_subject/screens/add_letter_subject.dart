@@ -9,7 +9,7 @@ class AddLetterSubject extends ConsumerWidget {
     this.currentSubject,
   });
 
-  final LetterSubjecct? currentSubject;
+  final LetterSubject? currentSubject;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -20,20 +20,24 @@ class AddLetterSubject extends ConsumerWidget {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        currentSubject == null ?
-         await ref.read(LetterSubjectMasterRepositoryProvider.notifier).addLetterSubject
-         (subjectName: _subject!, 
-         tenderNumber: _tenderNumber!
-         ) : await ref.read(LetterSubjectMasterRepositoryProvider.notifier).editLetterSubject(
-          currentSubjectId: currentSubject!.id,
-          subjectName: _subject!,
-          tenderNumber: _tenderNumber!,
-         );
-
+        currentSubject == null
+            ? await ref
+                .read(letterSubjectMasterRepositoryProvider.notifier)
+                .addLetterSubject(
+                    subjectName: _subject!, tenderNumber: _tenderNumber!)
+            : await ref
+                .read(letterSubjectMasterRepositoryProvider.notifier)
+                .editLetterSubject(
+                  currentSubjectId: currentSubject!.id,
+                  subjectName: _subject!,
+                  tenderNumber: _tenderNumber!,
+                );
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Subject ${currentSubject == null ? "added" : "updated"} successfully!')),
+          SnackBar(
+              content: Text(
+                  'Subject ${currentSubject == null ? "added" : "updated"} successfully!')),
         );
         Navigator.pop(context); // Close the modal
       } catch (e) {
@@ -64,7 +68,8 @@ class AddLetterSubject extends ConsumerWidget {
                   currentSubject != null
                       ? 'Edit Letter Subject'
                       : 'Add Letter Subject',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(

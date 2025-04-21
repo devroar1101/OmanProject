@@ -3,6 +3,8 @@ import 'package:tenderboard/common/utilities/global_helper.dart';
 class Letter {
   final int? letterId;
   final int? cabinetId;
+  final String? negotiationNumber;
+  final String? comments;
   final int? folderId;
   final int? locationId;
   final String? subject;
@@ -29,39 +31,42 @@ class Letter {
   final String? objectId;
   final DateTime? timeStamp;
 
-  Letter({
-    this.letterId,
-    this.cabinetId,
-    this.folderId,
-    this.locationId,
-    this.subject,
-    required this.year,
-    this.dateOnLetter,
-    required this.templateId,
-    this.receivedDate,
-    this.createdDate,
-    this.classificationId,
-    this.priorityId,
-    this.sendTo,
-    this.flagStatus,
-    this.direction,
-    this.directionType,
-    this.referenecNumber,
-    this.letterNumber,
-    this.tenderNumber,
-    this.statusId,
-    this.actionToBeTaken,
-    this.tenderStatusId,
-    this.createdBy,
-    this.jobOwnerId,
-    this.isDeleted,
-    this.objectId,
-    this.timeStamp,
-  });
+  Letter(
+      {this.letterId,
+      this.cabinetId,
+      this.folderId,
+      this.locationId,
+      this.subject,
+      required this.year,
+      this.dateOnLetter,
+      required this.templateId,
+      this.receivedDate,
+      this.createdDate,
+      this.classificationId,
+      this.priorityId,
+      this.sendTo,
+      this.flagStatus,
+      this.direction,
+      this.directionType,
+      this.referenecNumber,
+      this.letterNumber,
+      this.tenderNumber,
+      this.statusId,
+      this.actionToBeTaken,
+      this.tenderStatusId,
+      this.createdBy,
+      this.jobOwnerId,
+      this.isDeleted,
+      this.objectId,
+      this.timeStamp,
+      this.negotiationNumber,
+      this.comments});
 
   factory Letter.fromMap(Map<String, dynamic> map) {
     return Letter(
       letterId: map['letterId'] ?? 0,
+      negotiationNumber: map['negotiationNumber'],
+      comments: map['comments'],
       cabinetId: map['cabinetId'],
       folderId: map['folderId'],
       locationId: map['locationId'],
@@ -100,6 +105,8 @@ class Letter {
 
   Map<String, dynamic> toMap() {
     return {
+      'negotiationNumber': negotiationNumber,
+      'comments': comments,
       'cabinetId': cabinetId,
       'folderId': folderId,
       'locationId': locationId,

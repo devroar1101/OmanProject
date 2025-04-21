@@ -4,6 +4,7 @@ import 'package:tenderboard/common/widgets/load_letter_document.dart';
 import 'package:tenderboard/office/letter/screens/letter_form.dart';
 import 'package:tenderboard/office/letter_summary/screens/actions.dart';
 import 'package:tenderboard/office/letter_summary/screens/letter_routing.dart';
+import 'package:tenderboard/office/letter_summary/screens/widgets/summary_details.dart';
 
 class LetterSummary extends StatefulWidget {
   final String letterObjectId;
@@ -29,6 +30,7 @@ class _LetterSummaryState extends State<LetterSummary> {
               onPressed: () {
                 Navigator.pop(context);
               },
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
               label: const Text(
                 'Back',
                 style: TextStyle(
@@ -37,10 +39,13 @@ class _LetterSummaryState extends State<LetterSummary> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
             ),
           )
         ],
-        automaticallyImplyLeading: false, // Disable default back button
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -53,115 +58,57 @@ class _LetterSummaryState extends State<LetterSummary> {
             ),
           ),
         ),
-        title: LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Title Card
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: const Row(
-                    children: [
-                      SizedBox(width: 8),
-                      Text(
-                        'Summary',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              _buildTab("Details"),
+              _buildTab("Attachment"),
+              _buildTab("Link Document"),
+              _buildTab("Additional Info"),
+              _buildTab("Action"),
+            ],
+          ),
         ),
       ),
-      body: SafeArea(
+      body: SizedBox.expand(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left Side - Navigation Tabs and Content
-            Flexible(
-              flex: 3,
-              child: Container(
-                child: Column(
-                  children: [
-                    // Tabs
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _buildTab("Details"),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          _buildTab("Routing"),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          _buildTab("Attachment"),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          _buildTab("Link Document"),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          _buildTab("Additional Info"),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          _buildTab("Action"),
-                        ],
-                      ),
-                    ),
-                    // Content Area
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 12, right: 12, bottom: 12),
-                        child: _buildContent(
-                            Directionality.of(context) == TextDirection.rtl),
-                      ),
-                    ),
-                  ],
+            // Left Side
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: _buildContent(
+                      Directionality.of(context) == TextDirection.rtl),
                 ),
               ),
             ),
-            // Right Side - Document Viewer or Additional Content
-            Flexible(
-              flex: 2,
+            // Right Side
+            Expanded(
+              flex: 1,
               child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-                  child: Container(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 300),
+                  decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    child: Center(
-                      child: Container(
-                        color: Colors.grey[200], // Optional background color
-                        child: _buildHelperContent(
-                            Directionality.of(context) == TextDirection.rtl),
-                      ),
-                    ),
-                  )),
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: _buildHelperContent(
+                      Directionality.of(context) == TextDirection.rtl),
+                ),
+              ),
             ),
           ],
         ),
@@ -171,15 +118,16 @@ class _LetterSummaryState extends State<LetterSummary> {
 
   Widget _buildTab(String label) {
     final isSelected = _selectedTab == label;
+
     return GestureDetector(
       onTap: () {
-        if (!needHelper) {
-          _selectedTab = label;
-        } else {
-          _helperTab = label == 'Action' ? 'Letter' : label;
-        }
-
         setState(() {
+          if (!needHelper) {
+            _selectedTab = label;
+          } else {
+            _helperTab = label == 'Action' ? 'Letter' : label;
+          }
+
           if (label == 'Action') {
             if (needHelper) {
               _helperTab = 'Letter';
@@ -190,36 +138,30 @@ class _LetterSummaryState extends State<LetterSummary> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
         decoration: BoxDecoration(
           color: isSelected
-              ? _selectedTab == 'Action'
-                  ? Colors.amberAccent
-                  : Colors.blue
+              ? (_selectedTab == 'Action' ? Colors.amberAccent : Colors.blue)
               : Colors.grey[300],
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            bottomRight: Radius.circular(15),
-          ),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
               ? [
                   const BoxShadow(
                     color: Colors.black26,
-                    blurRadius: 5,
+                    blurRadius: 4,
                     offset: Offset(2, 2),
-                  ),
+                  )
                 ]
-              : null,
+              : [],
         ),
         child: Text(
-          _selectedTab == 'Action' && label == 'Action' ? 'Cancel' : label,
+          (_selectedTab == 'Action' && label == 'Action') ? 'Cancel' : label,
           style: TextStyle(
-              color: isSelected
-                  ? _selectedTab == 'Action'
-                      ? Colors.black
-                      : Colors.white
-                  : Colors.black,
-              fontWeight: FontWeight.bold),
+            color: isSelected
+                ? (_selectedTab == 'Action' ? Colors.black : Colors.white)
+                : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -228,13 +170,8 @@ class _LetterSummaryState extends State<LetterSummary> {
   Widget _buildContent(bool isRtl) {
     switch (_selectedTab) {
       case "Details":
-        return LetterForm(
-          screenName: 'LetterSummary',
+        return SummaryDetails(
           letterObjectId: widget.letterObjectId,
-        );
-      case "Routing":
-        return RoutingHistory(
-          objectId: widget.letterObjectId,
         );
       case "Action":
         return ActionScreen(
@@ -242,7 +179,6 @@ class _LetterSummaryState extends State<LetterSummary> {
           objectId: widget.letterObjectId,
           type: 'Letter',
         );
-
       default:
         return const Center(child: Text("Invalid Tab"));
     }
@@ -259,7 +195,6 @@ class _LetterSummaryState extends State<LetterSummary> {
         return RoutingHistory(
           objectId: widget.letterObjectId,
         );
-
       case "Letter":
         return LoadLetterDocument(
           objectId: widget.letterObjectId,

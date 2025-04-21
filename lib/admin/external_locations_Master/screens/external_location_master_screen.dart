@@ -25,7 +25,7 @@ class _ExternalLocationScreenState
     super.initState();
     // Fetch External Location Master items during initialization
     ref
-        .read(ExternalLocationRepositoryProvider.notifier)
+        .read(externalLocationRepositoryProvider.notifier)
         .fetchExternalLocation();
   }
 
@@ -59,7 +59,9 @@ class _ExternalLocationScreenState
               .toLowerCase()
               .contains(searchNameEnglish.toLowerCase());
       final matchesType = searchType.isEmpty ||
-          externalLocation.type.toLowerCase().contains(searchType.toLowerCase());
+          externalLocation.type
+              .toLowerCase()
+              .contains(searchType.toLowerCase());
       return matchesArabic && matchesEnglish && matchesType;
     }).toList();
 
@@ -73,13 +75,13 @@ class _ExternalLocationScreenState
 
   void onDelete(int locationId) {
     ref
-        .watch(ExternalLocationRepositoryProvider.notifier)
+        .watch(externalLocationRepositoryProvider.notifier)
         .deleteExternalLocation(locationId: locationId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final externalLocations = ref.watch(ExternalLocationRepositoryProvider);
+    final externalLocations = ref.watch(externalLocationRepositoryProvider);
     final filteredAndPaginatedList =
         _applyFiltersAndPagination(externalLocations);
 
@@ -154,8 +156,10 @@ class _ExternalLocationScreenState
                             externalLocation.nameEnglish
                                 .toLowerCase()
                                 .contains(searchNameEnglish.toLowerCase());
-                                final matchesType = searchType.isEmpty ||
-          externalLocation.type.toLowerCase().contains(searchType.toLowerCase());
+                        final matchesType = searchType.isEmpty ||
+                            externalLocation.type
+                                .toLowerCase()
+                                .contains(searchType.toLowerCase());
                         return matchesArabic && matchesEnglish && matchesType;
                       }).length
                     : externalLocations.length,

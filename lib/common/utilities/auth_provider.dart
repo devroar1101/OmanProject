@@ -48,7 +48,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (userName != null) {
         await prefs.setString('username', userName);
       }
-      preLoad();
     } else {
       await prefs.setString('selectedLanguage', 'en');
       await prefs.remove('accessToken');
@@ -110,11 +109,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await prefs.setString('selectedLanguage', language);
   }
 
-  void preLoad() {
+  void preLoad() async {
     if (state.isAuthenticated) {
       Future.microtask(() => ref.read(dgOptionsProvider(true)));
       Future.microtask(() => ref.read(cabinetOptionsProvider(true)));
-      Future.microtask(() => ref.read(locationOptionsProvider));
+
       Future.microtask(() => ref.read(userOptionsProvider));
     }
   }

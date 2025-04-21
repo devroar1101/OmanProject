@@ -170,6 +170,7 @@ final cabinetOptionsProvider =
         (ref, child) async {
   final authState = ref.watch(authProvider);
   bool isChild = child ?? false;
+
   return ref
       .read(cabinetRepositoryProvider.notifier)
       .getCabinetOptions(authState.selectedLanguage, isChild);

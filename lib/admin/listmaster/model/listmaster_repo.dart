@@ -1,8 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tenderboard/admin/listmaster/model/listmaster.dart';
+import 'package:tenderboard/admin/listmasteritem/model/listmasteritem.dart';
+import 'package:tenderboard/common/model/select_option.dart';
+import 'package:tenderboard/common/utilities/auth_provider.dart';
 import 'package:tenderboard/common/utilities/dio_provider.dart';
 
-final listMasterRepositoryProvider = StateNotifierProvider<ListMasterRepository, List<ListMaster>>((ref) {
+final listMasterRepositoryProvider =
+    StateNotifierProvider<ListMasterRepository, List<ListMaster>>((ref) {
   return ListMasterRepository(ref);
 });
 
@@ -11,7 +15,8 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
   final Ref ref;
 
   //Add
-  Future<void> addListMaster({required String nameEnglish, required String nameArabic}) async {
+  Future<void> addListMaster(
+      {required String nameEnglish, required String nameArabic}) async {
     final dio = ref.watch(dioProvider);
     Map<String, dynamic> requestBody = {
       'nameEnglish': nameEnglish,
@@ -22,16 +27,21 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
       final response = await dio.post('/ListMaster/Create', data: requestBody);
 
       // After adding a ListMaster, we update the state to trigger a rebuild
-      state = [ ListMaster(
-        nameEnglish: nameEnglish, 
-        nameArabic: nameArabic,
-        id: response.data['data']['id'],
-        listMasterCode: response.data['data']['code'],
-        objectId: response.data['data']['objectId'],),...state];
+      state = [
+        ListMaster(
+          nameEnglish: nameEnglish,
+          nameArabic: nameArabic,
+          id: response.data['data']['id'],
+          listMasterCode: response.data['data']['code'],
+          objectId: response.data['data']['objectId'],
+        ),
+        ...state
+      ];
     } catch (e) {
       throw Exception('Error occurred while adding ListMaster: $e');
     }
   }
+
   //Onload
   Future<List<ListMaster>> fetchListMasters() async {
     final dio = ref.watch(dioProvider);
@@ -43,11 +53,14 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
     };
 
     try {
-      final response = await dio.post('/Master/SearchAndListMaster', data: requestBody);
+      final response =
+          await dio.post('/Master/SearchAndListMaster', data: requestBody);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List;
-        state = data.map((item) => ListMaster.fromMap(item as Map<String, dynamic>)).toList();
+        state = data
+            .map((item) => ListMaster.fromMap(item as Map<String, dynamic>))
+            .toList();
       } else {
         throw Exception('Failed to load ListMasters: ${response.statusCode}');
       }
@@ -58,47 +71,84 @@ class ListMasterRepository extends StateNotifier<List<ListMaster>> {
   }
 
   //Edit
-  Future<void> editListMaster({required int id, required String nameEnglish, required String nameArabic}) async {
-  final dio = ref.watch(dioProvider);
-  Map<String, dynamic> requestBody = {
-    'id': id,
-    'nameEnglish': nameEnglish,
-    'nameArabic': nameArabic,
-  };
+  Future<void> editListMaster(
+      {required int id,
+      required String nameEnglish,
+      required String nameArabic}) async {
+    final dio = ref.watch(dioProvider);
 
-  try {
-    // Make a PUT or PATCH request to edit the existing ListMaster
-    final response = await dio.put(
-      '/ListMaster/Update',  // Assuming you're using a RESTful API where you pass the ID in the URL
-      data: requestBody,
-    );
-    print('listmaster commig result== > ${response.data}');
+    Map<String, dynamic> requestBody = {
+      'id': id,
+      'nameEnglish': nameEnglish,
+      'nameArabic': nameArabic,
+    };
 
-    // After successfully editing, update the state by replacing the old ListMaster with the updated one
-    final updatedListMaster = ListMaster(
-      id: id, // Ensure the id remains the same as the existing ListMaster
-      nameEnglish: nameEnglish,
-      nameArabic: nameArabic,
-      listMasterCode: response.data['data']['code'],
-        objectId: response.data['data']['objectId'], // Optionally update this if you receive a new value from the backend
-      // Update if there are any changes to the items list, otherwise leave as is
-    );
+    try {
+      // Make a PUT or PATCH request to edit the existing ListMaster
+      final response = await dio.put(
+        '/ListMaster/Update', // Assuming you're using a RESTful API where you pass the ID in the URL
+        data: requestBody,
+      );
+      print('listmaster commig result== > ${response.data}');
 
-    // Update the state to reflect the edited ListMaster
-    state = [
-      for (var listMaster in state)
-        if (listMaster.id == id) updatedListMaster else listMaster
-    ];
-  } catch (e) {
-    throw Exception('Error occurred while editing ListMaster: $e');
+      // After successfully editing, update the state by replacing the old ListMaster with the updated one
+      final updatedListMaster = ListMaster(
+        id: id, // Ensure the id remains the same as the existing ListMaster
+        nameEnglish: nameEnglish,
+        nameArabic: nameArabic,
+        listMasterCode: response.data['data']['code'],
+        objectId: response.data['data'][
+            'objectId'], // Optionally update this if you receive a new value from the backend
+        // Update if there are any changes to the items list, otherwise leave as is
+      );
+
+      // Update the state to reflect the edited ListMaster
+      state = [
+        for (var listMaster in state)
+          if (listMaster.id == id) updatedListMaster else listMaster
+      ];
+    } catch (e) {
+      throw Exception('Error occurred while editing ListMaster: $e');
+    }
+  }
+
+  Future<List<SelectOption<ListMasterItem>>> getItemsByMaster(
+      String name) async {
+    final dio = ref.watch(dioProvider);
+    final auth = ref.watch(authProvider);
+    Map<String, dynamic> requestBody = {"listMasterNameEnglish": name};
+
+    try {
+      final response = await dio.post(
+        '/Master/SearchListMasterItemByListMasterName',
+        data: requestBody,
+      );
+
+      if (response.statusCode == 200 && response.data['isSuccess'] == true) {
+        final List<dynamic> data = response.data['data'] ?? [];
+
+        // Convert API response into ListMasterItem objects
+        List<ListMasterItem> listMasterItems =
+            data.map((item) => ListMasterItem.fromMap(item)).toList();
+
+        // Convert ListMasterItems into SelectOption<ListMasterItem>
+        List<SelectOption<ListMasterItem>> options =
+            listMasterItems.map((item) {
+          return SelectOption<ListMasterItem>(
+            displayName: auth.selectedLanguage == 'en'
+                ? item.nameEnglish
+                : item.nameArabic, // Display name for selection
+            key: item.objectId, // Unique key for selection
+            value: item, // Store full item as value
+          );
+        }).toList();
+
+        return options;
+      } else {
+        throw Exception('Failed to fetch list master items');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching ListMaster items: $e');
+    }
   }
 }
-
-}
-
-
-
-
-
-
-
