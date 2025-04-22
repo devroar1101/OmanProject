@@ -10,9 +10,9 @@ import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/select_field.dart';
 
 class UsersSearchForm extends ConsumerStatefulWidget {
-  const UsersSearchForm({super.key, required this.onSearch});
+  UsersSearchForm({super.key, this.onSearch});
 
-  final Function(String, String, String, String, String) onSearch;
+  Function(String, String, String, String, String)? onSearch;
 
   @override
   _UsersSearchFormState createState() => _UsersSearchFormState();
@@ -33,13 +33,15 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
   void _resetFields() {
     _loginIdController.clear();
     _nameController.clear();
-    widget.onSearch(
-      '',
-      '',
-      '',
-      '',
-      '',
-    );
+   
+      widget.onSearch!(
+        '',
+        '',
+        '',
+        '',
+        '',
+      );
+    
     setState(() {
       _selectedDGValue = '';
       _selectedDepartmentValue = '';
@@ -53,7 +55,9 @@ class _UsersSearchFormState extends ConsumerState<UsersSearchForm> {
     String dg = _selectedDGValue!;
     String department = _selectedDepartmentValue!;
     String section = _selectedSectionValue!;
-    widget.onSearch(loginId, name, dg, department, section);
+   
+      widget.onSearch!(loginId, name, dg, department, section);
+    
 
     print('Search triggered with:');
     print('Login ID: $loginId');

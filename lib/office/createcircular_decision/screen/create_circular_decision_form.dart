@@ -15,10 +15,10 @@ import 'package:tenderboard/office/createcircular_decision/model/cretae_circular
 class CircularDecisionForm extends ConsumerStatefulWidget {
   final List<String>? scanDocuments;
   final CircularDecisionSearch? currentDocument;
-  final String? ScreenName;
+  final String? screenName;
 
   CircularDecisionForm(
-      {super.key, this.scanDocuments, this.currentDocument, this.ScreenName});
+      {super.key, this.scanDocuments, this.currentDocument, this.screenName});
 
   @override
   _CircularDecisionFormState createState() => _CircularDecisionFormState();

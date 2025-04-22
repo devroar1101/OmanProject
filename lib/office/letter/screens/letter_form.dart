@@ -1231,7 +1231,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        spacing: 8,
+       // spacing: 8,
         children: [
           Row(children: [
             Expanded(

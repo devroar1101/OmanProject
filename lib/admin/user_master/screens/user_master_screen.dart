@@ -40,7 +40,8 @@ class _UserScreenState extends ConsumerState<UserScreen>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0), // Start from off-screen (right)
       end: const Offset(0.0, 0.0), // Move to visible position
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    ).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -60,7 +61,9 @@ class _UserScreenState extends ConsumerState<UserScreen>
     });
   }
 
-  void onSearch(String loginId, String name, String dg, String department, String section) {
+  void onSearch(String loginId, String name, String dg, String department,
+      String section) {
+        print('iddddd$loginId');
     setState(() {
       searchLoginId = loginId;
       searchName = name;
@@ -79,14 +82,18 @@ class _UserScreenState extends ConsumerState<UserScreen>
     }
 
     List<User> filteredList = users.where((singleUser) {
+      print('single user id ${singleUser.loginId}');
       final matchesName = searchName.isEmpty ||
           (singleUser.name.toLowerCase()).contains(searchName.toLowerCase());
-      final matchesDg = searchDG.isEmpty || singleUser.dgId.toString() == searchDG;
+      final matchesDg =
+          searchDG.isEmpty || singleUser.dgId.toString() == searchDG;
+      final matchesLoginId = searchLoginId.isEmpty ||
+          (singleUser.loginId.toLowerCase()).contains(searchLoginId.toLowerCase());
       final matchesDepartment = searchDepartment.isEmpty ||
           singleUser.departmentId.toString() == searchDepartment;
       final matchesSection = searchSection.isEmpty ||
           singleUser.sectionId.toString() == searchSection;
-      return matchesDg && matchesSection && matchesDepartment && matchesName;
+      return matchesDg && matchesSection && matchesDepartment && matchesName && matchesLoginId;
     }).toList();
 
     int startIndex = (pageNumber - 1) * pageSize;
@@ -118,29 +125,42 @@ class _UserScreenState extends ConsumerState<UserScreen>
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Master'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _toggleSearchForm, // Show search form on click
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('User Master'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.search),
+      //       onPressed: _toggleSearchForm, // Show search form on click
+      //     ),
+      //   ],
+      // ),
       body: Stack(
         children: [
           Column(
             children: [
               if (users.isNotEmpty)
-                Pagination(
-                  totalItems: search ? filteredAndPaginatedList.length : users.length,
-                  initialPageSize: pageSize,
-                  onPageChange: (pageNo, newPageSize) {
-                    setState(() {
-                      pageNumber = pageNo;
-                      pageSize = newPageSize;
-                    });
-                  },
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.start, // Align items
+                  children: [
+                    Pagination(
+                      totalItems: search
+                          ? filteredAndPaginatedList.length
+                          : users.length,
+                      initialPageSize: pageSize,
+                      onPageChange: (pageNo, newPageSize) {
+                        setState(() {
+                          pageNumber = pageNo;
+                          pageSize = newPageSize;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.search,
+                          color: Colors.black), // Adjust color as needed
+                     onPressed: _toggleSearchForm, // Show search form on click
+                    ),
+                  ],
                 ),
               if (users.isEmpty)
                 const Center(child: Text('No items found'))
@@ -181,7 +201,8 @@ class _UserScreenState extends ConsumerState<UserScreen>
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4, // 40% width of screen
+                    width: MediaQuery.of(context).size.width *
+                        0.4, // 40% width of screen
                     height: double.infinity,
                     color: Colors.white, // Background color
                     padding: const EdgeInsets.all(16.0),

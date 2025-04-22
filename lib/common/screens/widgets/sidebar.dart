@@ -196,8 +196,8 @@ class _CustomSidebarState extends State<CustomSidebar> {
       decoration: BoxDecoration(
         // Lighter background
         gradient: const LinearGradient(colors: [
-          Color.fromARGB(255, 10, 31, 61),
-          Color.fromARGB(133, 10, 31, 61)
+          Color.fromARGB(135, 20, 92, 74),
+          Color.fromARGB(255, 10, 92, 74)
         ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
         borderRadius: BorderRadius.circular(12), // Rounded corners
         boxShadow: [
@@ -283,7 +283,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
             IconButton(
               icon: Icon(
                   _isMinimized ? (Icons.arrow_forward) : (Icons.arrow_back),
-                  color: AppTheme.iconColor),
+                  color: const Color.fromARGB(255, 5, 5, 5)),
               onPressed: _toggleMinimize,
             ),
           ],

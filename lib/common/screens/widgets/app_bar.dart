@@ -38,8 +38,8 @@ class CustomAppBar {
         decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: const [
-                Color.fromARGB(255, 10, 31, 61),
-                Color.fromARGB(133, 10, 31, 61)
+                Color.fromARGB(135, 20, 92, 74),
+                Color.fromARGB(255, 10, 92, 74)
               ],
               begin: isRtl ? Alignment.bottomLeft : Alignment.topRight,
               end: isRtl ? Alignment.topRight : Alignment.bottomLeft),
@@ -106,13 +106,24 @@ class CustomAppBar {
                   //     debugPrint('Dashboard clicked');
                   //   },
                   // ),
-                  IconButton(
-                    icon: const Icon(Icons.add, color: AppTheme.iconColor),
-                    onPressed: () {
-                      // Show AddListmasterScreen as a modal
-                      _showModal(context: context, screenName: screenName);
-                    },
-                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 212, 180,
+                          146), // Set your desired background color
+                      shape: BoxShape
+                          .circle, // Optional: Makes the button circular
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.add,
+                        color: AppTheme.iconColor,
+                      ),
+                      onPressed: () {
+                        // Show AddListmasterScreen as a modal
+                        _showModal(context: context, screenName: screenName);
+                      },
+                    ),
+                  )
                 ],
               )
             : AppBar(
@@ -209,7 +220,8 @@ class CustomAppBar {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (ctx) => const CreateMeetingMinutesScreen()));
+                              builder: (ctx) =>
+                                  const CreateMeetingMinutesScreen()));
                     },
                   ),
                   IconButton(
