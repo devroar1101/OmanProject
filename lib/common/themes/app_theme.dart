@@ -5,7 +5,7 @@ class AppTheme {
   // Define your color palette based on the eTendering website
   static const Color primaryColor = Color(0xFF004F95); // Blue
   static const Color secondaryColor = Color(0xFF004F95); // Same as primary
-  static const Color backgroundColor = Color(0xFFF5F5F5); // Light gray
+  static const Color backgroundColor = Color.fromARGB(255, 187, 186, 186); // Light gray
   static const Color darkBackgroundColor = Color.fromARGB(255, 203, 222, 241); // Dark blue-gray
   static const Color activeColor = Color.fromARGB(255, 252, 174, 30); // Green
   static const Color buttonColor = Color.fromARGB(255, 212, 180, 146); // Bright button color
@@ -53,7 +53,7 @@ class AppTheme {
   static ThemeData getTheme({required bool isDarkMode}) {
     return ThemeData(
       primaryColor: primaryColor,
-      scaffoldBackgroundColor: const Color.fromARGB(255, 248, 249, 250),
+      scaffoldBackgroundColor: Colors.grey[100],
       colorScheme: ColorScheme(
         primary: primaryColor,
         secondary: secondaryColor,

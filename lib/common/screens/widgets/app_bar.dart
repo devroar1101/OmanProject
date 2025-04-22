@@ -38,8 +38,8 @@ class CustomAppBar {
         decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: const [
-                Color.fromARGB(255, 10, 31, 61),
-                Color.fromARGB(133, 10, 31, 61)
+                Color.fromARGB(135, 20, 92, 74),
+                Color.fromARGB(255, 10, 92, 74)
               ],
               begin: isRtl ? Alignment.bottomLeft : Alignment.topRight,
               end: isRtl ? Alignment.topRight : Alignment.bottomLeft),
@@ -108,7 +108,8 @@ class CustomAppBar {
                   // ),
                   Container(
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 212, 180, 146), // Set your desired background color
+                      color: Color.fromARGB(255, 212, 180,
+                          146), // Set your desired background color
                       shape: BoxShape
                           .circle, // Optional: Makes the button circular
                     ),

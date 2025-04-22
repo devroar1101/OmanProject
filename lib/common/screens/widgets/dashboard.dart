@@ -95,7 +95,7 @@ class Dashboard extends StatelessWidget {
           width: 250,
           child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 226, 226, 226),
+              color: const Color.fromARGB(255, 154, 226, 215),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
