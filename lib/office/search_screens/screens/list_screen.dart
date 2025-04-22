@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
-
-import 'package:tenderboard/office/search_screens/screens/list_page.dart';
+import 'list_page.dart';
 
 class ListScreen extends StatefulWidget {
   final String screenName;
-  const ListScreen({required this.screenName, super.key});
+  const ListScreen({required this.screenName, Key? key}) : super(key: key);
 
   @override
-  _ListScreenState createState() => _ListScreenState();
+  State<ListScreen> createState() => _ListScreenState();
 }
 
 class _ListScreenState extends State<ListScreen> {
   String _selectedTab = "Letter";
+
+  @override
+  void didUpdateWidget(covariant ListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.screenName != widget.screenName) {
+      // Reset selected tab and trigger rebuild if the page changes
+      setState(() {
+        _selectedTab = "Letter";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +43,8 @@ class _ListScreenState extends State<ListScreen> {
                   _buildTab("Task"),
                 ],
               ),
-            // Content Area
             Expanded(
-              child: _buildContent(widget.screenName),
+              child: _buildContent(),
             ),
           ],
         ),
@@ -80,22 +89,23 @@ class _ListScreenState extends State<ListScreen> {
     );
   }
 
-  Widget _buildContent(String screenName) {
+  Widget _buildContent() {
     switch (_selectedTab) {
       case "Letter":
         return ListPage(
-          screenName: screenName,
+          key: ValueKey('${widget.screenName}_Letter'),
+          screenName: widget.screenName,
         );
       case "eJob":
-        return Center(child: Text("eJob Content for "));
+        return Center(child: Text("eJob Content for ${widget.screenName}"));
       case "CC":
-        return Center(child: Text("CC Content for "));
+        return Center(child: Text("CC Content for ${widget.screenName}"));
       case "Task":
-        return Center(child: Text("Task Content for "));
+        return Center(child: Text("Task Content for ${widget.screenName}"));
       default:
         return ListPage(
-          screenName: screenName,
-          key: ValueKey(screenName),
+          key: ValueKey('${widget.screenName}_Default'),
+          screenName: widget.screenName,
         );
     }
   }

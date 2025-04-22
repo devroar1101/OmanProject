@@ -43,7 +43,7 @@ class _ScannerAppState extends State<Scanner> {
     return Scaffold(
       body: DocumentViewer(
         imagePaths: imagePaths,
-
+        scanDocumnets: widget.scanDocumnets,
         startScan: _startScan, // Pass the function to start scanning
         showScannerDialog: showAlertBox,
         scanning: scanning, // Pass the function to show the dialog

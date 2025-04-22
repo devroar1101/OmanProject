@@ -51,6 +51,7 @@ dependencies:
   google_fonts: ^6.2.1
   pdf: ^3.11.1
   pro_image_editor: ^8.2.0
+  printing: ^5.14.2
  
 
 

@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:pdf/pdf.dart';
 import 'package:tenderboard/common/themes/app_theme.dart';
 import 'package:tenderboard/common/utilities/color_picker.dart';
 import 'package:tenderboard/common/widgets/image_editor.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 // ignore: must_be_immutable
 class DocumentViewer extends StatefulWidget {
@@ -13,6 +17,7 @@ class DocumentViewer extends StatefulWidget {
   final Future<void> Function()? startScan;
   final Function(BuildContext)? showScannerDialog;
   final Future<void> Function()? handlePageUpload;
+  final Function(List<String> documents)? scanDocumnets;
   bool? scanning;
 
   DocumentViewer(
@@ -22,6 +27,7 @@ class DocumentViewer extends StatefulWidget {
       this.totalPage = 0,
       this.showScannerDialog,
       this.scanning,
+      this.scanDocumnets,
       this.handlePageUpload});
 
   @override
@@ -67,46 +73,45 @@ class _DocumentViewerState extends State<DocumentViewer> {
     }
   }
 
-  Future<void> _saveImage(Uint8List imageData, BuildContext context) async {
-    const String apiUrl =
-        "http://192.168.1.12:8080/api/FileData/CreateFileData";
+  Future<void> _downloadPdf() async {
+    final pdfBytes = await compute(_generatePdfBytes, widget.imagePaths);
+    await Printing.sharePdf(
+      bytes: pdfBytes,
+      filename: 'scanned_document.pdf',
+    );
+  }
 
-    try {
-      final dio = Dio();
+  Future<void> _printImagesAsPdf() async {
+    final pdfBytes = await compute(_generatePdfBytes, widget.imagePaths);
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdfBytes,
+    );
+  }
 
-      dio.options.connectTimeout = const Duration(seconds: 30);
-      dio.options.receiveTimeout = const Duration(seconds: 30);
+// This runs in a background isolate
+  Future<Uint8List> _generatePdfBytes(List<Uint8List> imageDataList) async {
+    final pdf = pw.Document();
 
-      String base64Image = base64Encode(imageData);
+    for (var imageData in imageDataList) {
+      final image = pw.MemoryImage(imageData);
 
-      final payload = {
-        'content': base64Image,
-      };
-
-      final response = await dio.post(
-        apiUrl,
-        data: payload,
-        options: Options(headers: {'Content-Type': 'application/json'}),
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          build: (context) {
+            return pw.Center(
+              child: pw.Image(
+                image,
+                fit: pw
+                    .BoxFit.contain, // Keep aspect ratio, fully fits inside A4
+              ),
+            );
+          },
+        ),
       );
-
-      if (response.data['statusCode'] == '200' ||
-          response.data["IsSuccess"] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image saved successfully!")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Failed to save image: ${response.data['Message']}"),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error saving image: $e")),
-      );
-      print("Error saving image: $e");
     }
+
+    return await pdf.save();
   }
 
   void _editImage() async {
@@ -122,6 +127,16 @@ class _DocumentViewerState extends State<DocumentViewer> {
       setState(() {
         widget.imagePaths[currentPage] = editedImage;
       });
+// Background function to convert a list of images to Base64
+      List<String> _convertToBase64(List<Uint8List> images) {
+        return images.map((image) => base64Encode(image)).toList();
+      }
+
+      if (widget.scanDocumnets != null) {
+        List<String> base64Strings =
+            await compute(_convertToBase64, widget.imagePaths);
+        widget.scanDocumnets!(base64Strings);
+      }
     }
   }
 
@@ -268,6 +283,22 @@ class _DocumentViewerState extends State<DocumentViewer> {
                             validCurrentPage < widget.imagePaths.length - 1
                                 ? () => _changePage(validCurrentPage + 1)
                                 : null,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28,
+                        icon: const Icon(
+                          Icons.picture_as_pdf,
+                          color: ColorPicker.formIconColor,
+                        ),
+                        onPressed: _downloadPdf,
+                      ),
+                      const SizedBox(height: 2),
+                      IconButton(
+                        iconSize: 28,
+                        icon: const Icon(Icons.print,
+                            color: ColorPicker.formIconColor),
+                        onPressed: _printImagesAsPdf,
                       ),
                       const SizedBox(height: 2),
                       if (widget.startScan != null)

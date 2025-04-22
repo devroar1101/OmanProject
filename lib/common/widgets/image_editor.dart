@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pro_image_editor/pro_image_editor.dart';
@@ -23,9 +22,14 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
   Future<void> _loadSignatureImage() async {
     final data = await rootBundle.load("assets/signature.png");
-    setState(() {
-      _signatureImage = data.buffer.asUint8List();
+    _signatureImage = data.buffer.asUint8List();
+
+    // Automatically open editor after the widget has built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openEditor();
     });
+
+    setState(() {});
   }
 
   Future<void> _openEditor() async {
@@ -43,7 +47,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
           configs: ProImageEditorConfigs(
             theme: ThemeData.dark(useMaterial3: true),
 
-            // 👇 Inject signature as a sticker
+            // Inject signature image as a sticker
             stickerEditor: StickerEditorConfigs(
               enabled: true,
               buildStickers: (addSticker, scrollController) {
@@ -88,13 +92,9 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Edit Image")),
+    return const Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: _openEditor,
-          child: const Text("Open Editor"),
-        ),
+        child: CircularProgressIndicator(), // Optional: Loading indicator
       ),
     );
   }

@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   emoji_picker_flutter
   flutter_localization
   flutter_twain_scanner
+  printing
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

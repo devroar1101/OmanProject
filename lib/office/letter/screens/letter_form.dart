@@ -209,61 +209,72 @@ class _LetterFormState extends ConsumerState<LetterForm> {
 
   //Save method
 
-  void save(context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      String response;
-      final util = await LetterUtils(
-          actionToBeTaken: _actionToBeController.text,
-          cabinet: _selectedCabinet,
-          classification: selectedClassification,
-          comments: _summaryController.text,
-          createdBy: currentUserId,
-          dateOnTheLetter: _dateOnTheLetter,
-          createdDate: _createdDate,
-          direction: _selectedDirection,
-          directionType: _selectedDirectionType,
-          externalLocation: _selectedLocation,
-          folder: _selectedFolder,
-          fromUser: currentUserId,
-          locationId: _selectedLocation,
-          priority: selectedPriority,
-          receivedDate: _receviedDate,
-          reference: _referenceController.text,
-          sendTo: _sendToController.text,
-          subject: _subjectController.text,
-          tenderNumber: _tenderNumberController.text,
-          letterNumber: _letterNumberController.text,
-          negotiationNumber: _negotiationNumberController.text,
-          tenderStatus: _selectedTenderStatus,
-          toUser: _selectedUser,
-          year: selectedYear,
-          statusId: saved ? 1 : 0,
-          scanDocuments: widget.scanDocumnets,
-          objectId: objectId);
-
-      if (!saved) {
-        response = await util.onSave();
-      } else {
-        response = await util.onSend();
+  void save(BuildContext context) async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+          saved = false;
+        });
       }
+      return;
+    }
 
-      CustomSnackbar.show(
-          context: context,
-          durationInSeconds: 3,
-          message: 'Letter saved successfully',
-          title: 'Successful',
-          typeId: 1,
-          asset: 'assets/saving.gif');
+    if (mounted) {
       setState(() {
-        isSaving = false;
-        saved = response != 'failure';
-        _referenceController.text = response;
+        isSaving = true;
       });
-    } else {
-      setState(() {
-        isSaving = false;
-        saved = false;
-      });
+    }
+
+    try {
+      final util = await LetterUtils(
+        actionToBeTaken: _actionToBeController.text,
+        cabinet: _selectedCabinet,
+        classification: selectedClassification,
+        comments: _summaryController.text,
+        createdBy: currentUserId,
+        dateOnTheLetter: _dateOnTheLetter,
+        createdDate: _createdDate,
+        direction: _selectedDirection,
+        directionType: _selectedDirectionType,
+        externalLocation: _selectedLocation,
+        folder: _selectedFolder,
+        fromUser: currentUserId,
+        locationId: _selectedLocation,
+        priority: selectedPriority,
+        receivedDate: _receviedDate,
+        reference: _referenceController.text,
+        sendTo: _sendToController.text,
+        subject: _subjectController.text,
+        tenderNumber: _tenderNumberController.text,
+        letterNumber: _letterNumberController.text,
+        negotiationNumber: _negotiationNumberController.text,
+        tenderStatus: _selectedTenderStatus,
+        toUser: _selectedUser,
+        year: selectedYear,
+        statusId: saved ? 1 : 0,
+        scanDocuments: widget.scanDocumnets,
+        objectId: objectId,
+      );
+
+      final response = saved ? await util.onSend() : await util.onSave();
+
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+          saved = response != 'failure';
+          _referenceController.text = response;
+        });
+      }
+    } catch (e, stack) {
+      debugPrint('Save error: $e\n$stack');
+
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+          saved = false;
+        });
+      }
     }
   }
 
