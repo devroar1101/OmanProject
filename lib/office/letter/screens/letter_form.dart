@@ -812,6 +812,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
       children: [
         Row(
           children: [
+            // Location Type Card
             GestureDetector(
               onTapDown: (_) =>
                   _locationTypeScale.value = 0.95, // Shrink on tap
@@ -853,6 +854,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               ),
             ),
             const SizedBox(width: 10),
+
+            // New Location Card
             GestureDetector(
               onTapDown: (_) => _newLocationScale.value = 0.95, // Shrink on tap
               onTapUp: (_) =>
@@ -891,6 +894,8 @@ class _LetterFormState extends ConsumerState<LetterForm> {
               ),
             ),
             const SizedBox(width: 5),
+
+            // External Location input field
             Expanded(
               child: SizedBox(
                 height: fieldHeight,
@@ -946,45 +951,41 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     return Column(
       children: [
         _buildRow([
-          Expanded(
-            child: SizedBox(
-              height: fieldHeight,
-              child: SelectField<Cabinet>(
-                options: cabinetOptions,
-                label: 'Cabinet',
-                initialValue: _selectedCabinetName,
-                key: ValueKey(cabinetOptions),
-                onChanged: (cabinet, selectedOption) {
-                  setState(() {
-                    folderOptions = selectedOption.childOptions
-                            ?.cast<SelectOption<Folder>>() ??
-                        [];
-                    _selectedFolder =
-                        null; // Clear the selected folder when cabinet changes
-                    _selectedCabinet = cabinet.id;
-                  });
-                },
-                hint: 'Select Cabinet',
-              ),
+          SizedBox(
+            height: fieldHeight,
+            child: SelectField<Cabinet>(
+              options: cabinetOptions,
+              label: 'Cabinet',
+              initialValue: _selectedCabinetName,
+              key: ValueKey(cabinetOptions),
+              onChanged: (cabinet, selectedOption) {
+                setState(() {
+                  folderOptions = selectedOption.childOptions
+                          ?.cast<SelectOption<Folder>>() ??
+                      [];
+                  _selectedFolder =
+                      null; // Clear the selected folder when cabinet changes
+                  _selectedCabinet = cabinet.id;
+                });
+              },
+              hint: 'Select Cabinet',
             ),
           ),
-          Expanded(
-            child: SizedBox(
-              height: fieldHeight,
-              child: SelectField<Folder>(
-                label: 'Folder',
-                options: folderOptions,
-                key: ValueKey(folderOptions),
-                initialValue: _selectedFolderName,
-                onChanged: (folder, selectedOption) {
-                  setState(() {
-                    _selectedFolder = folder.id;
-                  });
-                },
-                hint: folderOptions.isNotEmpty
-                    ? 'Select Folder'
-                    : 'No Folders Available',
-              ),
+          SizedBox(
+            height: fieldHeight,
+            child: SelectField<Folder>(
+              label: 'Folder',
+              options: folderOptions,
+              key: ValueKey(folderOptions),
+              initialValue: _selectedFolderName,
+              onChanged: (folder, selectedOption) {
+                setState(() {
+                  _selectedFolder = folder.id;
+                });
+              },
+              hint: folderOptions.isNotEmpty
+                  ? 'Select Folder'
+                  : 'No Folders Available',
             ),
           ),
         ]),
@@ -1006,90 +1007,82 @@ class _LetterFormState extends ConsumerState<LetterForm> {
         const SizedBox(height: 6),
         if (!outgoing)
           _buildRow([
-            Expanded(
-              child: SizedBox(
-                height: fieldHeight,
-                child: SelectField<Dg>(
-                  label: 'DG',
-                  options: dgOptions,
-                  key: ValueKey(dgOptions),
-                  initialValue: _selectedDGName,
-                  onChanged: (dg, selectedOption) {
-                    setState(() {
-                      departmentOptions = selectedOption.childOptions
-                              ?.cast<SelectOption<Department>>() ??
-                          [];
-                      _selectedDepartment = null;
-                      _selectedDG = dg.id;
-                      _selectedUserName = '';
-                    });
-                  },
-                  hint: 'Select DG',
-                ),
+            SizedBox(
+              height: fieldHeight,
+              child: SelectField<Dg>(
+                label: 'DG',
+                options: dgOptions,
+                key: ValueKey(dgOptions),
+                initialValue: _selectedDGName,
+                onChanged: (dg, selectedOption) {
+                  setState(() {
+                    departmentOptions = selectedOption.childOptions
+                            ?.cast<SelectOption<Department>>() ??
+                        [];
+                    _selectedDepartment = null;
+                    _selectedDG = dg.id;
+                    _selectedUserName = '';
+                  });
+                },
+                hint: 'Select DG',
               ),
             ),
-            Expanded(
-              child: SizedBox(
-                height: fieldHeight,
-                child: SelectField<Department>(
-                  label: 'Department',
-                  options: departmentOptions,
-                  initialValue: _selectedDepartmentName,
-                  key: ValueKey(departmentOptions),
-                  onChanged: (department, selectedOption) {
-                    setState(() {
-                      _selectedDepartment = department.id;
-                      _selectedUserName = '';
-                    });
-                  },
-                  hint: departmentOptions.isNotEmpty
-                      ? 'Select Department'
-                      : 'No Department Available',
-                ),
+            SizedBox(
+              height: fieldHeight,
+              child: SelectField<Department>(
+                label: 'Department',
+                options: departmentOptions,
+                initialValue: _selectedDepartmentName,
+                key: ValueKey(departmentOptions),
+                onChanged: (department, selectedOption) {
+                  setState(() {
+                    _selectedDepartment = department.id;
+                    _selectedUserName = '';
+                  });
+                },
+                hint: departmentOptions.isNotEmpty
+                    ? 'Select Department'
+                    : 'No Department Available',
               ),
             ),
           ]),
         if (!outgoing) const SizedBox(height: 6),
         if (!outgoing)
           _buildRow([
-            Expanded(
-              child: SizedBox(
-                height: fieldHeight,
-                child: SelectField<User>(
-                  label: 'User',
-                  requiredValidation: !outgoing ? false : true,
-                  options: filteredUserOption,
-                  key: ValueKey(filteredUserOption),
-                  initialValue: _selectedUserName,
-                  onChanged: (user, selectedOption) {
-                    _selectedUser = user.id;
-                    _selectedUserName = selectedOption.displayName;
-                  },
-                  hint: departmentOptions.isNotEmpty
-                      ? 'Select User'
-                      : 'No User Available',
-                ),
+            SizedBox(
+              height: fieldHeight,
+              child: SelectField<User>(
+                label: 'User',
+                requiredValidation: !outgoing ? false : true,
+                options: filteredUserOption,
+                key: ValueKey(filteredUserOption),
+                initialValue: _selectedUserName,
+                onChanged: (user, selectedOption) {
+                  _selectedUser = user.id;
+                  _selectedUserName = selectedOption.displayName;
+                },
+                hint: departmentOptions.isNotEmpty
+                    ? 'Select User'
+                    : 'No User Available',
               ),
             ),
           ]),
         if (!outgoing) const SizedBox(height: 6),
 
         _buildRow([
-          Expanded(
-            child: SizedBox(
-              height: fieldHeight,
-              child: SelectField<ListMasterItem>(
-                options: tenderStatusOption,
-                label: 'Tender Status',
-                initialValue: _selectedTenderStatusValue,
-                key: ValueKey(tenderStatusOption),
-                onChanged: (tenderStatus, selectedOption) {
-                  setState(() {
-                    _selectedTenderStatus = tenderStatus.id;
-                  });
-                },
-                hint: 'Tender Status',
-              ),
+          SizedBox(
+            height: fieldHeight,
+            child: SelectField<ListMasterItem>(
+              options: tenderStatusOption,
+              label: 'Tender Status',
+              initialValue: _selectedTenderStatusValue,
+              key: ValueKey(tenderStatusOption),
+              onChanged: (tenderStatus, selectedOption) {
+                setState(() {
+                  _selectedTenderStatus = tenderStatus.id;
+                });
+              },
+              hint: 'Tender Status',
             ),
           ),
           SizedBox(
@@ -1231,7 +1224,7 @@ class _LetterFormState extends ConsumerState<LetterForm> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-       // spacing: 8,
+        // spacing: 8,
         children: [
           Row(children: [
             Expanded(
