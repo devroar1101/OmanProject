@@ -52,7 +52,6 @@ class _CircularDecisionFormState extends ConsumerState<CircularDecisionForm> {
   }
 
   void assignvalue() {
-    print('show Document ${widget.currentDocument!.objectId}');
 
     if (widget.currentDocument != null) {
       if (widget.currentDocument?.typyId == 1) {
