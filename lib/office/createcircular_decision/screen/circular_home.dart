@@ -34,8 +34,8 @@ class _CircularDecisionState extends State<CreateCircularAndDecision> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CircularDecisionForm(
-                        currentDocument: widget.currentDocument,
-                        scanDocuments: scanDocuments,
+                        // currentDocument: widget.currentDocument,
+                        // scanDocuments: scanDocuments,
                       ),
                     ),
                   ),
